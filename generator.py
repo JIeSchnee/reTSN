@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# this model is used to generate periodic traffic in the network, the priorities will be defined by absolut deadline
+
 #
 # import sched
 # import time
