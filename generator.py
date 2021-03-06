@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+# this model is used to generate periodic traffic in the network, the priorities will be defined by absolut deadline
 #
 # import sched
 # import time
@@ -38,7 +38,7 @@ def system_periodic_streams_Generator(period, transmission_time, offset, time_du
     system_periodic_streams = []
     for i in range(len(period)):
         frame_id = 0
-        frame_init = Frame(frame_id, 0, 0, offset[i], transmission_time[i], period[i], i)
+        frame_init = Frame(frame_id, offset[i]+period[i], 0, offset[i], transmission_time[i], period[i], i)
         # print(frame_init.frame_id, frame_init.source, frame_init.transmission_time, frame_init.period)
         stream = [frame_init]
         periodicFrame_Generator(frame_init, stream, time_duration)
@@ -54,7 +54,7 @@ def sporadic_stream_Generator(time_duration):
     transmission_time = random.randint(1, 8)
     period = random.randint(transmission_time, 32)
     deadline = arrive_time + period
-    print(arrive_time, transmission_time, period)
+    # print(arrive_time, transmission_time, period)
     frame_init = Frame(frame_id, deadline, 0, arrive_time, transmission_time, period, 256)
     # frame_Id, deadline, priority, arrive_time, transmission_time, period, source
     stream = [frame_init]
@@ -87,15 +87,16 @@ if __name__ == "__main__":
     system_periodic_streams = system_periodic_streams_Generator(period, transmission_time, offset, time_duration)
     # for j in range(len(system_periodic_streams)):
     #     print(len(system_periodic_streams[j]))
-    # for i in system_periodic_streams:
-    #     for k in i:
-    #         print(k.source, k.frame_id, k.arrive_time, k.deadline, k.period, k.transmission_time, k.window_time)
+    for i in system_periodic_streams:
+        for k in i:
+            print("system_periodic_streams:", k.source, k.frame_id, k.arrive_time, k.deadline, k.period, k.transmission_time, k.window_time)
 
-    triggerSignal = 1  # 0: aperiodic traffic  1: sporadic traffic with minimal interval
+    triggerSignal = 0  # 0: aperiodic traffic  1: sporadic traffic with minimal interval
     triggered_stream = triggered_stream_Selection(triggerSignal, time_duration)
 
     if triggerSignal == 0:
-        print(triggered_stream.arrive_time, triggered_stream.transmission_time)
+        print("aperiodic traffic:", triggered_stream.source, triggered_stream.frame_id, triggered_stream.arrive_time,
+              triggered_stream.deadline, triggered_stream.period, triggered_stream.transmission_time, triggered_stream.window_time)
     elif triggerSignal == 1:
         for k in triggered_stream:
-            print(k.arrive_time, k.transmission_time, k.period, k.deadline)
+            print("sporadic traffic:", k.source, k.frame_id, k.arrive_time, k.deadline, k.period, k.transmission_time, k.window_time)
