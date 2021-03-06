@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-# this model is used to generate periodic traffic in the network, the priorities will be defined by absolut deadline
-#
+
 # import sched
 # import time
 
@@ -12,7 +11,9 @@ from copy import deepcopy
 
 
 class Frame:
-    def __init__(self, frame_Id, deadline, priority, arrive_time, transmission_time, period, source):
+    critical_level = ''
+
+    def __init__(self, frame_Id, deadline, priority, arrive_time, transmission_time, period, source, critical_level):
         self.frame_id = frame_Id
         self.deadline = deadline
         self.priority = priority
@@ -21,28 +22,20 @@ class Frame:
         self.transmission_time = transmission_time
         self.period = period
         self.source = source
-
-
-class Criticality:
-    node = ''
-    critical_level = ''  # safety_critical / critical / non_critical
-
-    def __init__(self, node, critical_level):
-        self.node = node
-        self.priority = critical_level
+        self.source = critical_level
 
 
 def period_Generator(stream_number, generated_transmission_times):
     utilizations = uunifast(stream_number)
-    # for i in range(len(utilizations)):
-    #     print(utilizations[i])
+    # for j in range(len(utilizations)):
+    #     print(utilizations[j])
 
     generated_period = []
-    for i in range(stream_number):
-        generated_period.append(math.ceil(generated_transmission_times[i] / utilizations[i]))
+    for j in range(stream_number):
+        generated_period.append(math.ceil(generated_transmission_times[j] / utilizations[j]))
 
     # test the total utilization will not exist 1 after ceiling operation
-    uti=[]
+    uti = []
     for i in range(stream_number):
         uti.append(generated_transmission_times[i] / generated_period[i])
     b = sum(uti)
@@ -79,15 +72,26 @@ def periodicFrame_Generator(traffic, stream, time_duration):
 
 def system_periodic_streams_Generator(period, transmission_time, offset, time_duration):
     system_periodic_streams = []
+    critical_definition = []
     for i in range(len(period)):
         frame_id = 0
-        frame_init = Frame(frame_id, offset[i] + period[i], 0, offset[i], transmission_time[i], period[i], i)
+        frame_init = Frame(frame_id, offset[i] + period[i], 0, offset[i], transmission_time[i], period[i], i,
+                           "not_identified")
         # print(frame_init.frame_id, frame_init.source, frame_init.transmission_time, frame_init.period)
+
+        if period[i] <= 10:
+            frame_init.critical_level = "safety_critical"
+        if period[i] > 10 & period[i] <= 100:
+            frame_init.critical_level = "critical"
+        if period[i] > 100:
+            frame_init.critical_level = "non_critical"
+
         stream = [frame_init]
         periodicFrame_Generator(frame_init, stream, time_duration)
         # for j in stream:
         #     print(j.frame_id, j.source, j.arrive_time, j.period)
         system_periodic_streams.append(stream)
+
     return system_periodic_streams
 
 
@@ -98,7 +102,7 @@ def sporadic_stream_Generator(time_duration):
     period = random.randint(transmission_time, 32)
     deadline = arrive_time + period
     # print(arrive_time, transmission_time, period)
-    frame_init = Frame(frame_id, deadline, 0, arrive_time, transmission_time, period, 256)
+    frame_init = Frame(frame_id, deadline, 0, arrive_time, transmission_time, period, 256, "sporadic")
     # frame_Id, deadline, priority, arrive_time, transmission_time, period, source
     stream = [frame_init]
     periodicFrame_Generator(frame_init, stream, time_duration)
@@ -106,7 +110,7 @@ def sporadic_stream_Generator(time_duration):
 
 
 def aperiodic_stream_Generator():
-    aperiodic_stream = Frame(0, 1000, 1000, random.randint(0, 100), random.randint(1, 8), 0, 255)
+    aperiodic_stream = Frame(0, 1000, 1000, random.randint(0, 100), random.randint(1, 8), 0, 255, "aperiodic")
     # frame_Id, deadline, priority, arrive_time, transmission_time, period, source
     # print(aperiodic_stream.arrive_time, aperiodic_stream.transmission_time)
     return aperiodic_stream
@@ -144,17 +148,18 @@ if __name__ == "__main__":
     for i in system_periodic_streams:
         for k in i:
             print("system_periodic_streams:", "source", k.source, "frame_id", k.frame_id, "arrive_time", k.arrive_time,
-                  "deadline", k.deadline, "period", k.period, "transmission_time", k.transmission_time, "window_time", k.window_time)
+                  "deadline", k.deadline, "period", k.period, "transmission_time", k.transmission_time, "window_time",
+                  k.window_time, "critical_level:", k.critical_level)
 
     # aperiodic and sporadic traffic generation
-    triggerSignal = 1  # 0: aperiodic traffic  1: sporadic traffic with minimal interval
+    triggerSignal = 0  # 0: aperiodic traffic  1: sporadic traffic with minimal interval
     triggered_stream = triggered_stream_Selection(triggerSignal, time_duration)
 
     if triggerSignal == 0:
         print("aperiodic_traffic:", triggered_stream.source, triggered_stream.frame_id, triggered_stream.arrive_time,
               triggered_stream.deadline, triggered_stream.period, triggered_stream.transmission_time,
-              triggered_stream.window_time)
+              triggered_stream.window_time, triggered_stream.critical_level)
     elif triggerSignal == 1:
         for k in triggered_stream:
             print("sporadic_traffic:", k.source, k.frame_id, k.arrive_time, k.deadline, k.period, k.transmission_time,
-                  k.window_time)
+                  k.window_time, k.critical_level)
