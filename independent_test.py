@@ -9,20 +9,20 @@ class schedule:
 
 
 if __name__ == "__main__":
-    window_times = [18, 47, 112]
-    period = [500, 200, 500]
+    window_times = [8, 5, 289, 69]
+    period = [100, 100, 1000, 1000]
     hyper_period = 1000
     current_time = 0
-    current_period = [1, 1, 1]
-    remain_time = [18, 47, 112]
-    offset = [0, 0, 0]
-    release_times = [0, 0, 0]
+    current_period = [1, 1, 1, 1]
+    remain_time = [8, 5, 289, 69]
+    offset = [0, 0, 0, 0]
+    release_times = [0, 0, 0, 0]
     preemption_overhead = 2.3
-    frame_id = [0, 0, 0]
-    fragment_id = [0, 0, 0]
-    source = [0, 1, 2]
-    destination = [0, 0, 0]
-
+    frame_id = [0, 0, 0, 0]
+    fragment_id = [0, 0, 0, 0]
+    source = [0, 1, 2, 3]
+    destination = [0, 0, 0, 0]
+    offline_schedule = []
     count = 0
 
     while current_time < hyper_period:
@@ -42,11 +42,13 @@ if __name__ == "__main__":
                     current_period[earliest_index] - 1)
             print("current_p", current_period_p)
 
-            if current_time < release_times[earliest_index]:
-
+            k = True
+            while k:
                 #print("deadline need to be modified")
                 temp_list[earliest_index] = 10000
                 earliest_index = temp_list.index(min(temp_list))
+                if current_time >= release_times[earliest_index]:
+                    k = False
 
             if remain_time[earliest_index] <= current_period_p - current_time:
                 print("schedule from part 1")
@@ -75,7 +77,9 @@ if __name__ == "__main__":
             sche = schedule(source[earliest_index], destination[earliest_index], frame_id[earliest_index],
                             fragment_id[earliest_index], current_time,
                             current_time + running_time)
-            print("source:", sche.source, "frame_id:", sche.frame_Id, "fragment_id:", sche.fragment_Id, "start time:", sche.start_time, "end time:", sche.end_time)
+
+            offline_schedule.append(sche)
+            print(sche.source, sche.frame_Id, sche.fragment_Id, sche.start_time, sche.end_time)
             fragment_id[earliest_index] += 1
             current_time += running_time
             if remain_time[earliest_index] == 0:
@@ -115,8 +119,8 @@ if __name__ == "__main__":
             sche = schedule(source[earliest_index], destination[earliest_index], frame_id[earliest_index],
                             fragment_id[earliest_index], current_time,
                             current_time + running_time)
-
-            print("source:", sche.source, "frame_id:", sche.frame_Id, "fragment_id:", sche.fragment_Id, "start time:", sche.start_time, "end time:", sche.end_time)
+            offline_schedule.append(sche)
+            print(sche.source, sche.frame_Id, sche.fragment_Id, sche.start_time, sche.end_time)
             fragment_id[earliest_index] += 1
             current_time += running_time
             if remain_time[earliest_index] == 0:
@@ -129,7 +133,12 @@ if __name__ == "__main__":
 
             if current_time < min(release_times):
                 current_time = min(release_times)
+
             print("frame id", frame_id)
             total_time = sum([b * c for b, c in zip(window_times, frame_id)])
             print("total_time and uti", total_time, total_time/hyper_period)
             print(count, count/hyper_period)
+    # print("-------------------- summarize ---------------------------")
+    # for i in range(len(offline_schedule)):
+    #     print(" source | frame_id | fragment_id | start time | end time")
+    #     print(offline_schedule[i].source, offline_schedule[i].frame_Id, offline_schedule[i].fragment_Id, offline_schedule[i].start_time, offline_schedule[i].end_time)
