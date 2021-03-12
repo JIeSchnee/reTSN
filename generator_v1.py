@@ -1,15 +1,9 @@
 #!/usr/bin/python3
 
-# import sched
-# import time
-
-# from threading import Timer
 import numpy as np
 import random
 import math
 from copy import deepcopy
-import decimal
-from decimal import Decimal
 
 
 class Frame:
@@ -223,12 +217,15 @@ def EDF_Scheduling(system_periodic_streams, period, window_times, hyper_period):
             temp_list = [a + b * c for a, b, c in zip(offset, period, current_period)]
             current_period_p = offset[earliest_index] + period[earliest_index] * (
                     current_period[earliest_index] - 1)
-            print("current_p", current_period_p)
+            # print("current_p", current_period_p)
 
-            if current_time < release_times[earliest_index]:
-                # print("deadline need to be modified")
+            k = True
+            while k:
+                #print("deadline need to be modified")
                 temp_list[earliest_index] = 10000
                 earliest_index = temp_list.index(min(temp_list))
+                if current_time >= release_times[earliest_index]:
+                    k = False
 
             if remain_time[earliest_index] <= current_period_p - current_time:
                 print("schedule from part 1")
@@ -257,7 +254,9 @@ def EDF_Scheduling(system_periodic_streams, period, window_times, hyper_period):
             sche = schedule(source[earliest_index], destination[earliest_index], frame_id[earliest_index],
                             fragment_id[earliest_index], current_time,
                             current_time + running_time)
-            print("source:", sche.source, "frame_id:", sche.frame_Id, "fragment_id:", sche.fragment_Id, "start time:", sche.start_time, "end time:", sche.end_time)
+            offline_schedule.append(sche)
+            print("---- schedule--- source | frame_id | fragment_id | start time | end time")
+            print(sche.source, sche.frame_Id, sche.fragment_Id, sche.start_time, sche.end_time)
             fragment_id[earliest_index] += 1
             current_time += running_time
             if remain_time[earliest_index] == 0:
@@ -297,8 +296,9 @@ def EDF_Scheduling(system_periodic_streams, period, window_times, hyper_period):
             sche = schedule(source[earliest_index], destination[earliest_index], frame_id[earliest_index],
                             fragment_id[earliest_index], current_time,
                             current_time + running_time)
-
-            print("source:", sche.source, "frame_id:", sche.frame_Id, "fragment_id:", sche.fragment_Id, "start time:", sche.start_time, "end time:", sche.end_time)
+            offline_schedule.append(sche)
+            print("---- schedule--- source | frame_id | fragment_id | start time | end time")
+            print(sche.source, sche.frame_Id, sche.fragment_Id, sche.start_time, sche.end_time)
             fragment_id[earliest_index] += 1
             current_time += running_time
             if remain_time[earliest_index] == 0:
@@ -311,13 +311,13 @@ def EDF_Scheduling(system_periodic_streams, period, window_times, hyper_period):
 
             if current_time < min(release_times):
                 current_time = min(release_times)
-            print("frame id", frame_id)
-            total_time = sum([b * c for b, c in zip(window_times, frame_id)])
-            print("total_time and uti", total_time, total_time/hyper_period)
-            print(count, count/hyper_period)
-            if count/hyper_period > 0.5:
+            # print("frame id", frame_id)
+            original_total_transmission_time = sum([b * c for b, c in zip(window_times, frame_id)])
+            print("original_total_transmission_time and uti: ", original_total_transmission_time, "|", original_total_transmission_time / hyper_period)
+            print("actual_total_transmission_time and uti:", count, "|", count / hyper_period)
+            if count / hyper_period > 0.5:
                 print("$______________warning________________$")
-            if count/hyper_period > 1:
+            if count / hyper_period > 1:
                 print("$______________Error_______________$")
                 exit()
 
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     print("start traffic generation")
 
     # period generation
-    stream_number = 10
+    stream_number = 5
 
     # generated_transmission_times = np.random.randint(low=1, high=5, size=(stream_number))
     # print(generated_transmission_times)
@@ -380,7 +380,12 @@ if __name__ == "__main__":
     #                            EDF schedule generation                       #
     # -------------------------------------------------------------------------#
 
-    scj = EDF_Scheduling(system_periodic_streams, period, window_times, hyper_period)
+    offline_schedule = EDF_Scheduling(system_periodic_streams, period, window_times, hyper_period)
+    # print("-------------------- summarize ---------------------------")
+    # for i in range(len(offline_schedule)):
+    #     print(" source | frame_id | fragment_id | start time | end time")
+    #     print(offline_schedule[i].source, offline_schedule[i].frame_Id, offline_schedule[i].fragment_Id,
+    #           offline_schedule[i].start_time, offline_schedule[i].end_time)
 
     # -------------------------------------------------------------------------#
     #               aperiodic and sporadic traffics generation                 #
