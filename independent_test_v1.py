@@ -235,7 +235,7 @@ if __name__ == "__main__":
             if offline_schedule[i].start_time < delayed_deadline and offline_schedule[i].end_time > temp_start:
                 # check if the frame belongs to preemptable flow, which without GB. With following test part we can #
                 # relax the release time of delayed frame for more prices verification                              #
-                if i == 2:
+                if i == 1:
                     emergency_action = True
                     acceptance_state_1 = False
                     print(offline_schedule[i].start_time, offline_schedule[i].end_time)
@@ -265,8 +265,30 @@ if __name__ == "__main__":
               "! WARNING: The delayed traffic can not be transmitted within its deadline and emergency action "
               "should be triggered ! ", acceptance_state_2)
         pass
-    # ----------------------flow 2 is preemptable -------------------------#
+    # !!! ATTENTION----flow 1 is preemptable -----!!!!#
     else:
         print("TBS assigned deadline:", deadline_U_tbs)
+        print("## flow 1 belongs to preemptable category ##")
 
+        # interference of the current active period traffic with deadline smaller than the assigned deadline and
+        # blocked by preemptable frame with greater deadline
+        remain_higher_priority = 0
+        preemptable_block = 0
+        for i in range(len(offline_schedule)):
+            if offline_schedule[i].start_time <= delayed_release_time < offline_schedule[i].end_time:
+                if i == 1:  # need to check if the active frame belongs to preempable flow
+                    if offline_schedule[i].deadline < delayed_deadline:
+                        remain_higher_priority += offline_schedule[i].end_time - delayed_release_time
+                    else:
+                        if offline_schedule[i].end_time - delayed_release_time > 2:
+                            preemptable_block += 2
+                            print("blocked by preemptable one with lower priority:", offline_schedule[i].start_time,
+                                  offline_schedule[i].end_time, preemptable_block)
+                        else:
+                            remain_higher_priority += offline_schedule[i].end_time - delayed_release_time
+                else:
+                    remain_higher_priority += offline_schedule[i].end_time - delayed_release_time
+                print("active one with higher priority:", offline_schedule[i].start_time, offline_schedule[i].end_time,
+                      remain_higher_priority)
 
+        # interference of the period traffic coming in the future
