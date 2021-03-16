@@ -18,6 +18,24 @@ class schedule:
         self.deadline = deadline
 
 
+class Frame:
+    critical_level = ''
+
+    def __init__(self, frame_Id, fragment_Id, deadline, priority, arrive_time, window_times, period, source,
+                 destination, critical_level):
+        self.frame_id = frame_Id
+        self.fragment_Id = fragment_Id
+        self.deadline = deadline
+        self.priority = priority
+        self.arrive_time = arrive_time
+        self.window_time = window_times
+        self.transmission_time = window_times - 2  # time for guard band is 2 time unit
+        self.period = period
+        self.source = source
+        self.destination = destination
+        self.critical_level = critical_level
+
+
 if __name__ == "__main__":
     # window_times = [23, 13, 48]
     # period = [200, 100, 200]
@@ -52,6 +70,9 @@ if __name__ == "__main__":
     offline_schedule = []
     count = 0
 
+    sporadic_flow = Frame(0, 0, 0, 0, 7, 2, 6, 0, 0, "sporadic")
+
+    # frame_Id, fragment_Id, deadline, priority, arrive_time, window_times, period, source,destination, critical_level
     while current_time < 2 * hyper_period:
         # print("-----------------------------------------------------------------------------------------------------")
         # print("current time:", current_time)
@@ -211,7 +232,7 @@ if __name__ == "__main__":
     print("deadline of delayed frame:", delayed_deadline)
 
     print("----------------Delayed frame acceptance test 1--------------------")
-    emergency_queue = [0]
+    emergency_queue = []
     acceptance_state_1 = False
     acceptance_state_2 = False
     emergency_action = False
@@ -228,6 +249,7 @@ if __name__ == "__main__":
         acceptance_state_1 = True
         deadline_U_tbs = max(delayed_release_time, deadline_U_tbs) + C_delayed_frame / Uti_TBS
         print("acceptance test 1 passed:", acceptance_state_1)
+        print("TBS assigned deadline:", deadline_U_tbs)
     else:
         temp_start = delayed_deadline - C_delayed_frame
         for i in range(len(offline_schedule)):
@@ -256,7 +278,8 @@ if __name__ == "__main__":
                             "action should be triggered ! ", acceptance_state_1)
             else:
                 acceptance_state_1 = True
-        print("acceptance test 1 passed:", acceptance_state_1)
+                deadline_U_tbs = delayed_deadline
+        print("&&&&&&acceptance test 1 passed:", acceptance_state_1)
 
     print("----------------Delayed frame acceptance test 2 response time analysis--------------------")
     if not acceptance_state_1:
@@ -267,28 +290,77 @@ if __name__ == "__main__":
         pass
     # !!! ATTENTION----flow 1 is preemptable -----!!!!#
     else:
-        print("TBS assigned deadline:", deadline_U_tbs)
+
         print("## flow 1 belongs to preemptable category ##")
 
         # interference of the current active period traffic with deadline smaller than the assigned deadline and
-        # blocked by preemptable frame with greater deadline
-        remain_higher_priority = 0
-        preemptable_block = 0
+        # blocked by preemptable frame with greater deadline and blocked by st non-preemptable frame with lower priority
+        interference_active = 0
+
+        # interference of active periodic traffic
         for i in range(len(offline_schedule)):
             if offline_schedule[i].start_time <= delayed_release_time < offline_schedule[i].end_time:
                 if i == 1:  # need to check if the active frame belongs to preempable flow
-                    if offline_schedule[i].deadline < delayed_deadline:
-                        remain_higher_priority += offline_schedule[i].end_time - delayed_release_time
+                    if offline_schedule[i].deadline < deadline_U_tbs:
+                        interference_active += offline_schedule[i].end_time - delayed_release_time
                     else:
                         if offline_schedule[i].end_time - delayed_release_time > 2:
-                            preemptable_block += 2
+                            interference_active += 2
+                            # time_for_delayed_frame = offline_schedule[i].end_time - delayed_release_time + 2
+                            # C_delayed_frame -= time_for_delayed_frame
+                            # !!! attention the time can be used to transmit delayed frame !!!#
                             print("blocked by preemptable one with lower priority:", offline_schedule[i].start_time,
-                                  offline_schedule[i].end_time, preemptable_block)
+                                  offline_schedule[i].end_time, interference_active)
                         else:
-                            remain_higher_priority += offline_schedule[i].end_time - delayed_release_time
+                            interference_active += offline_schedule[i].end_time - delayed_release_time
                 else:
-                    remain_higher_priority += offline_schedule[i].end_time - delayed_release_time
-                print("active one with higher priority:", offline_schedule[i].start_time, offline_schedule[i].end_time,
-                      remain_higher_priority)
+                    # include the block by the st non preemptable frame.
+                    interference_active += offline_schedule[i].end_time - delayed_release_time
+                    print("interference of active one with higher priority:", offline_schedule[i].start_time,
+                          offline_schedule[i].end_time, interference_active)
+
+        # interference of active sporadic traffic
+        if interference_active == 0:
+            latest_sporadic_release = (math.ceil(
+                (delayed_release_time - sporadic_flow.arrive_time) / sporadic_flow.period) - 1) * sporadic_flow.period
+            print("the latest arrive time of sporadic frame", latest_sporadic_release)
+            if latest_sporadic_release <= delayed_release_time < latest_sporadic_release + sporadic_flow.window_time:
+                if latest_sporadic_release + sporadic_flow.window_time - delayed_release_time > 2:
+                    interference_active += 2
+                else:
+                    interference_active = latest_sporadic_release + sporadic_flow.window_time - delayed_release_time
+                    print("blocked by actuve sporadic frame:", interference_active)
 
         # interference of the period traffic coming in the future
+        interference_future = 0
+        for i in range(len(offline_schedule)):
+            if delayed_release_time < offline_schedule[i].start_time < deadline_U_tbs:
+                interference_future += offline_schedule[i].end_time - offline_schedule[i].start_time
+                print("interference of the period traffic coming in the future:", offline_schedule[i].start_time,
+                      offline_schedule[i].end_time, interference_future)
+        interference_future += pure_preemption_overhead
+        # according to the property of EDF, preemption occurs just one time
+
+        delayed_response_time = delayed_release_time + C_delayed_frame + interference_active + interference_future
+        print("TBS assigned deadline:", deadline_U_tbs)
+        print("deadline of delayed frame:", delayed_deadline)
+        print("the response time of delayed frame:", delayed_response_time)
+
+        if delayed_release_time > deadline_U_tbs:
+            for i in range(len(offline_schedule)):
+                if deadline_U_tbs < offline_schedule[i].start_time < delayed_response_time:
+                    delayed_response_time += offline_schedule[i].end_time - offline_schedule[i].start_time
+            delayed_response_time += delayed_response_time + pure_preemption_overhead
+            print("!! updated response time of delayed frame:", delayed_response_time)
+
+        if delayed_response_time <= delayed_deadline:
+            acceptance_state_2 = True
+            print(C_delayed_frame)
+            emergency_queue.append(C_delayed_frame)
+            print(emergency_queue)
+            print("acceptance test 2 passed:", acceptance_state_1)
+
+        else:
+            acceptance_state_2 = False
+            print("!!! @@@#### WARNING  acceptance test 2 failed. The delayed st frame can not be handled before its "
+                  "deadline")
