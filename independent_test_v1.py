@@ -251,36 +251,41 @@ if __name__ == "__main__":
         print("acceptance test 1 passed:", acceptance_state_1)
         print("TBS assigned deadline:", deadline_U_tbs)
     else:
-        temp_start = delayed_deadline - C_delayed_frame
+        temp_in = 0
         for i in range(len(offline_schedule)):
 
-            if offline_schedule[i].start_time < delayed_deadline and offline_schedule[i].end_time > temp_start:
-                # check if the frame belongs to preemptable flow, which without GB. With following test part we can #
-                # relax the release time of delayed frame for more prices verification                              #
-                if i == 1:
-                    emergency_action = True
-                    acceptance_state_1 = False
-                    print(offline_schedule[i].start_time, offline_schedule[i].end_time)
-                    print("!@@@WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
-                          "action should be triggered ! ", acceptance_state_1)
-                else:
-                    gb_tolerate_time = offline_schedule[i].start_time - delayed_deadline
-                    if gb_tolerate_time <= 1:
-                        acceptance_state_1 = True
-                        deadline_U_tbs = delayed_deadline
-                        print("acceptance test 1 passed:", acceptance_state_1)
+           if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
+                if offline_schedule[i].source == 1:
+                    if offline_schedule[i].deadline < delayed_deadline:
+                        temp_in += offline_schedule[i].end_time - delayed_release_time
                     else:
-                        emergency_action = True
-                        acceptance_state_1 = False
-                        print(offline_schedule[i].start_time, offline_schedule[i].end_time)
-                        print(
-                            "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
-                            "action should be triggered ! ", acceptance_state_1)
-            else:
-                acceptance_state_1 = True
-                deadline_U_tbs = delayed_deadline
-        print("&&&&&&acceptance test 1 passed:", acceptance_state_1)
+                        temp_in += 2
+                else:
+                    temp_in += offline_schedule[i].end_time - delayed_release_time
 
+            if delayed_release_time <= offline_schedule[i].start_time <= delayed_deadline:
+                if offline_schedule[i].source == 1:
+                    if offline_schedule[i].deadline < delayed_deadline:
+                        temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
+                    else:
+                        temp_in += 2
+                else:
+                    temp_in += offline_schedule[i].end_time - delayed_release_time
+
+        slack = delayed_deadline - delayed_release_time - temp_in
+        if slack >= C_delayed_frame:
+            acceptance_state_1 = True
+            deadline_U_tbs = delayed_deadline
+            print("********acceptance test 1 passed with slack time *********:", slack)
+            print("assigned deadline:", deadline_U_tbs)
+        else:
+            emergency_action = True
+            acceptance_state_1 = False
+            print(
+                "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
+                "action should be triggered ! ")
+            
+            
     print("----------------Delayed frame acceptance test 2 response time analysis--------------------")
     if not acceptance_state_1:
         emergency_action = True
