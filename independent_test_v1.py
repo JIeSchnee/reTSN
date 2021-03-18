@@ -253,30 +253,36 @@ if __name__ == "__main__":
     else:
         temp_in = 0
         for i in range(len(offline_schedule)):
+            if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
+                print(offline_schedule[i].start_time, offline_schedule[i].end_time)
+                if i == delayed_sche_id:
+                    temp_in += 0
+                    print("delayed frame is released within its offline scheduled time")
 
-           if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
-               if i == delayed_sche_id:
-                   temp_in += 0
-                   print("delayed frame is released within its offline scheduled time")
-                    
-               if offline_schedule[i].source == 1:
-                   if offline_schedule[i].deadline < delayed_deadline:
-                       temp_in += offline_schedule[i].end_time - delayed_release_time
-                   else:
-                       temp_in += 2
-               else:
-                   temp_in += offline_schedule[i].end_time - delayed_release_time
+                if offline_schedule[i].source == 1:
+                    if offline_schedule[i].deadline < delayed_deadline:
+                        temp_in += offline_schedule[i].end_time - delayed_release_time
+                    else:
+                        temp_in += 2
+                    print("##", temp_in)
+                else:
+                    temp_in += offline_schedule[i].end_time - delayed_release_time
+                    print("@@", temp_in)
 
-            if delayed_release_time <= offline_schedule[i].start_time <= delayed_deadline:
+            if delayed_release_time <= offline_schedule[i].start_time < delayed_deadline:
+                print(offline_schedule[i].start_time, offline_schedule[i].end_time)
                 if offline_schedule[i].source == 1:
                     if offline_schedule[i].deadline < delayed_deadline:
                         temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
                     else:
                         temp_in += 2
+                    print("$$", temp_in)
                 else:
                     temp_in += offline_schedule[i].end_time - delayed_release_time
+                    print("&&", temp_in)
 
         slack = delayed_deadline - delayed_release_time - temp_in
+        print("%%%", slack)
         if slack >= C_delayed_frame:
             acceptance_state_1 = True
             deadline_U_tbs = delayed_deadline
