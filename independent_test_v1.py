@@ -334,6 +334,7 @@ if __name__ == "__main__":
     else:
         iteration = True
         while iteration:
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
             interference = 0
             delayed_response_time = 0
             for i in range(len(offline_schedule)):
@@ -364,7 +365,31 @@ if __name__ == "__main__":
                             interference += offline_schedule[i].end_time - delayed_release_time
                             print("interference of active one with higher priority:", offline_schedule[i].start_time,
                                   offline_schedule[i].end_time, interference)
-            preemption = 0
+
+            # if there is no active periodic frame, we need to check sporadic one
+            # ------------------interference of active sporadic traffic-------------------- #
+            #      the deadline of sporadic frames will never greater than delayed one      #
+            #      the delayed frame can be effected by active sporadic frame
+            # ----------------------------------------------------------------------------- #
+
+            sporadic_offset = sporadic_flow.arrive_time
+            # print("sporadic offset:", sporadic_offset)
+            C_sporadic = sporadic_flow.window_time
+            sporadic_interval = sporadic_flow.period
+            latest_sporadic_release = (math.ceil((delayed_release_time - sporadic_offset) / sporadic_interval)
+                                       - 1) * sporadic_flow.period + sporadic_offset
+            if interference == 0:
+                if latest_sporadic_release <= delayed_release_time < latest_sporadic_release + sporadic_flow.window_time:
+                    if latest_sporadic_release + sporadic_flow.window_time - delayed_release_time > 2:
+                        interference += 2
+                        print("the latest arrive time of sporadic frame", latest_sporadic_release)
+                        print("delayed traffic is blocked by active sporadic frame %")
+                    else:
+                        interference += latest_sporadic_release + sporadic_flow.window_time - delayed_release_time
+                        print("the latest arrive time of sporadic frame", latest_sporadic_release)
+                        print("delayed traffic is blocked by active sporadic frame &")
+
+            # preemption = 0
             for i in range(len(offline_schedule)):
                 # interference of the period traffic coming in the future
                 if delayed_release_time <= offline_schedule[i].start_time < deadline_U_tbs:
@@ -374,8 +399,9 @@ if __name__ == "__main__":
                         if offline_schedule[i].source == preemptable_flow:
                             if offline_schedule[i].deadline < delayed_deadline:
                                 interference += offline_schedule[i].end_time - offline_schedule[i].start_time
-                                preemption += pure_preemption_overhead
-                                print("future higher priority", offline_schedule[i].end_time - offline_schedule[i].start_time)
+                                # preemption += pure_preemption_overhead
+                                print("future higher priority",
+                                      offline_schedule[i].end_time - offline_schedule[i].start_time)
                             else:
                                 interference += 0
                         else:
@@ -385,20 +411,6 @@ if __name__ == "__main__":
                             ## TODO calculate the response time of offline_schedule[i]
             # interference += preemption
             print("interference :", interference)
-
-
-
-            # # interference of active sporadic traffic
-            # if interference_active == 0:
-            #     latest_sporadic_release = (math.ceil(
-            #         (delayed_release_time - sporadic_flow.arrive_time) / sporadic_flow.period) - 1) * sporadic_flow.period
-            #     print("the latest arrive time of sporadic frame", latest_sporadic_release)
-            #     if latest_sporadic_release <= delayed_release_time < latest_sporadic_release + sporadic_flow.window_time:
-            #         if latest_sporadic_release + sporadic_flow.window_time - delayed_release_time > 2:
-            #             interference_active += 2
-            #         else:
-            #             interference_active = latest_sporadic_release + sporadic_flow.window_time - delayed_release_time
-            #             print("blocked by actuve sporadic frame:", interference_active)
 
             # interference of the frame in the same queue
             if delayed_response_time - delayed_release_time > 0:
