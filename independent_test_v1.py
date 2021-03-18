@@ -255,13 +255,17 @@ if __name__ == "__main__":
         for i in range(len(offline_schedule)):
 
            if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
-                if offline_schedule[i].source == 1:
-                    if offline_schedule[i].deadline < delayed_deadline:
-                        temp_in += offline_schedule[i].end_time - delayed_release_time
-                    else:
-                        temp_in += 2
-                else:
-                    temp_in += offline_schedule[i].end_time - delayed_release_time
+               if i == delayed_sche_id:
+                   temp_in += 0
+                   print("delayed frame is released within its offline scheduled time")
+                    
+               if offline_schedule[i].source == 1:
+                   if offline_schedule[i].deadline < delayed_deadline:
+                       temp_in += offline_schedule[i].end_time - delayed_release_time
+                   else:
+                       temp_in += 2
+               else:
+                   temp_in += offline_schedule[i].end_time - delayed_release_time
 
             if delayed_release_time <= offline_schedule[i].start_time <= delayed_deadline:
                 if offline_schedule[i].source == 1:
