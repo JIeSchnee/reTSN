@@ -43,12 +43,6 @@ class Frame:
         self.critical_level = critical_level
 
 
-def active_offline_schedule_update(i, offline_schedule, release_time, remain_transmission_time):
-    already_transed = release_time + 2 - offline_schedule[i].start_time
-    remain_transmission_time = offline_schedule[i].end_time - offline_schedule[i].start_time - already_transed
-    return remain_transmission_time
-
-
 def active_frame_interference(offline_schedule, interference, release_time, transmission_time, deadline,
                               preemptable_flow, remain_transmission_time):
     print("------------ interference from active --------------")
@@ -66,10 +60,6 @@ def active_frame_interference(offline_schedule, interference, release_time, tran
                     else:
                         if offline_schedule[i].end_time - release_time > 2:
                             interference += 2
-                            # time_for_delayed_frame = offline_schedule[i].end_time - delayed_release_time + 2
-                            # C_delayed_frame -= time_for_delayed_frame
-                            # !!! attention the time can be used to transmit delayed frame !!!#
-
                             print("blocked by preemptable one with lower priority and offline schedule will be updated",
                                   offline_schedule[i].start_time, offline_schedule[i].end_time, interference)
                             # TODO calculate the response time of offline_schedule[i]
@@ -617,7 +607,7 @@ if __name__ == "__main__":
     print("deadline of delayed frame:", delayed_deadline)
     Uti_server_up_bound = 1 - count / (2 * hyper_period)
 
-    # @@@@@@@@@@@@@@@ delayed traffic analysis @@@@@@@@@@@@@#
+    # -------------- delayed traffic analysis --------------- #
     emergency_queue = delayed_frame_processing(offline_schedule, sporadic_flow, deadline_U_tbs,
                                                hyper_period, C_delayed_frame,
                                                delayed_release_time, delayed_deadline,
