@@ -43,9 +43,15 @@ class Frame:
         self.critical_level = critical_level
 
 
-def active_frame_interference(offline_schedule, interference, release_time, transmission_time, deadline,
+def active_frame_interference(j, offline_schedule, interference, release_time, transmission_time, deadline,
                               preemptable_flow, remain_transmission_time, remain_transmission_deadline,
-                              retransmiss_st_preemptable_frames, retransmiss_st_deadline):
+                              retransmiss_st_preemptable_frames, retransmiss_st_deadline, retrans_sched_id, sched_check):
+
+    if sched_check[j] == -1:
+        print("sporadic frame handling")
+    else:
+        print("ST frame handling")
+
     print("------------ interference from active --------------")
     for i in range(len(offline_schedule)):
         # interference of active periodic traffic
@@ -56,22 +62,29 @@ def active_frame_interference(offline_schedule, interference, release_time, tran
             else:
                 if offline_schedule[i].source == preemptable_flow:
                     # need to check if the active frame belongs to preempable flow
-                    if offline_schedule[i].deadline < deadline:
-                        interference += offline_schedule[i].end_time - release_time
+                    if retrans_sched_id[j] == i:
+                        print("the frame was preempted and is retransmitted")
+                        interference += 0
                     else:
-                        if offline_schedule[i].end_time - release_time > 2:
-                            interference += 2
-                            print("blocked by preemptable one with lower priority and offline schedule will be updated")
-                            # TODO calculate the response time of offline_schedule[i]
-                            remain_transmission_time = (offline_schedule[i].end_time - offline_schedule[i].start_time) \
-                                                       - (release_time - offline_schedule[i].start_time + 2) + 0.3
-                            remain_transmission_deadline = offline_schedule[i].deadline
-                            if remain_transmission_time > 0:
-                                retransmiss_st_preemptable_frames.append(remain_transmission_time)
-                                retransmiss_st_deadline.append(remain_transmission_deadline)
-
-                        else:
+                        if offline_schedule[i].deadline < deadline:
                             interference += offline_schedule[i].end_time - release_time
+                        else:
+                            if offline_schedule[i].end_time - release_time > 2:
+                                interference += 2
+                                print(
+                                    "blocked by preemptable one with lower priority and offline schedule will be updated")
+                                # TODO calculate the response time of offline_schedule[i]
+                                remain_transmission_time = (offline_schedule[i].end_time - offline_schedule[
+                                    i].start_time) \
+                                                           - (release_time - offline_schedule[i].start_time + 2) + 0.3
+                                remain_transmission_deadline = offline_schedule[i].deadline
+                                if remain_transmission_time > 0:
+                                    retransmiss_st_preemptable_frames.append(remain_transmission_time)
+                                    retransmiss_st_deadline.append(remain_transmission_deadline)
+                                    sched_check.append(i)
+
+                            else:
+                                interference += offline_schedule[i].end_time - release_time
                 else:
                     # include the block by the st non preemptable frame.
                     interference += offline_schedule[i].end_time - release_time
@@ -79,18 +92,22 @@ def active_frame_interference(offline_schedule, interference, release_time, tran
             print("interference of active one with higher priority:", offline_schedule[i].start_time,
                   offline_schedule[i].end_time, interference)
 
-    return interference, retransmiss_st_preemptable_frames, retransmiss_st_deadline
+    return interference, retransmiss_st_preemptable_frames, retransmiss_st_deadline, sched_check
 
 
-def future_frame_interference(offline_schedule, interference, release_time, transmission_time, deadline,
+def future_frame_interference(j, offline_schedule, interference, release_time, transmission_time, deadline,
                               preemptable_flow, remain_transmission_time, remain_transmission_deadline,
-                              retransmiss_st_preemptable_frames, retransmiss_st_deadline):
+                              retransmiss_st_preemptable_frames, retransmiss_st_deadline, retrans_sched_id, sched_check):
+    if sched_check[j] == -1:
+        print("sporadic frame handling")
+    else:
+        print("ST frame handling")
+
     print("---------------- interference from future (accumulate) ----------------")
     temp_compare = release_time
     for i in range(len(offline_schedule)):
         # interference of the period traffic coming in the future
         if release_time <= offline_schedule[i].start_time < deadline:
-
             if offline_schedule[i].start_time - release_time - interference - transmission_time > -2:
                 interference += 0
             else:
@@ -120,6 +137,7 @@ def future_frame_interference(offline_schedule, interference, release_time, tran
                         if remain_transmission_time > 0:
                             retransmiss_st_preemptable_frames.append(remain_transmission_time)
                             retransmiss_st_deadline.append(remain_transmission_deadline)
+                            sched_check.append(i)
 
                 else:
                     if offline_schedule[i].start_time - temp_compare > 0:
@@ -135,7 +153,7 @@ def future_frame_interference(offline_schedule, interference, release_time, tran
 
                 print("interference of future ST", offline_schedule[i].start_time, offline_schedule[i].end_time)
 
-    return interference, retransmiss_st_preemptable_frames, retransmiss_st_deadline
+    return interference, retransmiss_st_preemptable_frames, retransmiss_st_deadline, sched_check
 
 
 def EDF_Scheduling():
@@ -302,34 +320,33 @@ def EDF_Scheduling():
 
 
 def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_schedule, deadline_U_CBS, C_CBS_remain,
-                                 preemptable_flow, sporadic_response_time, mark):
+                                 preemptable_flow, sporadic_response_time, mark, retrans_sched_id):
     interference_sporadic = 0
     retransmiss_st_preemptable_frames = []
     retransmiss_st_deadline = []
+    sched_check = []
 
     if mark[j] != 0:
         deadline_U_CBS = mark[j]
 
     print("assigned deadline:", deadline_U_CBS)
 
-
-
     # if there is frame preempted by sporadic frame is will be created as a new sporadic frame
     while sporadic_c > 0:
 
         remain_transmission_time = 0
         remain_transmission_deadline = 0
-        interference_sporadic, retransmiss_st_preemptable_frames, retransmiss_st_deadline = \
-            active_frame_interference(offline_schedule, interference_sporadic, sporadic_arrive_t,
+        interference_sporadic, retransmiss_st_preemptable_frames, retransmiss_st_deadline, sched_check = \
+            active_frame_interference(j,offline_schedule, interference_sporadic, sporadic_arrive_t,
                                       sporadic_c, deadline_U_CBS, preemptable_flow, remain_transmission_time,
                                       remain_transmission_deadline, retransmiss_st_preemptable_frames,
-                                      retransmiss_st_deadline)
+                                      retransmiss_st_deadline, retrans_sched_id, sched_check)
 
-        interference_sporadic, retransmiss_st_preemptable_frames, retransmiss_st_deadline = \
-            future_frame_interference(offline_schedule, interference_sporadic, sporadic_arrive_t,
+        interference_sporadic, retransmiss_st_preemptable_frames, retransmiss_st_deadline, sched_check = \
+            future_frame_interference(j, offline_schedule, interference_sporadic, sporadic_arrive_t,
                                       sporadic_c, deadline_U_CBS, preemptable_flow, remain_transmission_time,
                                       remain_transmission_deadline, retransmiss_st_preemptable_frames,
-                                      retransmiss_st_deadline)
+                                      retransmiss_st_deadline, retrans_sched_id, sched_check)
 
         print("interference :", interference_sporadic)
 
@@ -338,14 +355,12 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
             sporadic_response_time = sporadic_arrive_t + sporadic_c + interference_sporadic
             sporadic_c = 0
             print("handling preempted ST frame, the response time is:", sporadic_response_time)
-
             if sporadic_response_time > deadline_U_CBS:
                 print(" warning the ST frame missing deadline, previous sporadic frame will be dropped ")
 
         # if response time larger than assigned deadline, the interference coming after assigned deadline need
         # to be calculated
-
-        if mark[j] == 0:
+        else:
             temp_int = 0
             temp_deadline_1 = deadline_U_CBS
             if C_CBS_remain > sporadic_c:
@@ -463,9 +478,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 print("sporadic frame is fragmented, capacity replenishment and update deadline",
                       C_CBS_remain, deadline_U_CBS)
 
-
-    return sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline,\
-           C_CBS_remain, deadline_U_CBS
+    return sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, \
+           C_CBS_remain, deadline_U_CBS, sched_check
 
 
 if __name__ == "__main__":
@@ -514,6 +528,16 @@ if __name__ == "__main__":
         mark.append(0)
     print(mark)
 
+    mark = []
+    for i in range(len(sporadic_arrive)):
+        mark.append(0)
+    print(mark)
+
+    retrans_sched_id = []
+    for i in range(len(sporadic_arrive)):
+        retrans_sched_id.append(-1)
+    print(retrans_sched_id)
+
     print("")
     print("-----------------------CBS parameter setup----------------------------------")
 
@@ -560,9 +584,10 @@ if __name__ == "__main__":
                 print("sporadic deadline stay unchanged: ", deadline_U_CBS)
                 print("C_remain is enough for the next frame: ", C_CBS_remain)
 
-            sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, C_CBS_remain, deadline_U_CBS = \
+            sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, C_CBS_remain, \
+            deadline_U_CBS, sched_check = \
                 sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule, deadline_U_CBS,
-                                             C_CBS_remain, preemptable_flow, sporadic_response_time, mark)
+                                             C_CBS_remain, preemptable_flow, sporadic_response_time, mark, retrans_sched_id)
 
             # 此处进行剩下的被抢占帧的处理
             for i in range(len(retransmiss_st_preemptable_frames)):
@@ -574,9 +599,13 @@ if __name__ == "__main__":
             for i in range(len(retransmiss_st_deadline)):
                 mark.insert(j + i + 1, retransmiss_st_deadline[i])
 
+            for i in range(len(sched_check)):
+                retrans_sched_id.insert(j + i + 1, sched_check[i])
+
             print(sporadic_arrive)
             print(sporadic_C)
             print(mark)
+            print(retrans_sched_id)
 
             sim_time += sporadic_response_time
             # if sim_time > 2*hyper_period:
