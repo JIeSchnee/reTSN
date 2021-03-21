@@ -78,7 +78,6 @@ def active_frame_interference(offline_schedule, interference, release_time, tran
 
 def future_frame_interference(offline_schedule, interference, release_time, transmission_time, deadline,
                               preemptable_flow, remain_transmission_time):
-
     print("---------------- interference from future (accumulate) ----------------")
     temp_compare = release_time
     for i in range(len(offline_schedule)):
@@ -103,7 +102,8 @@ def future_frame_interference(offline_schedule, interference, release_time, tran
                             interference += offline_schedule[i].end_time - offline_schedule[i].start_time \
                                             - 2 + pure_preemption_overhead
                             temp_compare = offline_schedule[i].end_time
-                        print("interference of future preemptable", offline_schedule[i].start_time, offline_schedule[i].end_time)
+                        print("interference of future preemptable", offline_schedule[i].start_time,
+                              offline_schedule[i].end_time)
 
                         # preemption += pure_preemption_overhead
                     else:
@@ -286,22 +286,59 @@ def delayed_frame_processing(offline_schedule, sporadic_flow, deadline_U_tbs, hy
             if delayed_response_time >= deadline_U_tbs:
                 iteration = False
 
-
             temp_inter = 0
             temp_deadline_0 = deadline_U_tbs
 
             while delayed_response_time > temp_deadline_0:
                 print("updated response time of delayed frame")
+                temp_compare = delayed_release_time
                 for i in range(len(offline_schedule)):
                     if temp_deadline_0 < offline_schedule[i].start_time < delayed_response_time:
-                        if offline_schedule[i].source == preemptable_flow:
-                            if offline_schedule[i].deadline < deadline_U_tbs:
-                                temp_inter += offline_schedule[i].end_time - offline_schedule[i].start_time
-                            else:
-                                temp_inter += 0
-                                # ## TODO calculate the response time of offline_schedule[i]
+
+                        if offline_schedule[i].start_time - delayed_response_time > -2:
+                            temp_inter += 0
                         else:
-                            temp_inter += offline_schedule[i].end_time - offline_schedule[i].start_time
+                            if offline_schedule[i].source == preemptable_flow:
+
+                                if offline_schedule[i].deadline < deadline_U_tbs:
+
+                                    if offline_schedule[i].start_time - temp_compare > 0:
+
+                                        if delayed_response_time - offline_schedule[i].start_time <= 2:
+                                            temp_inter += 0
+                                        else:
+                                            temp_inter += offline_schedule[i].end_time - offline_schedule[
+                                                i].start_time \
+                                                          - 2 + pure_preemption_overhead
+                                        temp_compare = offline_schedule[i].end_time
+
+                                    else:
+                                        temp_inter += offline_schedule[i].end_time - offline_schedule[i].start_time \
+                                                      - 2 + pure_preemption_overhead
+                                        temp_compare = offline_schedule[i].end_time
+                                    print("interference of preemptable frame coming after response time",
+                                          offline_schedule[i].start_time, offline_schedule[i].end_time)
+                                else:
+                                    temp_inter += 0
+
+                            else:
+                                if offline_schedule[i].start_time - temp_compare > 0:
+                                    if delayed_response_time - offline_schedule[i].start_time <= 2:
+                                        temp_inter += 0
+                                    else:
+                                        temp_inter += offline_schedule[i].end_time - offline_schedule[i].start_time \
+                                                      - 2 + pure_preemption_overhead
+                                        print("interference of ST frame coming after response time",
+                                              offline_schedule[i].start_time, offline_schedule[i].end_time)
+                                        temp_compare = offline_schedule[i].end_time
+                                else:
+                                    temp_inter += offline_schedule[i].end_time - offline_schedule[i].start_time
+                                    temp_compare = offline_schedule[i].end_time
+                                    print("interference of ST frame coming after response time",
+                                          offline_schedule[i].start_time, offline_schedule[i].end_time)
+
+
+                                # ## TODO calculate the response time of offline_schedule[i]
                 delayed_response_time += temp_inter
                 temp_deadline_0 = delayed_response_time
 
