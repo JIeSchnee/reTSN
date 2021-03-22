@@ -625,7 +625,6 @@ if __name__ == "__main__":
                                          C_CBS_remain, preemptable_flow, sporadic_response_time, mark,
                                          retrans_sched_id, sporadic_C, sporadic_arrive)
 
-        # 此处进行剩下的被抢占帧的处理
         for i in range(len(retransmiss_st_preemptable_frames)):
             sporadic_arrive.insert(j + i + 1, sporadic_response_time)
 
@@ -642,8 +641,3 @@ if __name__ == "__main__":
         print(sporadic_C)
         print(mark)
         print(retrans_sched_id)
-
-        # if sim_time > 2*hyper_period:
-        #     break
-
-
