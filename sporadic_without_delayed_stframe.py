@@ -334,23 +334,27 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     deadline_U_CBS_backpack = deadline_U_CBS
 
     if mark[j] != 0:
-
-        if deadline_U_CBS > mark[j]:
-            print("@@ preempted frame handling @@")
-            deadline_U_CBS = mark[j]
-        else:
-
-            if mark[j] - (sporadic_arrive[j+1] + sporadic_C[j+1]) > sporadic_C[j]:
-                sporadic_arrive[j], sporadic_arrive[j + 1] = sporadic_arrive[j + 1], sporadic_arrive[j]
-                sporadic_C[j], sporadic_C[j + 1] = sporadic_C[j + 1], sporadic_C[j]
-                mark[j], mark[j + 1] = mark[j + 1], mark[j]
-                retrans_sched_id[j], retrans_sched_id[j + 1] = retrans_sched_id[j + 1], retrans_sched_id[j]
-                sporadic_c = sporadic_C[j]
-                sporadic_arrive_t = sporadic_arrive[j]
-                print("preempted ST frame can be postponed")
-            else:
+        if mark[j+1] == 0:
+            if deadline_U_CBS > mark[j]:
+                print("@@ preempted frame handling @@")
                 deadline_U_CBS = mark[j]
-                print("preempted ST frame should be transmitted now")
+            else:
+
+                if mark[j] - (sporadic_arrive[j + 1] + sporadic_C[j + 1]) > sporadic_C[j]:
+                    sporadic_arrive[j], sporadic_arrive[j + 1] = sporadic_arrive[j + 1], sporadic_arrive[j]
+                    sporadic_C[j], sporadic_C[j + 1] = sporadic_C[j + 1], sporadic_C[j]
+                    mark[j], mark[j + 1] = mark[j + 1], mark[j]
+                    retrans_sched_id[j], retrans_sched_id[j + 1] = retrans_sched_id[j + 1], retrans_sched_id[j]
+                    sporadic_c = sporadic_C[j]
+                    sporadic_arrive_t = sporadic_arrive[j]
+                    print("preempted ST frame can be postponed")
+                else:
+                    deadline_U_CBS = mark[j]
+                    print("preempted ST frame should be transmitted now")
+        else:
+            deadline_U_CBS = mark[j]
+
+
 
             print(sporadic_arrive)
             print(sporadic_C)
@@ -598,49 +602,48 @@ if __name__ == "__main__":
     sporadic_release_time = sporadic_arrive[0]
 
     sporadic_Rt = []
-    sim_time = 0
-    while sim_time < 2 * hyper_period:
-        for j in range(len(sporadic_arrive)):
-            print("---------------------------------------------------------------------------")
-            print(j)
-            print("sporadic frame arrive time", sporadic_arrive[j])
-            if sporadic_response_time > sporadic_arrive[j]:
-                sporadic_arrive[j] = sporadic_response_time
 
-            print("updated sporadic arrive time: ", sporadic_arrive[j])
-            if C_CBS_remain >= (deadline_U_CBS - sporadic_arrive[j]) * Uti_CBS:
-                deadline_U_CBS = sporadic_arrive[j] + T_CBS
-                C_CBS_remain = C_CBS
-                print("full capacity and deadline: ", deadline_U_CBS)
-            else:
-                print("sporadic deadline stay unchanged: ", deadline_U_CBS)
-                print("C_remain is enough for the next frame: ", C_CBS_remain)
+    for j in range(len(sporadic_arrive)):
+        print("---------------------------------------------------------------------------")
+        print(j)
+        print("sporadic frame arrive time", sporadic_arrive[j])
+        if sporadic_response_time > sporadic_arrive[j]:
+            sporadic_arrive[j] = sporadic_response_time
 
-            sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, C_CBS_remain, \
-            deadline_U_CBS, sched_check = \
-                sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule, deadline_U_CBS,
-                                             C_CBS_remain, preemptable_flow, sporadic_response_time, mark,
-                                             retrans_sched_id, sporadic_C, sporadic_arrive)
+        print("updated sporadic arrive time: ", sporadic_arrive[j])
+        if C_CBS_remain >= (deadline_U_CBS - sporadic_arrive[j]) * Uti_CBS:
+            deadline_U_CBS = sporadic_arrive[j] + T_CBS
+            C_CBS_remain = C_CBS
+            print("full capacity and deadline: ", deadline_U_CBS)
+        else:
+            print("sporadic deadline stay unchanged: ", deadline_U_CBS)
+            print("C_remain is enough for the next frame: ", C_CBS_remain)
 
-            # 此处进行剩下的被抢占帧的处理
-            for i in range(len(retransmiss_st_preemptable_frames)):
-                sporadic_arrive.insert(j + i + 1, sporadic_response_time)
+        sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, C_CBS_remain, \
+        deadline_U_CBS, sched_check = \
+            sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule, deadline_U_CBS,
+                                         C_CBS_remain, preemptable_flow, sporadic_response_time, mark,
+                                         retrans_sched_id, sporadic_C, sporadic_arrive)
 
-            for i in range(len(retransmiss_st_preemptable_frames)):
-                sporadic_C.insert(j + i + 1, retransmiss_st_preemptable_frames[i])
+        # 此处进行剩下的被抢占帧的处理
+        for i in range(len(retransmiss_st_preemptable_frames)):
+            sporadic_arrive.insert(j + i + 1, sporadic_response_time)
 
-            for i in range(len(retransmiss_st_deadline)):
+        for i in range(len(retransmiss_st_preemptable_frames)):
+            sporadic_C.insert(j + i + 1, retransmiss_st_preemptable_frames[i])
 
-                mark.insert(j + i + 1, retransmiss_st_deadline[i])
+        for i in range(len(retransmiss_st_deadline)):
+            mark.insert(j + i + 1, retransmiss_st_deadline[i])
 
-            for i in range(len(sched_check)):
-                retrans_sched_id.insert(j + i + 1, sched_check[i])
+        for i in range(len(sched_check)):
+            retrans_sched_id.insert(j + i + 1, sched_check[i])
 
-            print(sporadic_arrive)
-            print(sporadic_C)
-            print(mark)
-            print(retrans_sched_id)
+        print(sporadic_arrive)
+        print(sporadic_C)
+        print(mark)
+        print(retrans_sched_id)
 
-            sim_time += sporadic_response_time
-            # if sim_time > 2*hyper_period:
-            #     break
+        # if sim_time > 2*hyper_period:
+        #     break
+
+
