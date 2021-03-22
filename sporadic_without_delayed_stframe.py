@@ -136,7 +136,7 @@ def future_frame_interference(j, offline_schedule, interference, release_time, t
 
                     else:
                         interference += 0
-                        remain_transmission_time = offline_schedule[i].end_time - offline_schedule[i].start_time
+                        remain_transmission_time = offline_schedule[i].end_time - offline_schedule[i].start_time - 2
                         remain_transmission_deadline = offline_schedule[i].deadline
                         if remain_transmission_time > 0:
                             retransmiss_st_preemptable_frames.append(remain_transmission_time)
@@ -324,7 +324,8 @@ def EDF_Scheduling():
 
 
 def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_schedule, deadline_U_CBS, C_CBS_remain,
-                                 preemptable_flow, sporadic_response_time, mark, retrans_sched_id):
+                                 preemptable_flow, sporadic_response_time, mark, retrans_sched_id, sporadic_C,
+                                 sporadic_arrive):
     interference_sporadic = 0
     retransmiss_st_preemptable_frames = []
     retransmiss_st_deadline = []
@@ -333,11 +334,33 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     deadline_U_CBS_backpack = deadline_U_CBS
 
     if mark[j] != 0:
-        deadline_U_CBS = mark[j]
+
+        if deadline_U_CBS > mark[j]:
+            print("@@ preempted frame handling @@")
+            deadline_U_CBS = mark[j]
+        else:
+
+            if mark[j] - (sporadic_arrive[j+1] + sporadic_C[j+1]) > sporadic_C[j]:
+                sporadic_arrive[j], sporadic_arrive[j + 1] = sporadic_arrive[j + 1], sporadic_arrive[j]
+                sporadic_C[j], sporadic_C[j + 1] = sporadic_C[j + 1], sporadic_C[j]
+                mark[j], mark[j + 1] = mark[j + 1], mark[j]
+                retrans_sched_id[j], retrans_sched_id[j + 1] = retrans_sched_id[j + 1], retrans_sched_id[j]
+                sporadic_c = sporadic_C[j]
+                sporadic_arrive_t = sporadic_arrive[j]
+                print("preempted ST frame can be postponed")
+            else:
+                deadline_U_CBS = mark[j]
+                print("preempted ST frame should be transmitted now")
+
+            print(sporadic_arrive)
+            print(sporadic_C)
+            print(mark)
+            print(retrans_sched_id)
+
 
     print("actual assigned deadline:", deadline_U_CBS)
 
-    deadline_U_CBS = deadline_U_CBS_backpack
+
 
     # if there is frame preempted by sporadic frame is will be created as a new sporadic frame
     while sporadic_c > 0:
@@ -359,11 +382,12 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
         print("interference :", interference_sporadic)
 
         if mark[j] != 0:
-            print("#########################################################")
+            deadline_U_CBS = deadline_U_CBS_backpack
             sporadic_response_time = sporadic_arrive_t + sporadic_c + interference_sporadic
             sporadic_c = 0
             print("handling preempted ST frame, the response time is:", sporadic_response_time)
-            if sporadic_response_time > deadline_U_CBS:
+            if sporadic_response_time > mark[j]:
+                print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 print(" warning the ST frame missing deadline, previous sporadic frame will be dropped ")
 
         # if response time larger than assigned deadline, the interference coming after assigned deadline need
@@ -596,7 +620,7 @@ if __name__ == "__main__":
             deadline_U_CBS, sched_check = \
                 sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule, deadline_U_CBS,
                                              C_CBS_remain, preemptable_flow, sporadic_response_time, mark,
-                                             retrans_sched_id)
+                                             retrans_sched_id, sporadic_C, sporadic_arrive)
 
             # 此处进行剩下的被抢占帧的处理
             for i in range(len(retransmiss_st_preemptable_frames)):
