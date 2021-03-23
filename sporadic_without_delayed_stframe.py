@@ -47,6 +47,8 @@ def active_frame_interference(j, offline_schedule, interference, release_time, t
                               preemptable_flow, remain_transmission_time, remain_transmission_deadline,
                               retransmiss_st_preemptable_frames, retransmiss_st_deadline, retrans_sched_id,
                               sched_check):
+    pure_preemption_overhead = 0.3
+    
     print("------------ interference from active --------------")
     for i in range(len(offline_schedule)):
         # interference of active periodic traffic
@@ -100,6 +102,7 @@ def future_frame_interference(j, offline_schedule, interference, release_time, t
                               preemptable_flow, remain_transmission_time, remain_transmission_deadline,
                               retransmiss_st_preemptable_frames, retransmiss_st_deadline, retrans_sched_id,
                               sched_check):
+    pure_preemption_overhead = 0.3
     print("---------------- interference from future (accumulate) ----------------")
     #print(release_time)
     #print(deadline)
@@ -330,6 +333,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     retransmiss_st_preemptable_frames = []
     retransmiss_st_deadline = []
     sched_check = []
+    pure_preemption_overhead = 0.3
 
     deadline_U_CBS_backpack = deadline_U_CBS
 
