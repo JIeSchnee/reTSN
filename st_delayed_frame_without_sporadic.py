@@ -45,6 +45,7 @@ class Frame:
 
 def active_frame_interference(offline_schedule, interference, release_time, transmission_time, deadline,
                               preemptable_flow, remain_transmission_time):
+    pure_preemption_overhead = 0.3
     print("------------ interference from active --------------")
     for i in range(len(offline_schedule)):
         # interference of active periodic traffic
@@ -78,6 +79,8 @@ def active_frame_interference(offline_schedule, interference, release_time, tran
 
 def future_frame_interference(offline_schedule, interference, release_time, transmission_time, deadline,
                               preemptable_flow, remain_transmission_time):
+    
+    pure_preemption_overhead = 0.3
     print("---------------- interference from future (accumulate) ----------------")
     temp_compare = release_time
     for i in range(len(offline_schedule)):
@@ -135,6 +138,8 @@ def delayed_frame_processing(offline_schedule, sporadic_flow, deadline_U_tbs, hy
     acceptance_state_1 = False
     acceptance_state_2 = False
     emergency_action = False
+    pure_preemption_overhead = 0.3
+    
 
     print("server up bound:", Uti_server_up_bound)
     # Uti_TBS = Uti_server_up_bound + utilization_delayed - sum(emergency_queue) / (2 * hyper_period)
