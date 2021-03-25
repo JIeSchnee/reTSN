@@ -467,7 +467,7 @@ def EDF_Scheduling():
 
 def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_schedule, deadline_U_CBS, C_CBS_remain,
                                  preemptable_flow, sporadic_response_time, mark, retrans_sched_id, sporadic_C,
-                                 sporadic_arrive, delayed_release_time):
+                                 sporadic_arrive, delayed_release_time, delayed_response_time):
     interference_sporadic = 0
     retransmiss_st_preemptable_frames = []
     retransmiss_st_deadline = []
@@ -485,6 +485,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
         remain_transmission_time = 0
         remain_transmission_deadline = 0
+        sporadic_c_backpack = sporadic_C[j]
         interference_sporadic, retransmiss_st_preemptable_frames, retransmiss_st_deadline, sched_check = \
             active_frame_interference(j, offline_schedule, interference_sporadic, sporadic_arrive[j],
                                       sporadic_C[j], deadline_U_CBS, preemptable_flow, remain_transmission_time,
@@ -515,7 +516,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                         > deadline_U_CBS_backpack:
                     if sporadic_response_time - sporadic_arrive[j + 1] > 2:
                         print(" preempted by the sporadic frame")
-                        sporadic_c_backpack = sporadic_C[j]
+                        # sporadic_c_backpack = sporadic_C[j]
                         sporadic_C[j] = sporadic_C[j] - (sporadic_arrive[j + 1] - sporadic_arrive[j] + 1) + 0.3
 
                         print("remain preempted frame is: ", sporadic_C[j])
@@ -646,7 +647,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                     sporadic_response_time += temp_int
                     temp_deadline_1 = sporadic_response_time
 
-                print("ffdfaf", C_CBS_remain)
+                print("remain capacity for next round", C_CBS_remain)
 
                 C_CBS_remain = C_CBS_remain - sporadic_C[j]
                 sporadic_C[j] = 0
@@ -664,14 +665,20 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 C_CBS_remain = C_CBS
                 print("sporadic frame is fragmented and keep in the current loop, "
                       "capacity replenishment and update deadline",
-                      C_CBS_remain, deadline_U_CBS)
+                      C_CBS_remain, deadline_U_CBS)\
 
-    if sporadic_arrive[j] <= delayed_release_time < min(sporadic_response_time, sporadic_arrive[j + 1]):
-        print("!! delayed traffic released during the sporadic transmission !!")
-        sporadic_response_time = sporadic_response_time + C_delayed_frame - 1
+        if sporadic_arrive[j] <= delayed_release_time < sporadic_response_time:
+            print("!! delayed traffic released during the sporadic transmission !!")
+            if 0 < sporadic_c_backpack - (delayed_release_time - sporadic_arrive[j]) <= 2:
+                sporadic_response_time += 0
+                delayed_response_time += sporadic_c_backpack - (delayed_release_time - sporadic_arrive[j])
+            else:
+                sporadic_response_time = sporadic_response_time + C_delayed_frame - 1
+                delayed_response_time += 1
+
 
     return sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, \
-           C_CBS_remain, deadline_U_CBS, sched_check
+           C_CBS_remain, deadline_U_CBS, sched_check, delayed_response_time
 
 
 if __name__ == "__main__":
@@ -994,12 +1001,18 @@ if __name__ == "__main__":
             print("C_remain is enough for the next frame: ", C_CBS_remain)
 
         sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, C_CBS_remain, \
-        deadline_U_CBS, sched_check = \
+        deadline_U_CBS, sched_check, delayed_response_time = \
             sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule, deadline_U_CBS,
                                          C_CBS_remain, preemptable_flow, sporadic_response_time, mark,
-                                         retrans_sched_id, sporadic_C, sporadic_arrive, delayed_release_time)
+                                         retrans_sched_id, sporadic_C, sporadic_arrive, delayed_release_time,
+                                         delayed_response_time)
 
         print(" The response time of ", j, "th sporadic frame is :", sporadic_response_time)
+
+        if delayed_response_time <= delayed_deadline:
+            print("the final delayed response time is:", delayed_response_time)
+        else:
+            print(" !!! WARNING delayed frame miss deadline")
 
         for i in range(len(retransmiss_st_preemptable_frames)):
             sporadic_arrive.insert(j + i + 1, sporadic_response_time)
