@@ -230,6 +230,8 @@ def future_frame_interference(j, offline_schedule, interference, release_time, t
             print("there exist future coming frame")
             if i == delayed_sche_id:
                 interference += 0
+                print("The frame is delayed frame, time slot assigned to sporadic:", offline_schedule[i].start_time,
+                                  offline_schedule[i].end_time)
             else:
                 if release_time + interference + transmission_time - offline_schedule[i].start_time <= 2:
                     interference += 0
@@ -530,12 +532,12 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                     temp = offline_schedule[i].start_time
                                     sporadic_C[j] = sporadic_c_backpack - (temp - sporadic_arrive[j] + 1) + 0.3
                                     if sporadic_C[j] <= 2:
-                                        sporadic_C[j] = 0
                                         sporadic_response_time = sporadic_arrive[j] + sporadic_C[
                                             j] + interference_sporadic
                                         print("the response time of preempted frame", retrans_sched_id[j], "is: ",
                                               sporadic_response_time)
                                         deadline_U_CBS = deadline_U_CBS_backpack
+                                        sporadic_C[j] = 0
                                         interference_sporadic = 1
                                         if sporadic_response_time > mark[j]:
                                             print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -547,6 +549,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                 sporadic_C[j] = sporadic_c_backpack - (temp - sporadic_arrive[j] + 1) + 0.3
                             else:
                                 sporadic_C[j] = sporadic_c_backpack
+                        else:
+                            interference_sporadic = 1
 
                         sporadic_C[j], sporadic_C[j + 1] = sporadic_C[j + 1], sporadic_C[j]
                         mark[j], mark[j + 1] = mark[j + 1], mark[j]
@@ -560,8 +564,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                         print(mark)
                         print(retrans_sched_id)
                     else:
-                        sporadic_C[j] = 0
                         sporadic_response_time = sporadic_arrive[j] + sporadic_C[j] + interference_sporadic
+                        sporadic_C[j] = 0
                         print("the response time of preempted frame", retrans_sched_id[j], "is: ",
                               sporadic_response_time)
                         deadline_U_CBS = deadline_U_CBS_backpack
@@ -569,16 +573,17 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                             print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                             print(" warning the ST frame missing deadline, previous sporadic frame will be dropped ")
                 else:
-                    sporadic_C[j] = 0
                     sporadic_response_time = sporadic_arrive[j] + sporadic_C[j] + interference_sporadic
+                    sporadic_C[j] = 0
                     print("the response time of preempted frame", retrans_sched_id[j], "is: ", sporadic_response_time)
                     deadline_U_CBS = deadline_U_CBS_backpack
                     if sporadic_response_time > mark[j]:
                         print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                         print(" warning the ST frame missing deadline, previous sporadic frame will be dropped ")
             else:
-                sporadic_C[j] = 0
+
                 sporadic_response_time = sporadic_arrive[j] + sporadic_C[j] + interference_sporadic
+                sporadic_C[j] = 0
                 print("the response time of preempted frame", retrans_sched_id[j], "is: ", sporadic_response_time)
                 deadline_U_CBS = deadline_U_CBS_backpack
                 if sporadic_response_time > mark[j]:
@@ -806,6 +811,7 @@ if __name__ == "__main__":
 
         # 此处做接受测试 其结果会对Uti_cbs进行更改。只有在通过测试之后 delayed frame 才能入queue
 
+
         if delayed_count >= 1:
             if C_delayed_frame <= (delayed_deadline - delayed_release_time) * Uti_TBS:
                 acceptance_state = True
@@ -962,7 +968,7 @@ if __name__ == "__main__":
                 print("acceptance test 2 passed:", acceptance_state)
                 print(" the response time of delayed frame is: ", delayed_response_time)
 
-                if sporadic_arrive[j] > delayed_release_time:
+                if delayed_release_time < sporadic_arrive[j] < delayed_response_time:
                     sporadic_arrive[j] = delayed_response_time
 
             else:
@@ -973,6 +979,7 @@ if __name__ == "__main__":
 
         print("-----------------------------SPRADIC START-------------------------------")
         print(j)
+
         print("sporadic frame arrive time", sporadic_arrive[j])
         if sporadic_response_time > sporadic_arrive[j]:
             sporadic_arrive[j] = sporadic_response_time
