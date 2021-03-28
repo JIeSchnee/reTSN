@@ -613,8 +613,9 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                         print(retrans_sched_id)
 
                     else:
-                        sporadic_C[j] -= delayed_release_time - sporadic_arrive[j] + 1 + 0.3
                         delayed_release_time += 1
+                        sporadic_C[j] -= delayed_release_time - sporadic_arrive[j] - 0.3
+                        
                         print("updated delayed_release_time", delayed_release_time)
                         delayed_response_time = pure_delayed_response_time(offline_schedule, delayed_release_time,
                                                                            C_delayed_frame, deadline_U_tbs,
