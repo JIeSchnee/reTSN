@@ -615,7 +615,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                     else:
                         delayed_release_time += 1
                         sporadic_C[j] -= delayed_release_time - sporadic_arrive[j] - 0.3
-                        
+
                         print("updated delayed_release_time", delayed_release_time)
                         delayed_response_time = pure_delayed_response_time(offline_schedule, delayed_release_time,
                                                                            C_delayed_frame, deadline_U_tbs,
@@ -652,11 +652,12 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
                         print(" temp remain preempted frame is: ", sporadic_C[j])
 
+                        offsched_count = 0
                         for i in range(len(offline_schedule)):
 
                             if offline_schedule[i].start_time <= sporadic_arrive[j] <= offline_schedule[i].end_time \
                                     and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
-
+                                offsched_count += 1
                                 sporadic_arrive[j] = offline_schedule[i].end_time
                                 sporadic_C[j] = sporadic_c_backpack
                                 print(" release during ST transmission 1")
@@ -672,7 +673,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
                             elif sporadic_arrive[j] < offline_schedule[i].start_time < sporadic_response_time \
                                     and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
-
+                                offsched_count += 1
                                 if offline_schedule[i].start_time <= sporadic_arrive[j + 1] \
                                         <= offline_schedule[i].end_time:
                                     print(" release during ST transmission 2")
@@ -682,7 +683,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                         sporadic_C[j] = sporadic_c_backpack
                                         print("666")
                                         if offline_schedule[i].start_time - sporadic_arrive[j] > 0:
-                                            print("AAA")
+                                            print("AAA", sporadic_C[j], offline_schedule[i].start_time, sporadic_arrive[j])
                                             sporadic_C[j] = sporadic_C[j] - (offline_schedule[i].start_time + 1
                                                                              - sporadic_arrive[j]) + 0.3
                                             sporadic_arrive[j] = offline_schedule[i].end_time
@@ -696,6 +697,9 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                             sporadic_arrive[j] = offline_schedule[i].end_time
                                             interference_sporadic = 0
                                             break
+
+                        if offsched_count == 0:
+                            sporadic_arrive[j+1] += 1
 
                         newstart_time = 0
                         if sporadic_C[j] < 0:
@@ -1239,13 +1243,10 @@ if __name__ == "__main__":
     sporadic_Rt = []
     count = 1
 
-    # 如果有多个delay 需要再加一个循环
     Uti_TBS = Uti_server_up_bound - sum(emergency_queue) / (2 * hyper_period)
     print("utilization for TBS:", Uti_TBS)
 
     for j in range(len(sporadic_arrive)):
-
-        # 此处做接受测试 其结果会对Uti_cbs进行更改。只有在通过测试之后 delayed frame 才能入queue
 
         if delayed_count >= 1:
             if C_delayed_frame <= (delayed_deadline - delayed_release_time) * Uti_TBS:
@@ -1404,18 +1405,6 @@ if __name__ == "__main__":
                 print("acceptance test 2 passed:", acceptance_state)
                 print(" the estimated response time of delayed frame is: ", delayed_response_time)
 
-                # if delayed_release_time < sporadic_arrive[j] < delayed_response_time:
-                #     if delayed_flow_id != preemptable_flow:
-                #         if delayed_response_time - sporadic_arrive[j] <= 2:
-                #             sporadic_arrive[j] += delayed_response_time - sporadic_arrive[j]
-                #         else:
-                #             sporadic_arrive[j] = delayed_response_time
-                #     else:
-                #         if deadline_U_tbs <= deadline_U_CBS:
-                #             sporadic_arrive[j] = delayed_response_time
-                #         else:
-                #             print("the delayed frame is preemptable and will be interrupted by sporadic frame")
-
             else:
                 acceptance_state = False
                 print(
@@ -1469,7 +1458,7 @@ if __name__ == "__main__":
         for i in range(len(sched_check)):
             retrans_sched_id.insert(j + i + 1, sched_check[i])
 
-        print(sporadic_arrive)
-        print(sporadic_C)
-        print(mark)
-        print(retrans_sched_id)
+        # print(sporadic_arrive)
+        # print(sporadic_C)
+        # print(mark)
+        # print(retrans_sched_id)
