@@ -834,11 +834,12 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
                             print("temp remain preempted frame is: ", sporadic_C[j])
 
+                            offsched_count = 0
                             for i in range(len(offline_schedule)):
 
                                 if offline_schedule[i].start_time <= sporadic_arrive[j] <= offline_schedule[i].end_time \
                                         and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
-
+                                    offsched_count += 1
                                     sporadic_arrive[j] = offline_schedule[i].end_time
                                     sporadic_C[j] = sporadic_c_backpack
                                     print(" release during ST transmission 1")
@@ -852,7 +853,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
                                 elif sporadic_arrive[j] < offline_schedule[i].start_time < sporadic_response_time \
                                         and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
-
+                                    offsched_count += 1
                                     if offline_schedule[i].start_time <= sporadic_arrive[j + 1] \
                                             <= offline_schedule[i].end_time:
                                         print(" release during ST transmission 2")
@@ -877,6 +878,9 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                                 interference_sporadic = 0
                                                 break
 
+                            if offsched_count == 0:
+                                sporadic_arrive[j + 1] += 1
+                                
                             newstart_time = 0
                             if sporadic_C[j] < 0:
                                 temp = 0
