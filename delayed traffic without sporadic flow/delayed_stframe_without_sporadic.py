@@ -556,7 +556,7 @@ if __name__ == "__main__":
     accepted_count = 0
     delayed_miss_deadline_count = 0
 
-    round_number = 100
+    round_number = 1000
     preempted_frame_ontime = 0
     preempted_frame_misstime = 0
 
@@ -685,6 +685,7 @@ if __name__ == "__main__":
                     "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
                     "action should be triggered ! ")
 
+
         inter_delayed = 0
         temp_retranse_deadline = []
         temp_retranse_frame = []
@@ -801,7 +802,7 @@ if __name__ == "__main__":
 
             for j in range(len(sporadic_arrive)):
 
-                print("-----------------------------SPRADIC START-------------------------------")
+                print("-----------------------------Preempted ST frame-------------------------------")
                 print(j)
                 # print("the size of sporadic array", len(sporadic_arrive))
                 print("the preempted ST frame release time", sporadic_arrive[j])
@@ -850,17 +851,17 @@ if __name__ == "__main__":
                 print(retrans_sched_id)
 
     print("----------------------------------------------------------------")
-    print("release time:", delayed_frame_release_time_list)
-    print("frame size:", delayed_frame_size_list)
-    print("response time:", delayed_frame_response_time_list)
-    print("deadline:", delayed_frame_deadline_list)
-    print("acceptance state:", acceptance_test_state)
+    # print("release time:", delayed_frame_release_time_list)
+    # print("frame size:", delayed_frame_size_list)
+    # print("response time:", delayed_frame_response_time_list)
+    # print("deadline:", delayed_frame_deadline_list)
+    # print("acceptance state:", acceptance_test_state)
     print("accepted num: ", accepted_count)
     print("rejected num: ", rejected_count)
     print("delayed frame deadline missing:", delayed_miss_deadline_count)
 
-    print("the preempted ST sched_id:", preempted_sched_list)
-    print("the response time of preempted sched_id:", preempted_sched_response_time)
+    # print("the preempted ST sched_id:", preempted_sched_list)
+    # print("the response time of preempted sched_id:", preempted_sched_response_time)
     print("the number of ontime preempted ST frame:", preempted_frame_ontime)
     print("the number of mistime preempted ST frame:", preempted_frame_misstime)
     print("----------------------------------------------------------------")
