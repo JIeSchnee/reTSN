@@ -529,6 +529,49 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
            deadline_U_CBS, sched_check, delayed_response_time
 
 
+def conventional_response_time(delayed_release_time, delayed_deadline, C_delayed_frame, offline_schedule,
+                               conven_delayed_response_time):
+    interference = 0
+    pure_preemption_overhead = 0.3
+
+    for i in range(len(offline_schedule)):
+        if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
+            # if i == delayed_sche_id:
+            #     interference += 0
+            # else:
+            #     interference += offline_schedule[i].end_time - delayed_release_time
+            interference += offline_schedule[i].end_time - delayed_release_time
+
+    temp = delayed_release_time
+    for i in range(len(offline_schedule)):
+        if delayed_release_time <= offline_schedule[i].start_time < delayed_deadline:
+            if delayed_release_time + interference + C_delayed_frame - offline_schedule[i].start_time <= 2:
+                interference += 0
+            else:
+                if offline_schedule[i].start_time - temp > 0:
+                    if delayed_release_time + interference + C_delayed_frame - offline_schedule[i].start_time <= 2:
+                        interference += 0
+                    else:
+                        if interference != 0:
+                            if offline_schedule[i].start_time - temp < 1:
+                                interference += offline_schedule[i].end_time - offline_schedule[
+                                    i].start_time
+                            else:
+                                interference += offline_schedule[i].end_time - offline_schedule[
+                                    i].start_time - 1 + pure_preemption_overhead
+                        else:
+                            interference += offline_schedule[i].end_time - offline_schedule[i].start_time \
+                                            - 1 + pure_preemption_overhead
+                    temp = offline_schedule[i].end_time
+                else:
+                    interference += offline_schedule[i].end_time - offline_schedule[i].start_time
+                    temp = offline_schedule[i].end_time
+
+        conven_delayed_response_time = delayed_release_time + C_delayed_frame + interference
+
+    return conven_delayed_response_time
+
+
 if __name__ == "__main__":
 
     offline_schedule, source, hyper_period, window_times, period, destination, count = EDF_Scheduling()
@@ -556,10 +599,12 @@ if __name__ == "__main__":
     accepted_count = 0
     delayed_miss_deadline_count = 0
 
+    conven_deadline_miss = 0
+    conven_response_time_list = []
+
     round_number = 1000
     preempted_frame_ontime = 0
     preempted_frame_misstime = 0
-
 
     for i in range(round_number):
 
@@ -621,6 +666,18 @@ if __name__ == "__main__":
         delayed_frame_release_time_list.append(delayed_release_time)
         delayed_frame_deadline_list.append(delayed_deadline)
         delayed_frame_size_list.append(C_delayed_frame)
+
+        conven_delayed_response_time = 0
+        conven_delayed_response_time = conventional_response_time(delayed_release_time, delayed_deadline,
+                                                                  C_delayed_frame, offline_schedule,
+                                                                  conven_delayed_response_time)
+        print("conventinal response time:", conven_delayed_response_time)
+        conven_response_time_list.append (conven_delayed_response_time)
+
+        if conven_delayed_response_time > delayed_deadline:
+            conven_deadline_miss += 1
+        else:
+            conven_response_time_list.append(conven_delayed_response_time)
 
         Uti_TBS = Uti_server_up_bound - sum(emergency_queue) / (2 * hyper_period)
         print("utilization for TBS:", Uti_TBS)
@@ -684,7 +741,6 @@ if __name__ == "__main__":
                 print(
                     "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
                     "action should be triggered ! ")
-
 
         inter_delayed = 0
         temp_retranse_deadline = []
@@ -787,12 +843,10 @@ if __name__ == "__main__":
         else:
             delayed_miss_deadline_count += 1
             acceptance_test_state.append(0)
-            delayed_frame_response_time_list.append(delayed_response_time)
+            #delayed_frame_response_time_list.append(delayed_response_time)
             print(
                 "!!! @@@#### WARNING  acceptance test 2 failed. The delayed st frame can not be handled before its "
                 "deadline")
-
-
 
         while sporadic_arrive:
             print(sporadic_arrive)
@@ -856,9 +910,13 @@ if __name__ == "__main__":
     # print("response time:", delayed_frame_response_time_list)
     # print("deadline:", delayed_frame_deadline_list)
     # print("acceptance state:", acceptance_test_state)
+    print("conventional deadline missing number: ", conven_deadline_miss)
+    print("average response time of conventional method: ", np.mean(conven_response_time_list))
+
     print("accepted num: ", accepted_count)
     print("rejected num: ", rejected_count)
     print("delayed frame deadline missing:", delayed_miss_deadline_count)
+    print("average response time of proposed method:", np.mean(delayed_frame_response_time_list))
 
     # print("the preempted ST sched_id:", preempted_sched_list)
     # print("the response time of preempted sched_id:", preempted_sched_response_time)
