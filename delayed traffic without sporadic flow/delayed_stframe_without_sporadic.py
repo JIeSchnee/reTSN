@@ -346,39 +346,77 @@ def EDF_Scheduling():
     # offline_schedule = []
     # count = 0
 
-    # window_times = [4, 62, 6, 15]
-    # period = [100, 200, 100, 200]
-    # hyper_period = 200
+    # 0.5
+    window_times = [4, 62, 6, 15]
+    period = [100, 200, 100, 200]
+    hyper_period = 200
+    current_time = 0
+    current_period = [1, 1, 1, 1]
+    remain_time = [4, 62, 6, 15]
+    offset = [0, 0, 0, 0]
+    release_times = [0, 0, 0, 0]
+    pure_preemption_overhead = 0.3
+    preemption_overhead = 2.3
+    frame_id = [0, 0, 0, 0]
+    fragment_id = [0, 0, 0, 0]
+    source = [0, 1, 2, 3]
+    destination = [0, 0, 0, 0]
+    offline_schedule = []
+    count = 0
+
+    # 0.5
+    # window_times = [17, 8, 8, 205, 40]
+    # period = [200, 100, 100, 1000, 1000]
+    # hyper_period = 1000
     # current_time = 0
-    # current_period = [1, 1, 1, 1]
-    # remain_time = [4, 62, 6, 15]
-    # offset = [0, 0, 0, 0]
-    # release_times = [0, 0, 0, 0]
+    # current_period = [1, 1, 1, 1, 1]
+    # remain_time = [17, 8, 8, 205, 40]
+    # offset = [0, 0, 0, 0, 0]
+    # release_times = [0, 0, 0, 0, 0]
     # pure_preemption_overhead = 0.3
     # preemption_overhead = 2.3
-    # frame_id = [0, 0, 0, 0]
-    # fragment_id = [0, 0, 0, 0]
-    # source = [0, 1, 2, 3]
-    # destination = [0, 0, 0, 0]
+    # frame_id = [0, 0, 0, 0, 0]
+    # fragment_id = [0, 0, 0, 0, 0]
+    # source = [0, 1, 2, 3, 4]
+    # destination = [0, 0, 0, 0, 0]
     # offline_schedule = []
     # count = 0
 
-    window_times = [37, 48, 5, 35, 6]
-    period = [200, 200, 50, 200, 200]
-    hyper_period = 200
-    current_time = 0
-    current_period = [1, 1, 1, 1, 1]
-    remain_time = [37, 48, 5, 35, 6]
-    offset = [0, 0, 0, 0, 0]
-    release_times = [0, 0, 0, 0, 0]
-    pure_preemption_overhead = 0.3
-    preemption_overhead = 2.3
-    frame_id = [0, 0, 0, 0, 0]
-    fragment_id = [0, 0, 0, 0, 0]
-    source = [0, 1, 2, 3, 4]
-    destination = [0, 0, 0, 0, 0]
-    offline_schedule = []
-    count = 0
+    # 0.75
+    # window_times = [37, 48, 5, 35, 6]
+    # period = [200, 200, 50, 200, 200]
+    # hyper_period = 200
+    # current_time = 0
+    # current_period = [1, 1, 1, 1, 1]
+    # remain_time = [37, 48, 5, 35, 6]
+    # offset = [0, 0, 0, 0, 0]
+    # release_times = [0, 0, 0, 0, 0]
+    # pure_preemption_overhead = 0.3
+    # preemption_overhead = 2.3
+    # frame_id = [0, 0, 0, 0, 0]
+    # fragment_id = [0, 0, 0, 0, 0]
+    # source = [0, 1, 2, 3, 4]
+    # destination = [0, 0, 0, 0, 0]
+    # offline_schedule = []
+    # count = 0
+
+    # 0.9
+    # window_times = [5, 35, 7, 41, 14]
+    # period = [50, 100, 1000, 100, 1000]
+    # hyper_period = 1000
+    # current_time = 0
+    # current_period = [1, 1, 1, 1, 1]
+    # remain_time = [5, 35, 7, 41, 14]
+    # offset = [0, 0, 0, 0, 0]
+    # release_times = [0, 0, 0, 0, 0]
+    # pure_preemption_overhead = 0.3
+    # preemption_overhead = 2.3
+    # frame_id = [0, 0, 0, 0, 0]
+    # fragment_id = [0, 0, 0, 0, 0]
+    # source = [0, 1, 2, 3, 4]
+    # destination = [0, 0, 0, 0, 0]
+    # offline_schedule = []
+    # count = 0
 
 
     # frame_Id, fragment_Id, deadline, priority, arrive_time, window_times, period, source,destination, critical_level
@@ -595,7 +633,7 @@ if __name__ == "__main__":
 
     offline_schedule, source, hyper_period, window_times, period, destination, count = EDF_Scheduling()
 
-    preemptable_flow = 1
+    preemptable_flow = 3
     pure_preemption_overhead = 0.3
     preemption_overhead = 2.3
 
@@ -630,7 +668,7 @@ if __name__ == "__main__":
 
     variation = []
 
-    round_number = 1000
+    round_number = 10
     preempted_frame_ontime = 0
     preempted_frame_misstime = 0
 
@@ -867,6 +905,8 @@ if __name__ == "__main__":
                 delayed_frame_size_list.append(C_delayed_frame)
                 delayed_id_list.append(j)
 
+                print("length of temp_retranse_frame:", len(temp_retranse_frame))
+
                 if temp_retranse_frame:
                     print("There is preempted ST frame", temp_retranse_frame)
                     for i in range(len(temp_retranse_frame)):
@@ -880,10 +920,14 @@ if __name__ == "__main__":
                 acceptance_test_state.append(0)
                 #delayed_frame_response_time_list.append(delayed_response_time)
                 print(
-                    "!!! @@@#### WARNING  acceptance test 2 failed. The delayed st frame can not be handled before its "
-                    "deadline")
+                    "!!! @@@#### WARNING  The delayed st frame can not be handled before its deadline")
 
-            while sporadic_arrive:
+            count_sporadic = len(sporadic_arrive)
+            temp_response = delayed_response_time
+
+            while count_sporadic > 0:
+
+                print("count_sporadic:", count_sporadic)
                 print(sporadic_arrive)
                 print(sporadic_C)
                 print(mark)
@@ -891,7 +935,11 @@ if __name__ == "__main__":
 
                 for j in range(len(sporadic_arrive)):
 
+                    if count_sporadic != 0:
+                        sporadic_arrive[j] = temp_response
+
                     print("-----------------------------Preempted ST frame-------------------------------")
+                    print("count_sporadic:", count_sporadic)
                     print(j)
                     # print("the size of sporadic array", len(sporadic_arrive))
                     print("the preempted ST frame release time", sporadic_arrive[j])
@@ -906,7 +954,8 @@ if __name__ == "__main__":
                     deadline_U_CBS, sched_check, delayed_response_time = \
                         sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule,
                                                      preemptable_flow, sporadic_response_time, mark,
-                                                     retrans_sched_id, sporadic_C, sporadic_arrive, delayed_release_time,
+                                                     retrans_sched_id, sporadic_C, sporadic_arrive,
+                                                     delayed_release_time,
                                                      delayed_response_time, deadline_U_tbs, delayed_flow_id,
                                                      delayed_sche_id, count)
 
@@ -920,18 +969,23 @@ if __name__ == "__main__":
                         preempted_sched_list.append(retrans_sched_id[j])
                         preempted_origi_response_time.append(offline_schedule[retrans_sched_id[j]].end_time)
                         preempted_sched_response_time.append(sporadic_response_time)
-                        sporadic_arrive.pop(0)
-                        sporadic_C.pop(0)
-                        mark.pop(0)
-                        retrans_sched_id.pop(0)
+                        # sporadic_arrive.pop(0)
+                        # sporadic_C.pop(0)
+                        # mark.pop(0)
+                        # retrans_sched_id.pop(0)
+
+                        temp_response = sporadic_response_time
+                        count_sporadic -= 1
 
                     else:
                         print(" !!! WARNING preempted ST frame miss deadline")
                         preempted_frame_misstime += 1
+                        count_sporadic -= 1
 
                     if retransmiss_st_preemptable_frames:
                         print("There is another preempted ST frame", retransmiss_st_preemptable_frames)
                         for i in range(len(retransmiss_st_preemptable_frames)):
+                            count_sporadic += 1
                             sporadic_arrive.append(sporadic_response_time)
                             sporadic_C.append(retransmiss_st_preemptable_frames[i])
                             mark.append(retransmiss_st_deadline[i])
@@ -941,6 +995,14 @@ if __name__ == "__main__":
                         print(sporadic_C)
                         print(mark)
                         print(retrans_sched_id)
+
+            sporadic_arrive = []
+            sporadic_C = []
+            mark = []
+            retrans_sched_id = []
+
+
+
 
     print("")
     print("-----------------------Results-------------------------------")
@@ -964,7 +1026,7 @@ if __name__ == "__main__":
     b = [y for y in (conven_id_list + delayed_id_list) if y not in a]
     print("the difference of accepted delayed frame:", len(b))
 
-    if len(b) == 0:
+    if len(b) == 0 and len(delayed_frame_response_time_list) != 0:
         for i in range(len(delayed_frame_response_time_list)):
             variation_value = conven_response_time_list[i] - delayed_frame_response_time_list[i]
             if variation_value < 0.001:
