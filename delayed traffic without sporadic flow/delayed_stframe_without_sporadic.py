@@ -347,22 +347,22 @@ def EDF_Scheduling():
     # count = 0
 
     # 0.5
-    window_times = [4, 62, 6, 15]
-    period = [100, 200, 100, 200]
-    hyper_period = 200
-    current_time = 0
-    current_period = [1, 1, 1, 1]
-    remain_time = [4, 62, 6, 15]
-    offset = [0, 0, 0, 0]
-    release_times = [0, 0, 0, 0]
-    pure_preemption_overhead = 0.3
-    preemption_overhead = 2.3
-    frame_id = [0, 0, 0, 0]
-    fragment_id = [0, 0, 0, 0]
-    source = [0, 1, 2, 3]
-    destination = [0, 0, 0, 0]
-    offline_schedule = []
-    count = 0
+    # window_times = [4, 62, 6, 15]
+    # period = [100, 200, 100, 200]
+    # hyper_period = 200
+    # current_time = 0
+    # current_period = [1, 1, 1, 1]
+    # remain_time = [4, 62, 6, 15]
+    # offset = [0, 0, 0, 0]
+    # release_times = [0, 0, 0, 0]
+    # pure_preemption_overhead = 0.3
+    # preemption_overhead = 2.3
+    # frame_id = [0, 0, 0, 0]
+    # fragment_id = [0, 0, 0, 0]
+    # source = [0, 1, 2, 3]
+    # destination = [0, 0, 0, 0]
+    # offline_schedule = []
+    # count = 0
 
     # 0.5
     # window_times = [17, 8, 8, 205, 40]
@@ -383,22 +383,22 @@ def EDF_Scheduling():
     # count = 0
 
     # 0.75
-    # window_times = [37, 48, 5, 35, 6]
-    # period = [200, 200, 50, 200, 200]
-    # hyper_period = 200
-    # current_time = 0
-    # current_period = [1, 1, 1, 1, 1]
-    # remain_time = [37, 48, 5, 35, 6]
-    # offset = [0, 0, 0, 0, 0]
-    # release_times = [0, 0, 0, 0, 0]
-    # pure_preemption_overhead = 0.3
-    # preemption_overhead = 2.3
-    # frame_id = [0, 0, 0, 0, 0]
-    # fragment_id = [0, 0, 0, 0, 0]
-    # source = [0, 1, 2, 3, 4]
-    # destination = [0, 0, 0, 0, 0]
-    # offline_schedule = []
-    # count = 0
+    window_times = [37, 48, 5, 35, 6]
+    period = [200, 200, 50, 200, 200]
+    hyper_period = 200
+    current_time = 0
+    current_period = [1, 1, 1, 1, 1]
+    remain_time = [37, 48, 5, 35, 6]
+    offset = [0, 0, 0, 0, 0]
+    release_times = [0, 0, 0, 0, 0]
+    pure_preemption_overhead = 0.3
+    preemption_overhead = 2.3
+    frame_id = [0, 0, 0, 0, 0]
+    fragment_id = [0, 0, 0, 0, 0]
+    source = [0, 1, 2, 3, 4]
+    destination = [0, 0, 0, 0, 0]
+    offline_schedule = []
+    count = 0
 
     # 0.9
     # window_times = [5, 35, 7, 41, 14]
@@ -668,13 +668,16 @@ if __name__ == "__main__":
 
     variation = []
 
-    round_number = 10
+    round_number = 1000
     preempted_frame_ontime = 0
     preempted_frame_misstime = 0
 
     for j in range(round_number):
 
         print("-------------------- delayed frame generator ---------------------------")
+
+        acceptance_state1 = False
+        acceptance_state2 = False
         delayed_flow_id = random.randint(0, max(source))
         temp = []
         frame_id_check = []
@@ -749,6 +752,7 @@ if __name__ == "__main__":
         Uti_TBS = Uti_server_up_bound - sum(emergency_queue) / (2 * hyper_period)
         print("utilization for TBS:", Uti_TBS)
         if C_delayed_frame <= (delayed_deadline - delayed_release_time) * Uti_TBS:
+            # acceptance_state1 = True
             acceptance_state = True
             accepted_count += 1
             deadline_U_tbs = max(delayed_release_time, deadline_U_tbs) + C_delayed_frame / Uti_TBS
@@ -796,6 +800,7 @@ if __name__ == "__main__":
             slack = delayed_deadline - delayed_release_time - temp_in
 
             if slack >= C_delayed_frame:
+                # acceptance_state2 = True
                 acceptance_state = True
                 accepted_count += 1
                 deadline_U_tbs = delayed_deadline
@@ -803,14 +808,24 @@ if __name__ == "__main__":
                 print("assigned deadline:", deadline_U_tbs)
             else:
                 emergency_action = True
+                # acceptance_state2 = False
                 acceptance_state = False
                 rejected_count += 1
                 print(
                     "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
                     "action should be triggered ! ")
 
-        if acceptance_state:
+        # if acceptance_state1 and acceptance_state2 :
+        #     acceptance_state = True
+        # else:
+        #     emergency_action = True
+        #     acceptance_state = False
+        #     rejected_count += 1
+        #     print(
+        #         "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
+        #         "action should be triggered ! ")
 
+        if acceptance_state:
             inter_delayed = 0
             temp_retranse_deadline = []
             temp_retranse_frame = []
@@ -1019,6 +1034,8 @@ if __name__ == "__main__":
     print("accepted num: ", accepted_count)
     print("rejected num: ", rejected_count)
     print("accepted delayed frame deadline missing:", delayed_miss_deadline_count)
+
+    print("! The actual deadline missing number !:", rejected_count + delayed_miss_deadline_count)
     print("average response time of proposed method:", np.mean(delayed_frame_response_time_list))
     # print("the accepted round of proposed mothod:", delayed_id_list)
 
@@ -1043,12 +1060,13 @@ if __name__ == "__main__":
 
 
     print("----------------------Interference to preemptable ST frame----------------------")
+
     # print("the preempted ST sched_id:", preempted_sched_list)
     # print("the response time of preempted sched_id:", preempted_sched_response_time)
     # print("the original response time of preempted sched_id:", preempted_origi_response_time)
     print("the number of ontime preempted ST frame:", preempted_frame_ontime)
     print("the number of mistime preempted ST frame:", preempted_frame_misstime)
-    if preempted_frame_ontime:
+    if preempted_frame_ontime != 0:
         for i in range(len(preempted_sched_response_time)):
             pre_variation_value = preempted_sched_response_time[i] - preempted_origi_response_time[i]
             if -2 <= pre_variation_value <= 0:
