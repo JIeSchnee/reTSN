@@ -400,6 +400,25 @@ def EDF_Scheduling():
     offline_schedule = []
     count = 0
 
+    # 0.8
+    # window_times = [17, 101, 11, 44, 4]
+    # period = [50, 1000, 100, 200, 500]
+    # hyper_period = 1000
+    # current_time = 0
+    # current_period = [1, 1, 1, 1, 1]
+    # remain_time = [17, 101, 11, 44, 4]
+    # offset = [0, 0, 0, 0, 0]
+    # release_times = [0, 0, 0, 0, 0]
+    # pure_preemption_overhead = 0.3
+    # preemption_overhead = 2.3
+    # frame_id = [0, 0, 0, 0, 0]
+    # fragment_id = [0, 0, 0, 0, 0]
+    # source = [0, 1, 2, 3, 4]
+    # destination = [0, 0, 0, 0, 0]
+    # offline_schedule = []
+    # count = 0
+
+
     # 0.9
     # window_times = [5, 35, 7, 41, 14]
     # period = [50, 100, 1000, 100, 1000]
@@ -631,9 +650,11 @@ def conventional_response_time(delayed_release_time, delayed_deadline, C_delayed
 
 if __name__ == "__main__":
 
+    # window_times, period = periodic_traffic_generator(tream_number, sum_utilization, period_set)
+
     offline_schedule, source, hyper_period, window_times, period, destination, count = EDF_Scheduling()
 
-    preemptable_flow = 3
+    preemptable_flow = 1
     pure_preemption_overhead = 0.3
     preemption_overhead = 2.3
 
@@ -909,6 +930,7 @@ if __name__ == "__main__":
                 delayed_response_time += temp_inter
                 temp_deadline_0 = delayed_response_time
 
+
             if delayed_response_time <= delayed_deadline:
 
                 acceptance_test_state.append(1)
@@ -933,6 +955,7 @@ if __name__ == "__main__":
             else:
                 delayed_miss_deadline_count += 1
                 acceptance_test_state.append(0)
+                print("the actual response time:", delayed_response_time)
                 #delayed_frame_response_time_list.append(delayed_response_time)
                 print(
                     "!!! @@@#### WARNING  The delayed st frame can not be handled before its deadline")
