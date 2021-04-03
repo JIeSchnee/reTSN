@@ -768,12 +768,17 @@ def hyper_period_calculation(period):
 
 if __name__ == "__main__":
 
-    large_scale_loop = 100
+    large_scale_loop = 200
     final_delayed_miss = 0
     final_ST_miss = 0
+    final_accept = []
+    final_reject = []
+    scale_loop = []
+    max_delayed_response_time = []
+    min_delayed_response_time = []
+    ave_delayed_response_time = []
 
     for k in range(large_scale_loop):
-
 
         reselect = True
         while reselect:
@@ -959,7 +964,7 @@ if __name__ == "__main__":
                 print("********* Acceptance test passed from uti 1 ***********:")
                 # print("TBS assigned deadline:", deadline_U_tbs)
 
-                if delayed_deadline - delayed_release_time < hyper_period * 0.3:
+                if delayed_deadline - delayed_release_time <= hyper_period * 0.3:
 
                     inter_block = 0
                     for i in range(len(offline_schedule)):
@@ -997,57 +1002,6 @@ if __name__ == "__main__":
                     else:
                         print("********* Acceptance test passed from uti 2 ***********:")
 
-
-
-
-                # if delayed_deadline - delayed_release_time < hyper_period * 0.1:
-                #     inter_block = 0
-                #     for i in range(len(offline_schedule)):
-                #
-                #         if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
-                #             if i == delayed_sche_id:
-                #                 inter_block += 0
-                #                 print("delayed frame is released within its offline scheduled time")
-                #
-                #             else:
-                #                 if offline_schedule[i].source == preemptable_flow:
-                #
-                #                     if offline_schedule[i].deadline < delayed_deadline:
-                #                         inter_block += offline_schedule[i].end_time - delayed_release_time
-                #                     else:
-                #                         inter_block += 1
-                #                 else:
-                #                     inter_block += offline_schedule[i].end_time - delayed_release_time
-                #
-                #         if delayed_release_time <= offline_schedule[i].start_time < delayed_deadline:
-                #             if offline_schedule[i].source == preemptable_flow:
-                #                 if offline_schedule[i].deadline < delayed_deadline:
-                #                     inter_block += offline_schedule[i].end_time - offline_schedule[i].start_time
-                #                 else:
-                #                     inter_block += 0
-                #             else:
-                #                 inter_block += offline_schedule[i].end_time - offline_schedule[i].start_time
-                #
-                #     if delayed_release_time + inter_block + C_delayed_frame > delayed_deadline:
-                #         acceptance_state = False
-                #         rejected_count += 1
-                #         print(
-                #             "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
-                #             "action should be triggered ! reject from Uti")
-                #     else:
-                #         acceptance_state = True
-                #         accepted_count += 1
-                #         deadline_U_tbs = max(delayed_release_time, deadline_U_tbs) + C_delayed_frame / Uti_TBS
-                #         print("********* Acceptance test passed from uti 2 ***********:")
-                #         print("TBS assigned deadline:", deadline_U_tbs)
-                #
-                # else:
-                #     acceptance_state = True
-                #     accepted_count += 1
-                #     deadline_U_tbs = max(delayed_release_time, deadline_U_tbs) + C_delayed_frame / Uti_TBS
-                #     print("********* Acceptance test passed from uti 1 ***********:")
-                #     print("TBS assigned deadline:", deadline_U_tbs)
-
             else:
                 emergency_action = True
                 # acceptance_state2 = False
@@ -1057,14 +1011,13 @@ if __name__ == "__main__":
                     "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
                     "action should be triggered ! ")
 
-                # temp_start = delayed_deadline - C_delayed_frame - 2
                 # temp_in = 0
                 # for i in range(len(offline_schedule)):
                 #     if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
-                #         # print(offline_schedule[i].start_time, offline_schedule[i].end_time)
+                #         print(offline_schedule[i].start_time, offline_schedule[i].end_time)
                 #         if i == delayed_sche_id:
                 #             temp_in += 0
-                #             # print("delayed frame is released within its offline scheduled time")
+                #             print("delayed frame is released within its offline scheduled time")
                 #         else:
                 #             if offline_schedule[i].source == preemptable_flow:
                 #                 if offline_schedule[i].deadline < delayed_deadline:
@@ -1074,59 +1027,26 @@ if __name__ == "__main__":
                 #                         temp_in += 1
                 #                     else:
                 #                         temp_in += offline_schedule[i].end_time - delayed_release_time
-                #                 # print("##", temp_in)
+                #                 print("##", temp_in)
                 #             else:
                 #                 temp_in += offline_schedule[i].end_time - delayed_release_time
-                #                 # print("@@", temp_in)
+                #                 print("@@", temp_in)
                 #
-                # tt_compare = delayed_release_time
                 # for i in range(len(offline_schedule)):
                 #     if delayed_release_time <= offline_schedule[i].start_time < delayed_deadline:
                 #         if delayed_release_time + C_delayed_frame + temp_in - offline_schedule[i].start_time <= 2:
                 #             temp_in += 0
-                #             # print("$$", temp_in)
+                #             print("$$", temp_in)
                 #         else:
                 #             if offline_schedule[i].source == preemptable_flow:
                 #                 if offline_schedule[i].deadline < delayed_deadline:
-                #                     if offline_schedule[i].start_time - tt_compare > 0:
-                #                         if delayed_release_time + temp_in + C_delayed_frame - offline_schedule[
-                #                             i].start_time <= 2:
-                #                             temp_in += 0
-                #                         else:
-                #                             temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time \
-                #                                             - 1 + pure_preemption_overhead
-                #                         tt_compare = offline_schedule[i].end_time
-                #                     else:
-                #                         temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
-                #                         tt_compare = offline_schedule[i].end_time
-                #                 else:
-                #                     if delayed_release_time + temp_in + C_delayed_frame + offline_schedule[i].end_time - \
-                #                             offline_schedule[i].start_time > offline_schedule[i].deadline:
-                #                         temp_in += offline_schedule[i].end_time - offline_schedule[
-                #                             i].start_time
-                #                     else:
-                #                         temp_in += 0
-                #
-                #             else:
-                #                 if offline_schedule[i].start_time - tt_compare > 0:
-                #                     if delayed_release_time + temp_in + C_delayed_frame - offline_schedule[
-                #                         i].start_time <= 2:
-                #                         temp_in += 0
-                #                     else:
-                #                         if temp_in != 0:
-                #                             if offline_schedule[i].start_time - tt_compare < 1:
-                #                                 temp_in += offline_schedule[i].end_time - offline_schedule[
-                #                                     i].start_time
-                #                             else:
-                #                                 temp_in += offline_schedule[i].end_time - offline_schedule[
-                #                                     i].start_time - 1 + pure_preemption_overhead
-                #                         else:
-                #                             temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time \
-                #                                             - 1 + pure_preemption_overhead
-                #                     tt_compare = offline_schedule[i].end_time
-                #                 else:
                 #                     temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
-                #                     tt_compare = offline_schedule[i].end_time
+                #                     print("&&", temp_in)
+                #                 else:
+                #                     temp_in += 0
+                #             else:
+                #                 temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
+                #                 print("@#$", temp_in)
                 #
                 # slack = delayed_deadline - delayed_release_time - temp_in
                 #
@@ -1136,25 +1056,15 @@ if __name__ == "__main__":
                 #     accepted_count += 1
                 #     deadline_U_tbs = delayed_deadline
                 #     print("******** Acceptance test  passed with slack time *********:", slack)
-                #     # print("assigned deadline:", deadline_U_tbs)
+                #     print("assigned deadline:", deadline_U_tbs)
                 # else:
                 #     emergency_action = True
                 #     # acceptance_state2 = False
                 #     acceptance_state = False
                 #     rejected_count += 1
-                #     # print(
-                #     #     "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
-                #     #     "action should be triggered ! ")
-
-            # if acceptance_state1 and acceptance_state2 :
-            #     acceptance_state = True
-            # else:
-            #     emergency_action = True
-            #     acceptance_state = False
-            #     rejected_count += 1
-            #     print(
-            #         "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
-            #         "action should be triggered ! ")
+                #     print(
+                #         "!$$$WARNING: The delayed traffic can not be transmitted within its deadline and emergency "
+                #         "action should be triggered ! ")
 
             if acceptance_state:
 
@@ -1384,8 +1294,6 @@ if __name__ == "__main__":
                 retrans_sched_id = []
 
 
-
-
         print("")
         print("-----------------------Results-------------------------------")
         # print("release time:", delayed_frame_release_time_list)
@@ -1445,8 +1353,22 @@ if __name__ == "__main__":
             print("minimum jitter:", min(pre_variation))
 
 
-    print("final check")
+        print("final check")
 
-    final_delayed_miss += delayed_miss_deadline_count
-    final_ST_miss += preempted_frame_misstime
-    print(final_delayed_miss, final_ST_miss)
+        final_delayed_miss += delayed_miss_deadline_count
+        final_ST_miss += preempted_frame_misstime
+        final_accept.append(accepted_count)
+        final_reject.append(rejected_count)
+        scale_loop.append(k)
+        print(final_delayed_miss, final_ST_miss)
+        print(final_accept)
+        print("average min max accept", np.mean(final_accept)/round_number, min(final_accept)/round_number, max(final_accept)/round_number)
+        print(final_reject)
+        print("average min max reject", np.mean(final_reject)/round_number, min(final_reject)/round_number, max(final_reject)/round_number)
+
+        max_delayed_response_time.append(max(delayed_frame_response_time_list))
+        min_delayed_response_time.append(min(delayed_frame_response_time_list))
+        ave_delayed_response_time.append(np.mean(delayed_frame_response_time_list))
+        print("max delayed response time", max_delayed_response_time)
+        print("min delayed response time", min_delayed_response_time)
+        print("average delayed response time", ave_delayed_response_time)
