@@ -383,30 +383,12 @@ def EDF_Scheduling():
     # count = 0
 
     # 0.75
-    window_times = [37, 48, 5, 35, 6]
-    period = [200, 200, 50, 200, 200]
-    hyper_period = 200
-    current_time = 0
-    current_period = [1, 1, 1, 1, 1]
-    remain_time = [37, 48, 5, 35, 6]
-    offset = [0, 0, 0, 0, 0]
-    release_times = [0, 0, 0, 0, 0]
-    pure_preemption_overhead = 0.3
-    preemption_overhead = 2.3
-    frame_id = [0, 0, 0, 0, 0]
-    fragment_id = [0, 0, 0, 0, 0]
-    source = [0, 1, 2, 3, 4]
-    destination = [0, 0, 0, 0, 0]
-    offline_schedule = []
-    count = 0
-
-    # 0.8
-    # window_times = [17, 101, 11, 44, 4]
-    # period = [50, 1000, 100, 200, 500]
-    # hyper_period = 1000
+    # window_times = [37, 48, 5, 35, 6]
+    # period = [200, 200, 50, 200, 200]
+    # hyper_period = 200
     # current_time = 0
     # current_period = [1, 1, 1, 1, 1]
-    # remain_time = [17, 101, 11, 44, 4]
+    # remain_time = [37, 48, 5, 35, 6]
     # offset = [0, 0, 0, 0, 0]
     # release_times = [0, 0, 0, 0, 0]
     # pure_preemption_overhead = 0.3
@@ -417,6 +399,24 @@ def EDF_Scheduling():
     # destination = [0, 0, 0, 0, 0]
     # offline_schedule = []
     # count = 0
+
+    # 0.8
+    window_times = [17, 101, 11, 44, 4]
+    period = [50, 1000, 100, 200, 500]
+    hyper_period = 1000
+    current_time = 0
+    current_period = [1, 1, 1, 1, 1]
+    remain_time = [17, 101, 11, 44, 4]
+    offset = [0, 0, 0, 0, 0]
+    release_times = [0, 0, 0, 0, 0]
+    pure_preemption_overhead = 0.3
+    preemption_overhead = 2.3
+    frame_id = [0, 0, 0, 0, 0]
+    fragment_id = [0, 0, 0, 0, 0]
+    source = [0, 1, 2, 3, 4]
+    destination = [0, 0, 0, 0, 0]
+    offline_schedule = []
+    count = 0
 
 
     # 0.9
@@ -971,68 +971,71 @@ if __name__ == "__main__":
                 print(mark)
                 print(retrans_sched_id)
 
-                for j in range(len(sporadic_arrive)):
+                for j in range(1000000):
 
-                    if count_sporadic != 0:
-                        sporadic_arrive[j] = temp_response
+                    if j < len(sporadic_arrive):
+                        print("-----------------------------Preempted ST frame-------------------------------")
+                        if count_sporadic != 0:
+                            sporadic_arrive[j] = temp_response
 
-                    print("-----------------------------Preempted ST frame-------------------------------")
-                    print("count_sporadic:", count_sporadic)
-                    print(j)
-                    # print("the size of sporadic array", len(sporadic_arrive))
-                    print("the preempted ST frame release time", sporadic_arrive[j])
-
-                    print(sporadic_arrive)
-                    print(sporadic_C)
-                    print(mark)
-                    print(retrans_sched_id)
-
-                    sporadic_response_time = 0
-                    sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, \
-                    deadline_U_CBS, sched_check, delayed_response_time = \
-                        sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule,
-                                                     preemptable_flow, sporadic_response_time, mark,
-                                                     retrans_sched_id, sporadic_C, sporadic_arrive,
-                                                     delayed_release_time,
-                                                     delayed_response_time, deadline_U_tbs, delayed_flow_id,
-                                                     delayed_sche_id, count)
-
-                    if sporadic_response_time <= mark[j]:
-                        preempted_frame_ontime += 1
-
-                        print("the preempted response time is:", sporadic_response_time)
-                        print("it's original response time:", offline_schedule[retrans_sched_id[j]].end_time)
-                        print("variation", sporadic_response_time - offline_schedule[retrans_sched_id[j]].end_time)
-
-                        preempted_sched_list.append(retrans_sched_id[j])
-                        preempted_origi_response_time.append(offline_schedule[retrans_sched_id[j]].end_time)
-                        preempted_sched_response_time.append(sporadic_response_time)
-                        # sporadic_arrive.pop(0)
-                        # sporadic_C.pop(0)
-                        # mark.pop(0)
-                        # retrans_sched_id.pop(0)
-
-                        temp_response = sporadic_response_time
-                        count_sporadic -= 1
-
-                    else:
-                        print(" !!! WARNING preempted ST frame miss deadline")
-                        preempted_frame_misstime += 1
-                        count_sporadic -= 1
-
-                    if retransmiss_st_preemptable_frames:
-                        print("There is another preempted ST frame", retransmiss_st_preemptable_frames)
-                        for i in range(len(retransmiss_st_preemptable_frames)):
-                            count_sporadic += 1
-                            sporadic_arrive.append(sporadic_response_time)
-                            sporadic_C.append(retransmiss_st_preemptable_frames[i])
-                            mark.append(retransmiss_st_deadline[i])
-                            retrans_sched_id.append(sched_check[i])
+                        print("count_sporadic:", count_sporadic)
+                        print(j)
+                        # print("the size of sporadic array", len(sporadic_arrive))
+                        print("the preempted ST frame release time", sporadic_arrive[j])
 
                         print(sporadic_arrive)
                         print(sporadic_C)
                         print(mark)
                         print(retrans_sched_id)
+
+                        sporadic_response_time = 0
+                        sporadic_response_time, retransmiss_st_preemptable_frames, retransmiss_st_deadline, \
+                        deadline_U_CBS, sched_check, delayed_response_time = \
+                            sporadic_frame_response_time(j, sporadic_C[j], sporadic_arrive[j], offline_schedule,
+                                                         preemptable_flow, sporadic_response_time, mark,
+                                                         retrans_sched_id, sporadic_C, sporadic_arrive,
+                                                         delayed_release_time,
+                                                         delayed_response_time, deadline_U_tbs, delayed_flow_id,
+                                                         delayed_sche_id, count)
+
+                        if sporadic_response_time <= mark[j]:
+                            preempted_frame_ontime += 1
+
+                            print("the preempted response time is:", sporadic_response_time)
+                            print("it's original response time:", offline_schedule[retrans_sched_id[j]].end_time)
+                            print("variation", sporadic_response_time - offline_schedule[retrans_sched_id[j]].end_time)
+
+                            preempted_sched_list.append(retrans_sched_id[j])
+                            preempted_origi_response_time.append(offline_schedule[retrans_sched_id[j]].end_time)
+                            preempted_sched_response_time.append(sporadic_response_time)
+                            # sporadic_arrive.pop(0)
+                            # sporadic_C.pop(0)
+                            # mark.pop(0)
+                            # retrans_sched_id.pop(0)
+
+                            temp_response = sporadic_response_time
+                            count_sporadic -= 1
+
+                        else:
+                            print(" !!! WARNING preempted ST frame miss deadline")
+                            preempted_frame_misstime += 1
+                            count_sporadic -= 1
+
+                        if retransmiss_st_preemptable_frames:
+                            print("There is another preempted ST frame", retransmiss_st_preemptable_frames)
+                            for i in range(len(retransmiss_st_preemptable_frames)):
+                                count_sporadic += 1
+                                sporadic_arrive.append(sporadic_response_time)
+                                sporadic_C.append(retransmiss_st_preemptable_frames[i])
+                                mark.append(retransmiss_st_deadline[i])
+                                retrans_sched_id.append(sched_check[i])
+
+                            print(sporadic_arrive)
+                            print(sporadic_C)
+                            print(mark)
+                            print(retrans_sched_id)
+                    else:
+                        break
 
             sporadic_arrive = []
             sporadic_C = []
