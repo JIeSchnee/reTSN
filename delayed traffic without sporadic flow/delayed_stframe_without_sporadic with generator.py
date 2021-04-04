@@ -768,7 +768,7 @@ def hyper_period_calculation(period):
 
 if __name__ == "__main__":
 
-    large_scale_loop = 2
+    large_scale_loop = 100
     final_delayed_miss = 0
     final_ST_miss = 0
     final_accept = []
