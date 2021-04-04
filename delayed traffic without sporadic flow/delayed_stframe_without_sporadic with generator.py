@@ -784,7 +784,7 @@ if __name__ == "__main__":
         while reselect:
 
             stream_number = 5
-            target_utilization = 0.75
+            target_utilization = 0.7
             period_set = [50, 100, 200, 500, 1000]
             generated_window_times = []
             window_times = []
@@ -951,16 +951,36 @@ if __name__ == "__main__":
                 conven_response_time_list.append(conven_delayed_response_time)
                 conven_id_list.append(j)
 
+            pst_mark = 0
+            for i in range(len(offline_schedule)):
+
+                if offline_schedule[i].start_time <= delayed_release_time < offline_schedule[i].end_time:
+                    if offline_schedule[i].source == preemptable_flow:
+                        preemptable_flow_instance = i
+                        pst_mark = 1
+                        break
+
+                if delayed_release_time <= offline_schedule[i].start_time < delayed_deadline:
+                    if offline_schedule[i].source == preemptable_flow:
+                        preemptable_flow_instance = i
+                        pst_mark = 1
+                        break
 
             decay = 1
             Uti_TBS = Uti_server_up_bound - sum(emergency_queue) / (2 * hyper_period)
-            Uti_TBS_test = Uti_TBS * decay
+            if pst_mark:
+                Uti_TBS_test = Uti_TBS * decay - (
+                            offline_schedule[preemptable_flow_instance].end_time - offline_schedule[
+                        preemptable_flow_instance].start_time) / (offline_schedule[preemptable_flow_instance].deadline - delayed_release_time)
+            else:
+                Uti_TBS_test =  Uti_TBS
+
             # print("utilization for TBS:", Uti_TBS)
             if C_delayed_frame <= (delayed_deadline - delayed_release_time) * Uti_TBS_test:
                 # acceptance_state1 = True
                 acceptance_state = True
                 accepted_count += 1
-                deadline_U_tbs = max(delayed_release_time, deadline_U_tbs) + C_delayed_frame / Uti_TBS
+                deadline_U_tbs = max(delayed_release_time, deadline_U_tbs) + C_delayed_frame / Uti_TBS_test
                 print("********* Acceptance test passed from uti 1 ***********:")
                 # print("TBS assigned deadline:", deadline_U_tbs)
 
@@ -989,7 +1009,7 @@ if __name__ == "__main__":
                                 if offline_schedule[i].deadline < delayed_deadline:
                                     inter_block += offline_schedule[i].end_time - offline_schedule[i].start_time
                                 else:
-                                    inter_block += 0
+                                    inter_block += 1
                             else:
                                 inter_block += offline_schedule[i].end_time - offline_schedule[i].start_time
 
