@@ -971,7 +971,7 @@ if __name__ == "__main__":
             if pst_mark:
                 Uti_TBS_test = Uti_TBS * decay - (
                             offline_schedule[preemptable_flow_instance].end_time - offline_schedule[
-                        preemptable_flow_instance].start_time) / (offline_schedule[preemptable_flow_instance].deadline - delayed_release_time)
+                        preemptable_flow_instance].start_time) / (offline_schedule[preemptable_flow_instance].deadline - delayed_release_time - C_delayed_frame)
             else:
                 Uti_TBS_test =  Uti_TBS
 
