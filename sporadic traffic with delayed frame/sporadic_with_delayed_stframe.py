@@ -1475,7 +1475,6 @@ def conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic,
 
 
 def response_time_update(response_time, deadline, offline_schedule, preemptable_flow):
-
     temp_inter = 0
     temp_deadline_0 = deadline
 
@@ -1662,7 +1661,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
                 delay_count_1 -= 1
                 if sporadic_response_time - delayed_release_time < 2:
-                    print("!!!! the delayed frame will be insert and sporadic frame can be transmitted continuously !!!")
+                    print(
+                        "!!!! the delayed frame will be insert and sporadic frame can be transmitted continuously !!!")
 
                     sporadic_C[j] = 0
                     interference_sporadic = 0
@@ -1735,7 +1735,6 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                     print(sporadic_C)
                     print(mark)
                     print(retrans_sched_id)
-
 
         if mark[j] != 0:
 
@@ -1857,7 +1856,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                             temp_deadline_1 = deadline_U_CBS
                             deadline_U_CBS, C_CBS_remain = \
                                 Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remain,
-                                                            preemptable_flow, interference_sporadic, mark, retrans_sched_id,
+                                                            preemptable_flow, interference_sporadic, mark,
+                                                            retrans_sched_id,
                                                             sporadic_C, sporadic_arrive, delayed_sche_id, Uti_CBS)
                     else:
                         temp_int = 0
@@ -1895,11 +1895,13 @@ if __name__ == "__main__":
     error = 0
     guaranteed_sporadic = 0
     accepted_delayed_traffic = 0
+    sporadic_frame_number = 0
 
     sporadic_missing_count = 0
     bias = []
+    sporadic_deadline_miss_id = []
+    missing_percentage_list = []
 
-    sporadic_frame_number = []
 
     sporadic_response_time_list = []
     ST_preempted_response_time_list = []
@@ -1909,7 +1911,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 2
+    round_number = 1
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -1918,7 +1920,7 @@ if __name__ == "__main__":
         while reselect:
 
             stream_number = 5
-            target_utilization = 0.6
+            target_utilization = 0.7
             period_set = [50, 100, 200, 500, 1000]
             generated_window_times = []
             window_times = []
@@ -1972,10 +1974,8 @@ if __name__ == "__main__":
             #     reselect = False
             # print("The preemptable flow is", preemptable_flow)
 
-
             reselect = False
             preemptable_flow = 10000009
-
 
         pure_preemption_overhead = 0.3
         preemption_overhead = 2.3
@@ -2072,6 +2072,8 @@ if __name__ == "__main__":
             sporadic_arrive_backpack.append(sporadic_time_stamp_back)
             sporadic_time_stamp_back += sporadic_interval
 
+        sporadic_frame_number += len(sporadic_arrive_backpack)
+
         for i in range(len(sporadic_arrive_backpack)):
             sporadic_arrive_backpack_list.append(sporadic_arrive_backpack[i])
 
@@ -2083,7 +2085,6 @@ if __name__ == "__main__":
 
         for i in range(len(sporadic_deadline)):
             sporadic_deadline_list.append(sporadic_deadline[i])
-
 
         sporadic_deadline.append(1000000)
         print(sporadic_deadline)
@@ -2129,7 +2130,6 @@ if __name__ == "__main__":
             Uti_preempted_ST = 0
         else:
             Uti_preempted_ST = window_times[preemptable_flow] / (hyper_period)
-
 
         print("para:", Uti_server_up_bound, utilization_delayed, Uti_preempted_ST)
 
@@ -2189,7 +2189,7 @@ if __name__ == "__main__":
             # Uti_TBS_test = Uti_TBS * decay - C_preempted_ST / hyper_period
             Uti_TBS_test = Uti_TBS * decay
 
-        sporadic_frame_number.append(len(sporadic_arrive))
+
 
         original_length_sporadic = len(sporadic_arrive)
 
@@ -2223,7 +2223,8 @@ if __name__ == "__main__":
                                 inter_block = 0
                                 for i in range(len(offline_schedule)):
 
-                                    if offline_schedule[i].start_time < delayed_release_time < offline_schedule[i].end_time:
+                                    if offline_schedule[i].start_time < delayed_release_time < offline_schedule[
+                                        i].end_time:
                                         if i == delayed_sche_id:
                                             inter_block += 0
                                             # print("delayed frame is released within its offline scheduled time")
@@ -2294,7 +2295,6 @@ if __name__ == "__main__":
                                 "action should be triggered ! ")
 
                     if acceptance_state:
-
                         inter_delayed = 0
                         temp_retranse_frame_arrive = []
                         temp_retranse_deadline = []
@@ -2321,8 +2321,8 @@ if __name__ == "__main__":
 
                         delayed_response_time = delayed_release_time + C_delayed_frame + inter_delayed
 
-                        delayed_response_time = response_time_update(delayed_response_time, deadline_U_tbs, offline_schedule, preemptable_flow)
-
+                        delayed_response_time = response_time_update(delayed_response_time, deadline_U_tbs,
+                                                                     offline_schedule, preemptable_flow)
 
                     if acceptance_state:
                         accepted_delayed_traffic += 1
@@ -2385,10 +2385,10 @@ if __name__ == "__main__":
 
                 print(" The response time of ", j, "th sporadic frame is :", sporadic_response_time)
 
-                if retrans_sched_id[j] == -1 and mark[j] != 1000000:
+                if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
                     sporadic_response_time_list.append(sporadic_response_time)
 
-                if retrans_sched_id[j] != -1 and retrans_sched_id[j] != delayed_sche_id:
+                if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
                     print("check", offline_schedule[retrans_sched_id[j]].deadline)
                     ST_preempted_response_time_list.append(sporadic_response_time)
                     ST_preempted_deadline_list.append(offline_schedule[retrans_sched_id[j]].deadline)
@@ -2433,25 +2433,39 @@ if __name__ == "__main__":
         print("the number of delayed frame error", delayed_error)
         print("the preempted ST frame error     ", error)
         print("")
-        print("the sporadic arrive time                 ", sporadic_arrive_backpack_list)
-        print("the transmission time of sporadic frames ", sporadic_transmission_time)
+        # print("the sporadic arrive time                 ", sporadic_arrive_backpack_list)
+        # print("the transmission time of sporadic frames ", sporadic_transmission_time)
         print("the sporadic response time               ", sporadic_response_time_list)
         print("the sporadic deadline                    ", sporadic_deadline_list)
 
         for i in range(len(sporadic_response_time_list)):
+
             deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-            if deadline_missing_state[i] < 0:
+
+            if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
                 sporadic_missing_count += 1
                 bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+                sporadic_deadline_miss_id.append(i)
+                missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
+                # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
+                missing_percentage_list.append(missing_percentage)
 
-        print("the sporadic frame deadline missing number", sporadic_missing_count)
-        print("the missing time                          ", bias)
+        print("sporadic frame number :", sporadic_frame_number )
 
-        print("")
-        print("the ST preempted response time           ", ST_preempted_response_time_list)
-        print("the deadline of ST preempted frames      ", ST_preempted_deadline_list)
-        print("")
+        print("the sporadic frame number, deadline missing number and percentage: ",
+              sporadic_frame_number, "|",
+              sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
+        # print("the missing time                          ", bias)
+        # print("missing percentage                        ", missing_percentage_list)
+        # if missing_percentage_list:
+        #     print("average value, and median value             ", np.mean(missing_percentage_list), "|",
+        #           np.median(missing_percentage_list))
+
+        # print("")
+        # print("the ST preempted response time           ", ST_preempted_response_time_list)
+        # print("the deadline of ST preempted frames      ", ST_preempted_deadline_list)
+        # print("")
 
         # print("original length:", original_length_sporadic)
         print("sporadic frame for each round", sporadic_frame_number)
-        print("unscheduable count", unscheduleable_count)
+        # print("unscheduable count", unscheduleable_count)
