@@ -1911,7 +1911,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 1
+    round_number = 1000
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2383,6 +2383,9 @@ if __name__ == "__main__":
                                                  retransmiss_st_deadline,
                                                  sched_check, sporadic_interval, Uti_CBS)
 
+                if delayed_response_time > delayed_deadline:
+                    delayed_error += 1
+
                 print(" The response time of ", j, "th sporadic frame is :", sporadic_response_time)
 
                 if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
@@ -2435,26 +2438,10 @@ if __name__ == "__main__":
         print("")
         # print("the sporadic arrive time                 ", sporadic_arrive_backpack_list)
         # print("the transmission time of sporadic frames ", sporadic_transmission_time)
-        print("the sporadic response time               ", sporadic_response_time_list)
-        print("the sporadic deadline                    ", sporadic_deadline_list)
+        # print("the sporadic response time               ", sporadic_response_time_list)
+        # print("the sporadic deadline                    ", sporadic_deadline_list)
 
-        for i in range(len(sporadic_response_time_list)):
 
-            deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-
-            if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
-                sporadic_missing_count += 1
-                bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-                sporadic_deadline_miss_id.append(i)
-                missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
-                # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
-                missing_percentage_list.append(missing_percentage)
-
-        print("sporadic frame number :", sporadic_frame_number )
-
-        print("the sporadic frame number, deadline missing number and percentage: ",
-              sporadic_frame_number, "|",
-              sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
         # print("the missing time                          ", bias)
         # print("missing percentage                        ", missing_percentage_list)
         # if missing_percentage_list:
@@ -2467,5 +2454,23 @@ if __name__ == "__main__":
         # print("")
 
         # print("original length:", original_length_sporadic)
-        print("sporadic frame for each round", sporadic_frame_number)
         # print("unscheduable count", unscheduleable_count)
+        
+    for i in range(len(sporadic_response_time_list)):
+
+        deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+
+        if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
+            sporadic_missing_count += 1
+            bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+            sporadic_deadline_miss_id.append(i)
+            missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
+            # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
+            missing_percentage_list.append(missing_percentage)
+
+    print("sporadic frame number :", sporadic_frame_number )
+    print()
+
+    print("the sporadic frame number, deadline missing number and percentage: ",
+          sporadic_frame_number, "|",
+          sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
