@@ -1895,11 +1895,21 @@ if __name__ == "__main__":
     error = 0
     guaranteed_sporadic = 0
     accepted_delayed_traffic = 0
+
+    sporadic_missing_count = 0
+    bias = []
+
     sporadic_frame_number = []
+
     sporadic_response_time_list = []
     ST_preempted_response_time_list = []
     ST_preempted_deadline_list = []
-    round_number = 2000
+    sporadic_arrive_backpack_list = []
+    sporadic_deadline_list = []
+    C_sporadic_frames_list = []
+    deadline_missing_state = []
+
+    round_number = 2
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2062,11 +2072,18 @@ if __name__ == "__main__":
             sporadic_arrive_backpack.append(sporadic_time_stamp_back)
             sporadic_time_stamp_back += sporadic_interval
 
+        for i in range(len(sporadic_arrive_backpack)):
+            sporadic_arrive_backpack_list.append(sporadic_arrive_backpack[i])
+
         sporadic_deadline = []
         sporadic_step = sporadic_offset + sporadic_interval
         for i in range(len(sporadic_arrive) - 1):
             sporadic_deadline.append(sporadic_step)
             sporadic_step += sporadic_interval
+
+        for i in range(len(sporadic_deadline)):
+            sporadic_deadline_list.append(sporadic_deadline[i])
+
 
         sporadic_deadline.append(1000000)
         print(sporadic_deadline)
@@ -2416,10 +2433,20 @@ if __name__ == "__main__":
         print("the number of delayed frame error", delayed_error)
         print("the preempted ST frame error     ", error)
         print("")
-        print("the sporadic arrive time                 ", sporadic_arrive_backpack)
+        print("the sporadic arrive time                 ", sporadic_arrive_backpack_list)
         print("the transmission time of sporadic frames ", sporadic_transmission_time)
         print("the sporadic response time               ", sporadic_response_time_list)
-        print("the possible deadline of sporadic traffic", sporadic_deadline[: -1])
+        print("the sporadic deadline                    ", sporadic_deadline_list)
+
+        for i in range(len(sporadic_response_time_list)):
+            deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+            if deadline_missing_state[i] < 0:
+                sporadic_missing_count += 1
+                bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+
+        print("the sporadic frame deadline missing number", sporadic_missing_count)
+        print("the missing time                          ", bias)
+
         print("")
         print("the ST preempted response time           ", ST_preempted_response_time_list)
         print("the deadline of ST preempted frames      ", ST_preempted_deadline_list)
