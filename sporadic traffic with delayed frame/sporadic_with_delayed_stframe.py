@@ -2013,7 +2013,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
         postpont_time = - credit_1 / idleLp
         print("the postponed time:", postpont_time)
         credit_1 = 0
-
+        print("credit back to 0")
         sched_AVB_check = retrans_sched_AVB[j+1:]
         if j < len(sporadic_arrive_time_AVB) - 1:
             index = -5
@@ -2025,10 +2025,10 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                 if sporadic_arrive_time_AVB[index] < response_time + postpont_time:
                     # 实际的ready time 要包含期间所有ST的时间
                     ST_interference = credit_update(response_time, postpont_time, offline_schedule)
-                    print("original arrive time of next frame belong to the same class", sporadic_arrive_time_AVB[j + 1])
+                    print("original arrive time of next frame belongs to the same class", sporadic_arrive_time_AVB[j + 1])
                     sporadic_arrive_time_AVB[index] = response_time + postpont_time + ST_interference
 
-                    print("the updated arrive time of next frame :", sporadic_arrive_time_AVB[index])
+                    print("the updated ready time of next frame belongs to the same class :", sporadic_arrive_time_AVB[index])
                     print("sporadic_arrive_time_AVB update ")
                     print(sporadic_arrive_time_AVB)
 
@@ -2072,15 +2072,18 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                                 print(mark_AVB)
                                 print(retrans_sched_AVB)
 
+                else:
+                    print("the ready time of the next frame bolongs to the same class is", response_time + postpont_time)
+
     retrans_sched_AVB_check = retrans_sched_AVB[j:]
     class_index = -4
     for h in range(len(retrans_sched_AVB_check)):
         if retrans_sched_AVB[j] != -2:
-            if retrans_sched_AVB[h] == -2:
+            if retrans_sched_AVB_check[h] == -2:
                 class_index = j + h
                 break
         else:
-            if retrans_sched_AVB[h] != -2:
+            if retrans_sched_AVB_check[h] != -2:
                 class_index = j + h
                 break
 
