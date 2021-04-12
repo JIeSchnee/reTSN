@@ -1945,15 +1945,15 @@ def credit_update(response_time, postpont_time, offline_schedule):
                 if temp_response - offline_schedule[i].start_time <= 2:
                     interference += 0
                 else:
-                    interference += offline_schedule[i].end_time - offline_schedule[i].start_time - 2
+                    interference += offline_schedule[i].end_time - offline_schedule[i].start_time
                     print("the postponed time caused by offline schedule", offline_schedule[i].start_time,
                           offline_schedule[i].end_time, interference)
 
     return interference
 
+def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB,
+                                         retrans_sched_AVB, offline_schedule, response_time, sendLp, idleLp):
 
-def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB,
-                                                          offline_schedule, credit_A, sendLp, idleLp):
     release_time = sporadic_arrive_time_AVB[j]
     transmission_time = sporadic_transmission_time_AVB[j]
 
@@ -1962,13 +1962,12 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
 
     for i in range(len(offline_schedule)):
         if offline_schedule[i].start_time < release_time < offline_schedule[i].end_time:
-            # if i == delayed_sche_id:
-            #     interference += 0
-            # else:
-            #     interference += offline_schedule[i].end_time - delayed_release_time
-            interference += offline_schedule[i].end_time - release_time
-            # print("inteference frome active:", offline_schedule[i].start_time, offline_schedule[i].end_time, interference)
-
+            if i == delayed_sche_id:
+                interference += 0
+            else:
+                interference += offline_schedule[i].end_time - release_time
+            # interference += offline_schedule[i].end_time - release_time
+            print("inteference frome active:", offline_schedule[i].start_time, offline_schedule[i].end_time, interference)
 
     temp = release_time + interference + transmission_time
     for i in range(len(offline_schedule)):
@@ -1991,71 +1990,197 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                                     i].start_time
                             else:
                                 interference += offline_schedule[i].end_time - offline_schedule[
-                                    i].start_time - 1 + pure_preemption_overhead
+                                    i].start_time - 2 + pure_preemption_overhead
                         else:
                             interference += offline_schedule[i].end_time - offline_schedule[i].start_time \
-                                            - 1 + pure_preemption_overhead
+                                            - 2 + pure_preemption_overhead
                     temp = offline_schedule[i].end_time
                 else:
                     interference += offline_schedule[i].end_time - offline_schedule[i].start_time
                     temp = offline_schedule[i].end_time
 
-                # print("inteference frome future:", offline_schedule[i].start_time, offline_schedule[i].end_time, interference)
+                print("inteference frome future:", offline_schedule[i].start_time, offline_schedule[i].end_time, interference)
 
     response_time = release_time + transmission_time + interference
-    credit_A = sendLp * transmission_time
-    print("the credit after the frame transmission:", credit_A)
+    credit_1 = sendLp * transmission_time
+    print("the credit after the frame transmission:", credit_1)
+    print("the response time of current frame is", response_time)
 
-    if credit_A < 0:
-        postpont_time = - credit_A/idleLp
-        next_ready_time = response_time + postpont_time
+
+
+    if credit_1 < 0:
+
+        postpont_time = - credit_1 / idleLp
         print("the postponed time:", postpont_time)
-        print("the ready time of next frame:", next_ready_time)
-        credit_A = 0
+        credit_1 = 0
 
-        if j < len(sporadic_arrive_time_AVB)-1:
-            if sporadic_arrive_time_AVB[j+1] < response_time + postpont_time:
-                # 实际的ready time 要包含期间所有ST的时间
-                ST_interference = credit_update(response_time, postpont_time, offline_schedule)
-                print("original j+1 frame arrive time", sporadic_arrive_time_AVB[j+1])
-                sporadic_arrive_time_AVB[j+1] = response_time + postpont_time + ST_interference
+        sched_AVB_check = retrans_sched_AVB[j+1:]
+        if j < len(sporadic_arrive_time_AVB) - 1:
+            index = -5
+            for h in range(len(sched_AVB_check)):
+                if sched_AVB_check[h] == retrans_sched_AVB[j]:
+                    index = j + 1 + h
+                    break
+            if index != -5:
+                if sporadic_arrive_time_AVB[index] < response_time + postpont_time:
+                    # 实际的ready time 要包含期间所有ST的时间
+                    ST_interference = credit_update(response_time, postpont_time, offline_schedule)
+                    print("original arrive time of next frame belong to the same class", sporadic_arrive_time_AVB[j + 1])
+                    sporadic_arrive_time_AVB[index] = response_time + postpont_time + ST_interference
 
-                print("the arrive time of next frame:", sporadic_arrive_time_AVB[j+1])
-                credit_A = 0
-                print("sporadic_arrive_time_AVB update ")
-                print(sporadic_arrive_time_AVB)
+                    print("the updated arrive time of next frame :", sporadic_arrive_time_AVB[index])
+                    print("sporadic_arrive_time_AVB update ")
+                    print(sporadic_arrive_time_AVB)
 
-    return response_time, credit_A
+                    recheck_AVB = retrans_sched_AVB[j:]
+                    check_index = -4
+                    for l in range(len(recheck_AVB)):
+                        if retrans_sched_AVB[j] != -2:
+                            if retrans_sched_AVB[l] == -2:
+                                check_index = j + l
+                                break
+                        else:
+                            if retrans_sched_AVB[l] != -2:
+                                check_index = j + l
+                                break
 
-def AVB_based_frame_transmission(sporadic_arrive_backpack, sporadic_interval, C_sporadic, mark, retrans_sched_id,
-                                 delayed_release_time, delayed_deadline, C_delayed_frame, delayed_sche_id, offline_schedule, delayed_error_AVB):
+                    if check_index != -4:
 
-    sporadic_arrive_time_AVB = []
-    for i in range(len(sporadic_arrive_backpack)):
-        sporadic_arrive_time_AVB.append(sporadic_arrive_backpack[i])
-    sporadic_arrive_time_AVB.append(10000000000000)
+                        if check_index > index:
 
-    sporadic_deadline_AVB = []
-    for i in range(len(sporadic_arrive_backpack)):
-        sporadic_deadline_AVB.append(sporadic_arrive_backpack[i] + sporadic_interval)
-    sporadic_deadline_AVB.append(0)
+                            if sporadic_arrive_time_AVB[index] > sporadic_arrive_time_AVB[check_index]:
+                                print("!!! reorder!!!")
 
-    sporadic_transmission_time_AVB = []
-    for i in range(len(sporadic_arrive_backpack)):
-        sporadic_transmission_time_AVB.append(C_sporadic)
-    sporadic_transmission_time_AVB.append(0)
+                                sporadic_arrive_time_AVB[index], sporadic_arrive_time_AVB[check_index] = \
+                                    sporadic_arrive_time_AVB[check_index], sporadic_arrive_time_AVB[index]
 
-    mark_AVB = []
-    for i in range(len(mark)-1):
-        mark_AVB.append(mark[i])
-    mark_AVB.append(1000000)
+                                sporadic_deadline_AVB[index], sporadic_deadline_AVB[check_index] = \
+                                    sporadic_deadline_AVB[check_index], sporadic_deadline_AVB[index]
 
-    retrans_sched_AVB = []
-    for i in range(len(retrans_sched_id)-1):
-        retrans_sched_AVB.append(retrans_sched_id[i])
-    retrans_sched_AVB.append(-1)
+                                sporadic_transmission_time_AVB[index], sporadic_transmission_time_AVB[check_index] = \
+                                    sporadic_transmission_time_AVB[check_index], sporadic_transmission_time_AVB[index]
+
+                                mark_AVB[index], mark_AVB[check_index] = \
+                                    mark_AVB[check_index], mark_AVB[index]
+
+                                retrans_sched_AVB[index], retrans_sched_AVB[check_index] = \
+                                    retrans_sched_AVB[check_index], retrans_sched_AVB[index]
+
+                                print(sporadic_arrive_time_AVB)
+                                print(sporadic_deadline_AVB)
+                                print(sporadic_transmission_time_AVB)
+                                print(mark_AVB)
+                                print(retrans_sched_AVB)
+
+    retrans_sched_AVB_check = retrans_sched_AVB[j:]
+    class_index = -4
+    for h in range(len(retrans_sched_AVB_check)):
+        if retrans_sched_AVB[j] != -2:
+            if retrans_sched_AVB[h] == -2:
+                class_index = j + h
+                break
+        else:
+            if retrans_sched_AVB[h] != -2:
+                class_index = j + h
+                break
+
+    if class_index != -4:
+        release_time_class = sporadic_arrive_time_AVB[class_index]
+        print("the release time of frame belongs to another class:", release_time_class)
+
+        if release_time <= release_time_class < response_time:
+            print("there is frame from anther class release during the transmission of current frame")
+            temp_in = 0
+            ST_frame_number = 0
+            for i in range(len(offline_schedule)):
+
+                if offline_schedule[i].start_time < release_time_class < offline_schedule[i].end_time:
+                    print(offline_schedule[i].start_time, offline_schedule[i].end_time)
+                    if i == delayed_sche_id:
+                        temp_in += 0
+                        print("delayed frame is released within its offline scheduled time")
+                    else:
+                        temp_in += offline_schedule[i].end_time - release_time_class
+                        ST_frame_number += 1
+                        print("@@", temp_in)
+
+            for i in range(len(offline_schedule)):
+                if release_time_class <= offline_schedule[i].start_time < response_time:
+                    if response_time < offline_schedule[i].end_time:
+                        print("check point!!!!!!")
+                        temp_in += response_time - offline_schedule[i].start_time
+                    else:
+                        temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
+                        ST_frame_number += 1
+                        print("@#$", temp_in)
+
+            slack_class = response_time - release_time_class - temp_in
+            credit_2 += idleLp * slack_class
+            print("the current credit of another class", credit_2)
+        else:
+            credit_2 += 0
+
+    return credit_1, credit_2, response_time
+
+
+def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, retrans_sched_AVB,
+                                                          offline_schedule, credit_A, credit_B, sendLp, idleLp, response_time):
+    if retrans_sched_AVB[j] != -2:
+
+        if credit_A >= 0:
+            print("current frame is Class A")
+            credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B, sporadic_arrive_time_AVB,
+                                                 sporadic_transmission_time_AVB, retrans_sched_AVB, offline_schedule, response_time, sendLp, idleLp)
+
+    else:
+        if credit_B >= 0:
+            print("current frame is Class B")
+            credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
+                                                                                     sporadic_arrive_time_AVB,
+                                                                                     sporadic_transmission_time_AVB,
+                                                                                     retrans_sched_AVB,
+                                                                                     offline_schedule, response_time,
+                                                                                     sendLp, idleLp)
+
+
+    return response_time, credit_A, credit_B
+
+
+def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
+                                 mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
+                                 delayed_sche_id, offline_schedule, delayed_error_AVB):
+
+# def AVB_based_frame_transmission(sporadic_arrive_backpack, sporadic_interval, C_sporadic, mark, retrans_sched_id,
+# delayed_release_time, delayed_deadline, C_delayed_frame, delayed_sche_id, offline_schedule, delayed_error_AVB):
+
+    # sporadic_arrive_time_AVB = []
+    # for i in range(len(sporadic_arrive_backpack)):
+    #     sporadic_arrive_time_AVB.append(sporadic_arrive_backpack[i])
+    # sporadic_arrive_time_AVB.append(10000000000000)
+    #
+    # sporadic_deadline_AVB = []
+    # for i in range(len(sporadic_arrive_backpack)):
+    #     sporadic_deadline_AVB.append(sporadic_arrive_backpack[i] + sporadic_interval)
+    # sporadic_deadline_AVB.append(0)
+    #
+    # sporadic_transmission_time_AVB = []
+    # for i in range(len(sporadic_arrive_backpack)):
+    #     sporadic_transmission_time_AVB.append(C_sporadic)
+    # sporadic_transmission_time_AVB.append(0)
+    #
+    # mark_AVB = []
+    # for i in range(len(mark)-1):
+    #     mark_AVB.append(mark[i])
+    # mark_AVB.append(1000000)
+    #
+    # retrans_sched_AVB = []
+    # for i in range(len(retrans_sched_id)-1):
+    #     retrans_sched_AVB.append(retrans_sched_id[i])
+    # retrans_sched_AVB.append(-1)
 
     credit_A = 0
+    credit_B = 0
+
     sendLp = -0.7
     idleLp = 0.3
 
@@ -2065,7 +2190,6 @@ def AVB_based_frame_transmission(sporadic_arrive_backpack, sporadic_interval, C_
     print(sporadic_transmission_time_AVB)
     print(mark_AVB)
     print(retrans_sched_AVB)
-
 
 
     for i in range(len(sporadic_arrive_time_AVB)):
@@ -2088,29 +2212,41 @@ def AVB_based_frame_transmission(sporadic_arrive_backpack, sporadic_interval, C_
     print(sporadic_transmission_time_AVB)
     print(mark_AVB)
     print(retrans_sched_AVB)
-    #
+
+    response_time = 0
+
     for j in range(1000000):
 
         if j < len(sporadic_arrive_time_AVB) and mark_AVB[j] != 1000000:
+
             print("---------------------------------------------------------------------------")
             print("sporadic", j)
-            print("current credit A", credit_A)
+            print("current credit_A and credit_B", credit_A, credit_B)
             print("arrive time", sporadic_arrive_time_AVB[j])
-            response_time, credit_A = AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB,
-                                                          offline_schedule, credit_A, sendLp, idleLp)
+            print("previous response time:", response_time)
+
+            if response_time > sporadic_arrive_time_AVB[j]:
+                sporadic_arrive_time_AVB[j] = response_time
+                print("updated sporadic arrive time: ", sporadic_arrive_time_AVB[j])
+
+
+            response_time, credit_A, credit_B = AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB,
+                                                                    retrans_sched_AVB, offline_schedule, credit_A, credit_B, sendLp, idleLp, response_time)
             if retrans_sched_AVB[j] == delayed_sche_id:
                 print("the frame is delayed ST frame")
                 delayed_response_time_AVB = response_time
                 if delayed_response_time_AVB > mark_AVB[j]:
                     print("the delayed traffic miss deadline, with response time:", response_time)
                     delayed_error_AVB += 1
+                else:
+                    print("the delayed frame finished before its deadline")
 
         else:
             break
 
     print("the total number of deadline missing frame:", delayed_error_AVB)
 
-    return response_time
+    return
 
 if __name__ == "__main__":
 
@@ -2301,12 +2437,6 @@ if __name__ == "__main__":
         sporadic_arrive.append(100000000)
         print(sporadic_arrive)
 
-
-
-        sporadic_frame_number += len(sporadic_arrive_backpack)
-        for i in range(len(sporadic_arrive_backpack)):
-            sporadic_arrive_backpack_list.append(sporadic_arrive_backpack[i])
-
         sporadic_deadline = []
         sporadic_step = sporadic_offset + sporadic_interval
         for i in range(len(sporadic_arrive) - 1):
@@ -2374,12 +2504,29 @@ if __name__ == "__main__":
         print(mark)
         print(retrans_sched_id)
 
-        sporadic_arrive_backpack = []
-        sporadic_time_stamp_back = sporadic_offset
-        while sporadic_time_stamp_back < 2 * hyper_period:
-            sporadic_arrive_backpack.append(sporadic_time_stamp_back)
-            sporadic_time_stamp_back += sporadic_interval
+        sporadic_arrive_time_AVB = []
+        for i in range(len(sporadic_arrive)):
+            sporadic_arrive_time_AVB.append(sporadic_arrive[i])
 
+        sporadic_transmission_time_AVB = []
+        for i in range(len(sporadic_C)):
+            sporadic_transmission_time_AVB.append(sporadic_C[i])
+
+        sporadic_deadline_AVB = []
+        for i in range(len(sporadic_deadline)):
+            sporadic_deadline_AVB.append(sporadic_deadline[i])
+
+        mark_AVB = []
+        for i in range(len(mark)):
+            mark_AVB.append(mark[i])
+
+        retrans_sched_AVB = []
+        for i in range(len(retrans_sched_id)):
+            retrans_sched_AVB.append(retrans_sched_id[i])
+
+        sporadic_frame_number += len(sporadic_arrive_time_AVB)
+        for i in range(len(sporadic_arrive_time_AVB)):
+            sporadic_arrive_backpack_list.append(sporadic_arrive_time_AVB[i])
 
         print("")
         print("-----------------------CBS parameter setup----------------------------------")
@@ -2613,9 +2760,9 @@ if __name__ == "__main__":
                 print("sporadic frame arrive time", sporadic_arrive[j])
                 if sporadic_response_time > sporadic_arrive[j]:
                     sporadic_arrive[j] = sporadic_response_time
-
-                if mark[j] != 0:
-                    sporadic_arrive[j] = sporadic_response_time
+                #
+                # if mark[j] != 0:
+                #     sporadic_arrive[j] = sporadic_response_time
 
                 print("updated sporadic arrive time: ", sporadic_arrive[j])
                 print(sporadic_arrive)
@@ -2726,10 +2873,9 @@ if __name__ == "__main__":
         # print("unscheduable count", unscheduleable_count)
 
         # --------------------- frame transmission of AVB-credit based method--------------------- #
-        AVB_response_time = AVB_based_frame_transmission(sporadic_arrive_backpack, sporadic_interval,
-                                                     C_sporadic, mark, retrans_sched_id, delayed_release_time,
-                                                         delayed_deadline, C_delayed_frame, delayed_sche_id,
-                                                         offline_schedule, delayed_error_AVB)
+        AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
+                                 mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
+                                 delayed_sche_id, offline_schedule, delayed_error_AVB)
     print("")
 
     print("------------------------- *************-----------------------------")
