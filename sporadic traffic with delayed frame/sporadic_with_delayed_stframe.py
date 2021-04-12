@@ -1932,6 +1932,26 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
            C_CBS_remain, deadline_U_CBS, sched_check, delayed_response_time, error, delayed_error, delay_count_1
 
 
+def credit_update(response_time, postpont_time, offline_schedule):
+
+    interference = 0
+    for i in range(len(offline_schedule)):
+        # interference of the period traffic coming in the future
+        temp_response = response_time + interference + postpont_time
+        if response_time <= offline_schedule[i].start_time < temp_response:
+            if i == delayed_sche_id:
+                interference += 0
+            else:
+                if temp_response - offline_schedule[i].start_time <= 2:
+                    interference += 0
+                else:
+                    interference += offline_schedule[i].end_time - offline_schedule[i].start_time - 2
+                    print("the postponed time caused by offline schedule", offline_schedule[i].start_time,
+                          offline_schedule[i].end_time, interference)
+
+    return interference
+
+
 def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB,
                                                           offline_schedule, credit_A, sendLp, idleLp):
     release_time = sporadic_arrive_time_AVB[j]
@@ -1995,9 +2015,15 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
 
         if j < len(sporadic_arrive_time_AVB)-1:
             if sporadic_arrive_time_AVB[j+1] < response_time + postpont_time:
-                sporadic_arrive_time_AVB[j+1] = response_time + postpont_time
+                # 实际的ready time 要包含期间所有ST的时间
+                ST_interference = credit_update(response_time, postpont_time, offline_schedule)
+                print("original j+1 frame arrive time", sporadic_arrive_time_AVB[j+1])
+                sporadic_arrive_time_AVB[j+1] = response_time + postpont_time + ST_interference
+
                 print("the arrive time of next frame:", sporadic_arrive_time_AVB[j+1])
                 credit_A = 0
+                print("sporadic_arrive_time_AVB update ")
+                print(sporadic_arrive_time_AVB)
 
     return response_time, credit_A
 
@@ -2069,6 +2095,7 @@ def AVB_based_frame_transmission(sporadic_arrive_backpack, sporadic_interval, C_
             print("---------------------------------------------------------------------------")
             print("sporadic", j)
             print("current credit A", credit_A)
+            print("arrive time", sporadic_arrive_time_AVB[j])
             response_time, credit_A = AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB,
                                                           offline_schedule, credit_A, sendLp, idleLp)
             if retrans_sched_AVB[j] == delayed_sche_id:
@@ -2244,13 +2271,24 @@ if __name__ == "__main__":
         #                                        CBS                                               #
         # ---------------------------------------------------------------------------------------- #
         print("")
-        print("-----------------------sporadic generator----------------------------------")
+        print("-----------------------sporadic class A generator----------------------------------")
         sporadic_flow = Frame(0, 0, 0, 0, random.randint(0, 100), random.randint(1, math.ceil(np.mean(window_times))),
                               np.mean(period), 0, 0, "sporadic")
         sporadic_offset = sporadic_flow.arrive_time
         # print("sporadic offset:", sporadic_offset)
         C_sporadic = sporadic_flow.window_time
         sporadic_interval = sporadic_flow.period
+
+
+        print("----------------------sporadic class B generator------------------------------------")
+        sporadic_flow_B = Frame(0, 0, 0, 0, random.randint(0, 100), random.randint(1, math.ceil(np.mean(window_times))),
+                              random.randint(sporadic_interval, max(period)), 0, 0, "sporadic")
+        sporadic_offset_B = sporadic_flow_B.arrive_time
+        # print("sporadic offset:", sporadic_offset)
+        C_sporadic_B = sporadic_flow_B.window_time
+        sporadic_interval_B = sporadic_flow_B.period
+
+
 
         sporadic_queue = []
         print("sporadic traffic parameters:", sporadic_offset, C_sporadic, sporadic_interval)
@@ -2260,14 +2298,10 @@ if __name__ == "__main__":
         while sporadic_time_stamp < 2 * hyper_period:
             sporadic_arrive.append(sporadic_time_stamp)
             sporadic_time_stamp += sporadic_interval
-        sporadic_arrive.append(0)
+        sporadic_arrive.append(100000000)
         print(sporadic_arrive)
 
-        sporadic_arrive_backpack = []
-        sporadic_time_stamp_back = sporadic_offset
-        while sporadic_time_stamp_back < 2 * hyper_period:
-            sporadic_arrive_backpack.append(sporadic_time_stamp_back)
-            sporadic_time_stamp_back += sporadic_interval
+
 
         sporadic_frame_number += len(sporadic_arrive_backpack)
         for i in range(len(sporadic_arrive_backpack)):
@@ -2302,13 +2336,50 @@ if __name__ == "__main__":
         mark.append(1000000)
         print(mark)
 
-
-
         retrans_sched_id = []
         for i in range(len(sporadic_arrive) - 1):
             retrans_sched_id.append(-1)
         retrans_sched_id.append(-1)
         print(retrans_sched_id)
+
+        print("------------------ class B frames insertion")
+
+        sporadic_arrive_B = []
+        sporadic_time_stamp_B = sporadic_offset_B
+        while sporadic_time_stamp_B < 2 * hyper_period:
+            sporadic_arrive_B.append(sporadic_time_stamp_B)
+            sporadic_time_stamp_B += sporadic_interval_B
+        print("the arrive time of Class B frames")
+        print(sporadic_arrive_B)
+
+        for i in range(len(sporadic_arrive_B)):
+
+            for k in range(len(sporadic_arrive)-1):
+
+                if sporadic_arrive[k] <= sporadic_arrive_B[i] < sporadic_arrive[k + 1]:
+                    classB_insert_id = k + 1
+                    break
+                else:
+                    classB_insert_id = 0
+
+            sporadic_arrive.insert(classB_insert_id, sporadic_arrive_B[i])
+            sporadic_deadline.insert(classB_insert_id, sporadic_arrive_B[i] + sporadic_interval_B)
+            sporadic_C.insert(classB_insert_id, C_sporadic_B)
+            mark.insert(classB_insert_id, sporadic_arrive_B[i] + sporadic_interval_B)
+            retrans_sched_id.insert(classB_insert_id, -2)
+
+        print("arrays include class B frames ")
+        print(sporadic_arrive)
+        print(sporadic_C)
+        print(mark)
+        print(retrans_sched_id)
+
+        sporadic_arrive_backpack = []
+        sporadic_time_stamp_back = sporadic_offset
+        while sporadic_time_stamp_back < 2 * hyper_period:
+            sporadic_arrive_backpack.append(sporadic_time_stamp_back)
+            sporadic_time_stamp_back += sporadic_interval
+
 
         print("")
         print("-----------------------CBS parameter setup----------------------------------")
