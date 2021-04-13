@@ -1354,9 +1354,8 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
                                     delayed_error += 1
                             else:
                                 if mark[j] != 0:
-                                    print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                    print("the current frame miss deadline")
-                                    error += 1
+                                    print(" the deadline of class A or class B can not been guaranteed")
+                                    # error += 1
                         break
                 else:
                     print("the current frame can be finished before ST frame")
@@ -1379,9 +1378,8 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
                                 delayed_error += 1
                         else:
                             if mark[j] != 0:
-                                print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                print("the current frame miss deadline")
-                                error += 1
+                                print(" the deadline of class A or class B can not been guaranteed")
+                                # error += 1
 
         if offline_count == 0:
             sporadic_C[j] = sporadic_C[j] - (sporadic_arrive[prioritized_id] + 1 - sporadic_arrive[j]) + 0.3
@@ -1439,9 +1437,9 @@ def conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic,
                 delayed_error += 1
         else:
             if mark[j] != 0:
-                print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                print("the preempted ST frame miss deadline eeee")
-                error += 1
+                print(" the deadline of class A or class B can not been guaranteed")
+
+                # error += 1
 
     return sporadic_response_time, delayed_response_time, deadline_U_CBS, delayed_error, error
 
@@ -2313,6 +2311,8 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
     # for i in range(len(retrans_sched_id)-1):
     #     retrans_sched_AVB.append(retrans_sched_id[i])
     # retrans_sched_AVB.append(-1)
+    AVB_classA_response_time = []
+    AVB_classB_response_time = []
 
     credit_A = 0
     credit_B = 0
@@ -2375,14 +2375,24 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
                     print("the delayed traffic miss deadline, with response time:", response_time)
                     delayed_error_AVB += 1
                 else:
-                    print("the delayed frame finished before its deadline")
+                    print("the delayed frame finished before its deadline", response_time, mark_AVB[j])
+
+            elif retrans_sched_AVB[j] == -2:
+                print("the frame is class B frame", response_time)
+                AVB_classB_response_time.append(response_time)
+
+            elif retrans_sched_AVB[j] == -1:
+                print("the frame is class A frame", response_time)
+                AVB_classA_response_time.append(response_time)
 
         else:
             break
 
     print("the total number of deadline missing frame:", delayed_error_AVB)
+    # print(AVB_classA_response_time)
+    # print(AVB_classB_response_time)
 
-    return
+    return AVB_classA_response_time, AVB_classB_response_time, delayed_response_time_AVB
 
 if __name__ == "__main__":
 
@@ -2398,6 +2408,12 @@ if __name__ == "__main__":
     sporadic_deadline_miss_id = []
     missing_percentage_list = []
 
+    CBS_based_classA_response_time = []
+    CBS_based_classB_response_time = []
+    CBS_based_delayed_response_time = []
+    AVB_based_classA_response_time = []
+    AVB_based_classB_response_time = []
+    AVB_based_delayed_response_time = []
 
     sporadic_response_time_list = []
     ST_preempted_response_time_list = []
@@ -2945,6 +2961,15 @@ if __name__ == "__main__":
 
                 print(" The response time of ", j, "th sporadic frame is :", sporadic_response_time)
 
+                if retrans_sched_AVB[j] == -2:
+                    print("the frame is class B frame", sporadic_response_time)
+                    CBS_based_classB_response_time.append(sporadic_response_time)
+
+                elif retrans_sched_AVB[j] == -1:
+                    print("the frame is class A frame", sporadic_response_time)
+                    CBS_based_classA_response_time.append(sporadic_response_time)
+
+
                 if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
                     sporadic_response_time_list.append(sporadic_response_time)
 
@@ -2987,6 +3012,8 @@ if __name__ == "__main__":
 
             else:
                 break
+
+        CBS_based_delayed_response_time.append(delayed_response_time)
         print("---------------------error----------------------------")
         print("round number:                    ", round_number)
         print("accepted delayed frame:          ", accepted_delayed_traffic)
@@ -3015,28 +3042,45 @@ if __name__ == "__main__":
 
         # --------------------- frame transmission of AVB-credit based method--------------------- #
 
-        AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
+        AVB_classA_response_time, AVB_classB_response_time, delayed_response_time_AVB = AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
                                  mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
                                  delayed_sche_id, offline_schedule, delayed_error_AVB)
-    print("")
+
+        for i in range(len(AVB_classA_response_time)):
+            AVB_based_classA_response_time.append(AVB_classA_response_time[i])
+
+        for i in range(len(AVB_classB_response_time)):
+            AVB_based_classB_response_time.append(AVB_classB_response_time[i])
+
+        AVB_based_delayed_response_time.append(delayed_response_time_AVB)
+
 
     print("------------------------- *************-----------------------------")
-    for i in range(len(sporadic_response_time_list)):
+    # for i in range(len(sporadic_response_time_list)):
+    #
+    #     deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+    #
+    #     if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
+    #         sporadic_missing_count += 1
+    #         bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+    #         sporadic_deadline_miss_id.append(i)
+    #         missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
+    #         # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
+    #         missing_percentage_list.append(missing_percentage)
+    #
+    # print("sporadic frame number :", sporadic_frame_number )
+    # print()
+    #
+    # print("the sporadic frame number, deadline missing number and percentage: ",
+    #       sporadic_frame_number, "|",
+    #       sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
+    print("--------------------- CBS based transmission--------------------")
+    print(CBS_based_classA_response_time)
+    print(CBS_based_classB_response_time)
+    print(CBS_based_delayed_response_time)
 
-        deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-
-        if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
-            sporadic_missing_count += 1
-            bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-            sporadic_deadline_miss_id.append(i)
-            missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
-            # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
-            missing_percentage_list.append(missing_percentage)
-
-    print("sporadic frame number :", sporadic_frame_number )
-    print()
-
-    print("the sporadic frame number, deadline missing number and percentage: ",
-          sporadic_frame_number, "|",
-          sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
-
+    print("")
+    print("--------------------- AVB based transmission---------------------")
+    print(AVB_based_classA_response_time)
+    print(AVB_based_classB_response_time)
+    print(AVB_based_delayed_response_time)
