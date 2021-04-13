@@ -1403,7 +1403,7 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
         mark.insert(j, temp_mark)
         retrans_sched_id.insert(j, temp_retrans_sched_id)
 
-        deadline_U_CBS = deadline_U_CBS_backpack
+        # deadline_U_CBS = deadline_U_CBS_backpack
         print("update after prioritization ")
         print(sporadic_arrive)
         print(sporadic_C)
