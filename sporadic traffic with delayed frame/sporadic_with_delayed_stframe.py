@@ -2428,7 +2428,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 1
+    round_number = 10
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -3059,6 +3059,8 @@ if __name__ == "__main__":
 
         if delayed_response_time_AVB <= delayed_deadline:
             AVB_based_delayed_response_time.append(delayed_response_time_AVB)
+        else:
+            AVB_based_delayed_response_time.append(0)
 
     print("------------------------- *************-----------------------------")
     # for i in range(len(sporadic_response_time_list)):
@@ -3089,3 +3091,41 @@ if __name__ == "__main__":
     print(AVB_based_classA_response_time)
     print(AVB_based_classB_response_time)
     print(AVB_based_delayed_response_time)
+
+    print("")
+    print("--------------------------- variance -----------------------------")
+    difference_CBS_AVB_classA = []
+    for i in range(len(CBS_based_classA_response_time)):
+        difference_CBS_AVB_classA.append(CBS_based_classA_response_time[i] - AVB_based_classA_response_time[i])
+
+    difference_CBS_AVB_classB = []
+    for i in range(len(CBS_based_classB_response_time)):
+        difference_CBS_AVB_classB.append(CBS_based_classB_response_time[i] - AVB_based_classB_response_time[i])
+
+    difference_CBS_AVB_delayed_frame = []
+    for i in range(len(CBS_based_delayed_response_time)):
+        if CBS_based_delayed_response_time[i] != 0 and AVB_based_delayed_response_time[i] != 0:
+            difference_CBS_AVB_delayed_frame.append(CBS_based_delayed_response_time[i] - AVB_based_delayed_response_time[i])
+
+    CBS_delayed_frame_handling_count = 0
+    for i in range(len(CBS_based_delayed_response_time)):
+        if CBS_based_delayed_response_time[i] != 0:
+            CBS_delayed_frame_handling_count += 1
+
+    AVB_delayed_frame_handling_count = 0
+    for i in range(len(AVB_based_delayed_response_time)):
+        if AVB_based_delayed_response_time[i] != 0:
+            AVB_delayed_frame_handling_count += 1
+
+    print("difference_CBS_AVB_classA", difference_CBS_AVB_classA)
+    print("the average variation of class A", np.mean(difference_CBS_AVB_classA))
+    print("")
+    print("difference_CBS_AVB_classB", difference_CBS_AVB_classB)
+    print("the average variation of class B", np.mean(difference_CBS_AVB_classB))
+    print("")
+    print("difference_CBS_AVB_delayed_frame", difference_CBS_AVB_delayed_frame)
+    if difference_CBS_AVB_delayed_frame:
+        print("the average variation of delayed frame", np.mean(difference_CBS_AVB_delayed_frame))
+    print("")
+    print("the number of delayed frame handled by CBS", CBS_delayed_frame_handling_count)
+    print("the number of delayed frame handled by AVB", AVB_delayed_frame_handling_count)
