@@ -2013,9 +2013,16 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                 retrans_sched_AVB[j] = -1
 
             for h in range(len(sched_AVB_check)):
-                if sched_AVB_check[h] == retrans_sched_AVB[j]:
-                    index = j + 1 + h
-                    break
+
+                if sched_AVB_check[h] == -1:
+                    if sched_AVB_check[h] == retrans_sched_AVB[j] or sched_AVB_check[h] == delayed_sche_id:
+                        index = j + 1 + h
+                        break
+                else:
+                    if sched_AVB_check[h] == retrans_sched_AVB[j]:
+                        index = j + 1 + h
+                        break
+
             if index != -5:
                 if sporadic_arrive_time_AVB[index] < response_time + postpont_time:
                     # 实际的ready time 要包含期间所有ST的时间
@@ -2107,7 +2114,8 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                     else:
                         temp_in += offline_schedule[i].end_time - release_time_class
                         ST_frame_number += 1
-                        print("interference from active ST frame", temp_in)
+                        print("interference from active ST frame", offline_schedule[i].start_time,
+                              offline_schedule[i].end_time, temp_in)
 
             for i in range(len(offline_schedule)):
                 if release_time_class <= offline_schedule[i].start_time < response_time:
@@ -2224,6 +2232,11 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                     retrans_sched_AVB[j], retrans_sched_AVB[index] = retrans_sched_AVB[index], retrans_sched_AVB[j]
 
                     print(" conversion ")
+
+                    if response_time > sporadic_arrive_time_AVB[j]:
+                        sporadic_arrive_time_AVB[j] = response_time
+                        print("updated sporadic arrive time: ", sporadic_arrive_time_AVB[j])
+
                     print(sporadic_arrive_time_AVB)
                     print(sporadic_deadline_AVB)
                     print(sporadic_transmission_time_AVB)
