@@ -1404,7 +1404,7 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
         mark.insert(j, temp_mark)
         retrans_sched_id.insert(j, temp_retrans_sched_id)
 
-        deadline_U_CBS = deadline_U_CBS_backpack
+        # deadline_U_CBS = deadline_U_CBS_backpack
         print("update after prioritization ")
         print(sporadic_arrive)
         print(sporadic_C)
@@ -1762,12 +1762,13 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 print("the delayed frame will be transmitted without any interference",
                       delayed_response_time)
 
-        if mark[j] != 0 and retrans_sched_id[j] != delayed_sche_id:
+        if mark[j] != 0:
 
             print("start with frame belongs to class B with release time", sporadic_arrive[j])
 
-            if retrans_sched_id[j] == delayed_sche_id:
-                deadline_U_CBS = deadline_U_tbs
+            if retrans_sched_id[j] != -1 and retrans_sched_id[j] != -2:
+                print("it is delayed frame")
+                deadline_U_CBS = 1
 
             print("deadline comparisonion", deadline_U_CBS, deadline_U_CBS_backpack)
 
@@ -1836,17 +1837,50 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                     conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic, mark,
                                               retrans_sched_id, sporadic_C, sporadic_arrive, delayed_sche_id,
                                               delayed_error, error, deadline_U_CBS, delayed_response_time)
-        elif mark[j] == 0 or retrans_sched_id[j] == delayed_sche_id:
-            
+        elif mark[j] == 0:
+
             print("start with frame belongs to class A with release time", sporadic_arrive[j])
-            temp_check_flag_ST = -2
+            temp_check_flag = -2
+            temp_check_flag_delayed = -2
             temp_check_ST_list = mark[j:]
             # find the first ST preempted frame or delayed
             for i in range(len(temp_check_ST_list)):
                 if temp_check_ST_list[i] != 0:
-                    temp_check_flag_ST = i
+                    temp_check_flag = i
                     break
 
+            for i in range(len(temp_check_ST_list)):
+                if retrans_sched_id[j] == delayed_sche_id:
+                    temp_check_flag_delayed = i
+                    break
+            if temp_check_flag_delayed != -2:
+                if sporadic_arrive[temp_check_flag_delayed + j] <= sporadic_arrive[temp_check_flag + j]:
+
+                    sporadic_arrive[temp_check_flag_delayed + j], sporadic_arrive[temp_check_flag + j] = \
+                        sporadic_arrive[temp_check_flag + j], sporadic_arrive[temp_check_flag_delayed + j]
+
+                    sporadic_C[temp_check_flag_delayed + j], sporadic_C[temp_check_flag + j] = \
+                        sporadic_C[temp_check_flag + j], sporadic_C[temp_check_flag_delayed + j]
+
+                    mark[temp_check_flag_delayed + j], mark[temp_check_flag + j] = \
+                        mark[temp_check_flag + j], mark[temp_check_flag_delayed + j]
+
+                    retrans_sched_id[temp_check_flag_delayed + j], retrans_sched_id[temp_check_flag + j] = \
+                        retrans_sched_id[temp_check_flag + j], retrans_sched_id[temp_check_flag_delayed + j]
+
+                    print("the order of class B frame and delayed frame will be changed ")
+                    print(sporadic_arrive)
+                    print(sporadic_C)
+                    print(mark)
+                    print(retrans_sched_id)
+
+                    temp_check_flag_ST = temp_check_flag
+                else:
+                    temp_check_flag_ST = temp_check_flag
+            else:
+                temp_check_flag_ST = temp_check_flag
+
+            # temp_check_flag_ST = temp_check_flag
             if temp_check_flag_ST != -2 and temp_check_ST_list[temp_check_flag_ST] != 1000000:
                 prioritized_id = j + temp_check_flag_ST
                 print("prioritized candidate with release time ", prioritized_id,
@@ -2326,6 +2360,7 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
     sendLp = -0.7
     idleLp = 0.3
 
+
     print("AVB TEST ")
     print(sporadic_arrive_time_AVB)
     print(sporadic_deadline_AVB)
@@ -2429,7 +2464,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 10
+    round_number = 1000
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -3095,6 +3130,8 @@ if __name__ == "__main__":
 
     print("")
     print("--------------------------- variance -----------------------------")
+    print("size of CBS_based_classA_response_time", len(CBS_based_classA_response_time))
+    print("size of AVB_based_classA_response_time", len(AVB_based_classA_response_time))
     difference_CBS_AVB_classA = []
     for i in range(len(CBS_based_classA_response_time)):
         difference_CBS_AVB_classA.append(CBS_based_classA_response_time[i] - AVB_based_classA_response_time[i])
@@ -3120,13 +3157,19 @@ if __name__ == "__main__":
 
     print("difference_CBS_AVB_classA", difference_CBS_AVB_classA)
     print("the average variation of class A", np.mean(difference_CBS_AVB_classA))
+    print("max variation of class A", max(difference_CBS_AVB_classA))
+    print("min variation of class A", min(difference_CBS_AVB_classA))
     print("")
     print("difference_CBS_AVB_classB", difference_CBS_AVB_classB)
     print("the average variation of class B", np.mean(difference_CBS_AVB_classB))
+    print("max variation of class B", max(difference_CBS_AVB_classB))
+    print("min variation of class B", min(difference_CBS_AVB_classB))
     print("")
     print("difference_CBS_AVB_delayed_frame", difference_CBS_AVB_delayed_frame)
     if difference_CBS_AVB_delayed_frame:
         print("the average variation of delayed frame", np.mean(difference_CBS_AVB_delayed_frame))
+        print("max variation of delayed frame", max(difference_CBS_AVB_delayed_frame))
+        print("min variation of delayed frame", min(difference_CBS_AVB_delayed_frame))
     print("")
     print("the number of delayed frame handled by CBS", CBS_delayed_frame_handling_count)
     print("the number of delayed frame handled by AVB", AVB_delayed_frame_handling_count)
