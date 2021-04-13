@@ -2961,11 +2961,11 @@ if __name__ == "__main__":
 
                 print(" The response time of ", j, "th sporadic frame is :", sporadic_response_time)
 
-                if retrans_sched_AVB[j] == -2:
+                if retrans_sched_id[j] == -2:
                     print("the frame is class B frame", sporadic_response_time)
                     CBS_based_classB_response_time.append(sporadic_response_time)
 
-                elif retrans_sched_AVB[j] == -1:
+                elif retrans_sched_id[j] == -1:
                     print("the frame is class A frame", sporadic_response_time)
                     CBS_based_classA_response_time.append(sporadic_response_time)
 
