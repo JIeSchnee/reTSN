@@ -1762,7 +1762,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 print("the delayed frame will be transmitted without any interference",
                       delayed_response_time)
 
-        if mark[j] != 0:
+        if mark[j] != 0 and retrans_sched_id[j] != delayed_sche_id:
 
             print("start with frame belongs to class B with release time", sporadic_arrive[j])
 
@@ -1836,7 +1836,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                     conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic, mark,
                                               retrans_sched_id, sporadic_C, sporadic_arrive, delayed_sche_id,
                                               delayed_error, error, deadline_U_CBS, delayed_response_time)
-        else:
+        elif mark[j] == 0 or retrans_sched_id[j] == delayed_sche_id:
+            
             print("start with frame belongs to class A with release time", sporadic_arrive[j])
             temp_check_flag_ST = -2
             temp_check_ST_list = mark[j:]
