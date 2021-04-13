@@ -1967,7 +1967,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
 
         if release_time <= offline_schedule[i].start_time < temp_response:
 
-            if temp_response - offline_schedule[i].start_time <= 2:
+            if i == delayed_sche_id:
                 interference += 0
             else:
                 if offline_schedule[i].start_time - temp > 0:
@@ -1998,7 +1998,6 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
     print("the response time of current frame is", response_time)
 
 
-
     if credit_1 < 0:
 
         postpont_time = - credit_1 / idleLp
@@ -2027,6 +2026,10 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                     print("the updated ready time of next frame belongs to the same class :", sporadic_arrive_time_AVB[index])
                     print("sporadic_arrive_time_AVB update ")
                     print(sporadic_arrive_time_AVB)
+                    print(sporadic_deadline_AVB)
+                    print(sporadic_transmission_time_AVB)
+                    print(mark_AVB)
+                    print(retrans_sched_AVB)
 
                     recheck_AVB = retrans_sched_AVB[j:]
                     check_index = -4
@@ -2816,7 +2819,7 @@ if __name__ == "__main__":
 
                         max_preemption_times_delayed = math.floor(C_delayed_frame / 2)
                         max_preemption_overhead_delayed = max_preemption_times_delayed * pure_preemption_overhead
-
+                        print("max_preemption_overhead_delayed", max_preemption_overhead_delayed)
                         slack = delayed_deadline - delayed_release_time - temp_in
                         print("Slack for delayed traffic", slack)
 
