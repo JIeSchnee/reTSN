@@ -1672,7 +1672,6 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 print(mark)
                 print(retrans_sched_id)
 
-
             elif sporadic_arrive[j] < delayed_release_time < sporadic_response_time:
 
                 delay_count_1 -= 1
@@ -1754,6 +1753,11 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                     print(sporadic_C)
                     print(mark)
                     print(retrans_sched_id)
+
+            elif delayed_response_time < sporadic_arrive[j]:
+                delayed_response_time += 0
+                print("the delayed frame will be transmitted without any interference",
+                      delayed_response_time)
 
         if mark[j] != 0:
 
@@ -2004,6 +2008,11 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
         sched_AVB_check = retrans_sched_AVB[j+1:]
         if j < len(sporadic_arrive_time_AVB) - 1:
             index = -5
+            delay_sched_back = retrans_sched_AVB[j]
+
+            if retrans_sched_AVB[j] != -1 and retrans_sched_AVB[j] != -2:
+                retrans_sched_AVB[j] = -1
+
             for h in range(len(sched_AVB_check)):
                 if sched_AVB_check[h] == retrans_sched_AVB[j]:
                     index = j + 1 + h
@@ -2012,7 +2021,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                 if sporadic_arrive_time_AVB[index] < response_time + postpont_time:
                     # 实际的ready time 要包含期间所有ST的时间
                     ST_interference = credit_update(response_time, postpont_time, offline_schedule)
-                    print("original arrive time of next frame belongs to the same class", sporadic_arrive_time_AVB[j + 1])
+                    print("original arrive time of next frame belongs to the same class", sporadic_arrive_time_AVB[index])
                     sporadic_arrive_time_AVB[index] = response_time + postpont_time + ST_interference
 
                     print("the updated ready time of next frame belongs to the same class :", sporadic_arrive_time_AVB[index])
@@ -2060,7 +2069,10 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                                 print(retrans_sched_AVB)
 
                 else:
-                    print("the ready time of the next frame bolongs to the same class is", response_time + postpont_time)
+                    print("the ready time of the next frame bolongs to the same class is", response_time + postpont_time
+                          , "and the release time of next frame stay unchanged", sporadic_arrive_time_AVB[index])
+
+            retrans_sched_AVB[j] = delay_sched_back
 
     retrans_sched_AVB_check = retrans_sched_AVB[j:]
     class_index = -4
@@ -2085,7 +2097,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
             for i in range(len(offline_schedule)):
 
                 if offline_schedule[i].start_time < release_time_class < offline_schedule[i].end_time:
-                    print(offline_schedule[i].start_time, offline_schedule[i].end_time)
+                    print("the active frame:", offline_schedule[i].start_time, offline_schedule[i].end_time)
                     if i == delayed_sche_id:
                         temp_in += 0
                         print("delayed frame is released within its offline scheduled time")
@@ -2117,20 +2129,139 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                                                           offline_schedule, credit_A, credit_B, sendLp, idleLp, response_time):
     if retrans_sched_AVB[j] != -2:
 
-        if credit_A >= 0:
-            print("current frame is Class A")
-            credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B, sporadic_arrive_time_AVB,
-                                                 sporadic_transmission_time_AVB, retrans_sched_AVB, offline_schedule, response_time, sendLp, idleLp)
+        check_frame = retrans_sched_AVB[j+1:]
+        if j < len(sporadic_arrive_time_AVB) - 1:
+            index = -5
+            for h in range(len(check_frame)):
+                if check_frame[h] == -2:
+                    index = j + 1 + h
+                    break
+            if index != -5:
+
+                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index]:
+                    print(" the frame belongs to class B with earlier ready time")
+
+                    sporadic_arrive_time_AVB[j], sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[index], \
+                                                                                   sporadic_arrive_time_AVB[j]
+
+                    sporadic_deadline_AVB[j], sporadic_deadline_AVB[index] = sporadic_deadline_AVB[index], \
+                                                                                   sporadic_deadline_AVB[j]
+
+                    sporadic_transmission_time_AVB[j], sporadic_transmission_time_AVB[index] = sporadic_transmission_time_AVB[index], \
+                                                                             sporadic_transmission_time_AVB[j]
+
+                    mark_AVB[j], mark_AVB[index] = mark_AVB[index], mark_AVB[j]
+
+                    retrans_sched_AVB[j], retrans_sched_AVB[index] = retrans_sched_AVB[index], retrans_sched_AVB[j]
+
+                    print(" conversion ")
+                    print(sporadic_arrive_time_AVB)
+                    print(sporadic_deadline_AVB)
+                    print(sporadic_transmission_time_AVB)
+                    print(mark_AVB)
+                    print(retrans_sched_AVB)
+
+                    credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
+                                                                                             sporadic_arrive_time_AVB,
+                                                                                             sporadic_transmission_time_AVB,
+                                                                                             retrans_sched_AVB,
+                                                                                             offline_schedule,
+                                                                                             response_time,
+                                                                                             sendLp, idleLp)
+                else:
+                    print("keep unchanged, current frame belongs to class A")
+                    credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B,
+                                                                                             sporadic_arrive_time_AVB,
+                                                                                             sporadic_transmission_time_AVB,
+                                                                                             retrans_sched_AVB,
+                                                                                             offline_schedule,
+                                                                                             response_time, sendLp,
+                                                                                             idleLp)
+            else:
+                if credit_A >= 0:
+                    print("current frame is Class A")
+                    credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B, sporadic_arrive_time_AVB,
+                                                         sporadic_transmission_time_AVB, retrans_sched_AVB, offline_schedule, response_time, sendLp, idleLp)
+        else:
+            if credit_A >= 0:
+                print("current frame is Class A")
+                credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B,
+                                                                                         sporadic_arrive_time_AVB,
+                                                                                         sporadic_transmission_time_AVB,
+                                                                                         retrans_sched_AVB,
+                                                                                         offline_schedule,
+                                                                                         response_time, sendLp, idleLp)
 
     else:
-        if credit_B >= 0:
-            print("current frame is Class B")
-            credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
-                                                                                     sporadic_arrive_time_AVB,
-                                                                                     sporadic_transmission_time_AVB,
-                                                                                     retrans_sched_AVB,
-                                                                                     offline_schedule, response_time,
-                                                                                     sendLp, idleLp)
+        check_frame = retrans_sched_AVB[j + 1:]
+        if j < len(sporadic_arrive_time_AVB) - 1:
+            index = -5
+            for h in range(len(check_frame)):
+                if check_frame[h] != -2:
+                    index = j + 1 + h
+                    break
+
+            if index != -5:
+
+                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index]:
+                    print(" the frame belongs to class A with earlier ready time")
+
+                    sporadic_arrive_time_AVB[j], sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[index], \
+                                                                                   sporadic_arrive_time_AVB[j]
+
+                    sporadic_deadline_AVB[j], sporadic_deadline_AVB[index] = sporadic_deadline_AVB[index], \
+                                                                             sporadic_deadline_AVB[j]
+
+                    sporadic_transmission_time_AVB[j], sporadic_transmission_time_AVB[index] = \
+                    sporadic_transmission_time_AVB[index], \
+                    sporadic_transmission_time_AVB[j]
+
+                    mark_AVB[j], mark_AVB[index] = mark_AVB[index], mark_AVB[j]
+
+                    retrans_sched_AVB[j], retrans_sched_AVB[index] = retrans_sched_AVB[index], retrans_sched_AVB[j]
+
+                    print(" conversion ")
+                    print(sporadic_arrive_time_AVB)
+                    print(sporadic_deadline_AVB)
+                    print(sporadic_transmission_time_AVB)
+                    print(mark_AVB)
+                    print(retrans_sched_AVB)
+
+                    credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B,
+                                                                                             sporadic_arrive_time_AVB,
+                                                                                             sporadic_transmission_time_AVB,
+                                                                                             retrans_sched_AVB,
+                                                                                             offline_schedule,
+                                                                                             response_time, sendLp,
+                                                                                             idleLp)
+                else:
+                    print("keep unchanged, current frame belongs to class B")
+                    credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
+                                                                                             sporadic_arrive_time_AVB,
+                                                                                             sporadic_transmission_time_AVB,
+                                                                                             retrans_sched_AVB,
+                                                                                             offline_schedule,
+                                                                                             response_time,
+                                                                                             sendLp, idleLp)
+            else:
+                if credit_B >= 0:
+                    print("current frame is Class B")
+                    credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
+                                                                                             sporadic_arrive_time_AVB,
+                                                                                             sporadic_transmission_time_AVB,
+                                                                                             retrans_sched_AVB,
+                                                                                             offline_schedule, response_time,
+                                                                                             sendLp, idleLp)
+        else:
+            if credit_B >= 0:
+                print("current frame is Class B")
+                credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
+                                                                                         sporadic_arrive_time_AVB,
+                                                                                         sporadic_transmission_time_AVB,
+                                                                                         retrans_sched_AVB,
+                                                                                         offline_schedule,
+                                                                                         response_time,
+                                                                                         sendLp, idleLp)
 
     return response_time, credit_A, credit_B
 
@@ -2744,7 +2875,7 @@ if __name__ == "__main__":
 
                 print("-----------------------------SPRADIC START-------------------------------")
                 print(j)
-                print("delayed frame check state: delayed_count, count", delayed_count, delay_count_1)
+                print("delayed frame check state: delayed_count, delay_count_1", delayed_count, delay_count_1)
                 if delay_count_1 == 0:
                     print("there is no delayed frame, already handled or already rejected")
 
