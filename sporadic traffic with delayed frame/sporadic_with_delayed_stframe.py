@@ -483,7 +483,7 @@ def future_interference_delayed(offline_schedule, interference, release_time, tr
 
                                 interference += offline_schedule[i].end_time - offline_schedule[i].start_time
 
-                                print("the preemptable frame can not be preempted !!@@@")
+                                print("the preemptable frame can not be preempted !!")
                             else:
 
                                 interference += 0
@@ -739,7 +739,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
         for i in range(len(offline_schedule)):
 
             if offline_schedule[i].start_time <= sporadic_arrive[j] < offline_schedule[i].end_time:
-                print("@@@@@@@@@@@@@", offline_schedule[i].start_time, offline_schedule[i].end_time)
+                print("release during active ST frame", offline_schedule[i].start_time, offline_schedule[i].end_time)
                 print("delayed id", delayed_sche_id)
                 flag = 1
                 flag_id = i
@@ -748,14 +748,14 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
             if sporadic_arrive[j] < offline_schedule[i].start_time and sporadic_arrive[
                 j] + C_CBS_remain - \
                     offline_schedule[i].start_time > 2:
-                print("################", offline_schedule[i].start_time,
+                print("will be interfered by future coming ST frame ", offline_schedule[i].start_time,
                       offline_schedule[i].end_time)
                 flag = 2
                 flag_id = i
                 break
 
             elif sporadic_arrive[j] == offline_schedule[i].end_time:
-                print("$$$$$$$$$$$$$$$", offline_schedule[i].start_time,
+                print("release at special time point", offline_schedule[i].start_time,
                       offline_schedule[i].end_time)
                 flag = 3
                 flag_id = i
@@ -1281,54 +1281,51 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
                          preemptable_flow, interference_sporadic, mark, retrans_sched_id, sporadic_C,
                          sporadic_arrive, delayed_sche_id, delayed_error, error, deadline_U_CBS):
     print(" will be preempted by the sporadic frame and being prioritized")
+    print(" the arrive time of prioritized frame:", sporadic_arrive[prioritized_id])
 
     # sporadic_c_backpack = sporadic_C[j]
     if sporadic_arrive[j] == sporadic_arrive[prioritized_id]:
         sporadic_C[j] -= 0
     else:
-        sporadic_C[j] = sporadic_C[j] - (sporadic_arrive[prioritized_id] - sporadic_arrive[j] - 1) + 0.3
-        sporadic_arrive[prioritized_id] += 1
 
-    print(" the remain preempted frame is updated: ", sporadic_C[j])
+        print(" the remain preempted frame may be updated: ")
 
-    offsched_count = 0
-    for i in range(len(offline_schedule)):
+        offline_count = 0
 
-        if sporadic_arrive[j] <= offline_schedule[i].start_time <= sporadic_arrive[prioritized_id]:
-            offsched_count += 0
+        for i in range(len(offline_schedule)):
 
-        if offline_schedule[i].start_time <= sporadic_arrive[j] <= offline_schedule[i].end_time \
-                and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
+            if offline_schedule[i].start_time <= sporadic_arrive[j] <= offline_schedule[i].end_time \
+                    and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
+                offline_count += 1
+                sporadic_arrive[j] = offline_schedule[i].end_time
+                sporadic_C[j] = sporadic_c_backpack
+                print(" the current frame release during ST transmission and being suspended", sporadic_arrive[j], sporadic_C[j])
+                interference_sporadic = 0
+                if offline_schedule[i].start_time <= sporadic_arrive[prioritized_id] \
+                        <= offline_schedule[i].end_time:
+                    # sporadic_C[j] = sporadic_c_backpack
+                    sporadic_arrive[prioritized_id] = offline_schedule[i].end_time
+                    print("prioritized frame release during ST transmission and release time update -- active")
+                    break
+                else:
+                    break
 
-            sporadic_arrive[j] = offline_schedule[i].end_time
-            sporadic_C[j] = sporadic_c_backpack
-            print(" release during ST transmission and being suspended")
-            print(sporadic_C[j])
-            print(sporadic_arrive[j])
-            interference_sporadic = 0
-            if offline_schedule[i].start_time <= sporadic_arrive[prioritized_id] \
-                    <= offline_schedule[i].end_time:
-                # sporadic_C[j] = sporadic_c_backpack
-                sporadic_arrive[prioritized_id] = offline_schedule[i].end_time
-                print("555ffff")
-                break
-            else:
-                break
+            elif sporadic_arrive[j] < offline_schedule[i].start_time < sporadic_response_time \
+                    and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
 
-        elif sporadic_arrive[j] < offline_schedule[i].start_time < sporadic_response_time \
-                and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
-
-            if offline_schedule[i].start_time <= sporadic_arrive[prioritized_id] \
-                    <= offline_schedule[i].end_time:
-                print(" release during ST transmission fafa")
-                sporadic_arrive[prioritized_id] = offline_schedule[i].end_time
+                if offline_schedule[i].start_time <= sporadic_arrive[prioritized_id] \
+                        <= offline_schedule[i].end_time:
+                    print("prioritized frame release during ST transmission and release time update -- future")
+                    sporadic_arrive[prioritized_id] = offline_schedule[i].end_time
 
                 if sporadic_response_time - offline_schedule[i].start_time > 2:
-                    sporadic_C[j] = sporadic_c_backpack
-                    print("666fff")
+
+                    print("start to calculate the remaining transmission time")
                     if offline_schedule[i].start_time - sporadic_arrive[j] > 0:
-                        print("AAA", sporadic_C[j], offline_schedule[i].start_time,
-                              sporadic_arrive[j])
+                        sporadic_C[j] = sporadic_c_backpack
+                        offline_count += 1
+                        print("the parameters for calculation: C , offline sched start time, C arrive time", sporadic_C[j],
+                              offline_schedule[i].start_time, sporadic_arrive[j])
                         sporadic_C[j] = sporadic_C[j] - (offline_schedule[i].start_time + 1
                                                          - sporadic_arrive[j]) + 0.3
                         sporadic_arrive[j] = offline_schedule[i].end_time
@@ -1337,50 +1334,42 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
                         print(sporadic_arrive[j])
                         break
                     else:
-                        print("bbb")
+                        print("the current frame can be finished before ST frame")
+                        sporadic_response_time = sporadic_arrive[j] + sporadic_C[j] + interference_sporadic
+
                         sporadic_C[j] -= 0
-                        sporadic_arrive[j] = offline_schedule[i].end_time
                         interference_sporadic = 0
+
+                        if retrans_sched_id[j] == delayed_sche_id:
+                            print("the response time of delayed frame", j, "is: ", sporadic_response_time)
+                            delayed_response_time = sporadic_response_time
+                        else:
+                            print("the response time of frame", j, "is: ", sporadic_response_time)
+
+                        if sporadic_response_time > mark[j]:
+                            if retrans_sched_id[j] == delayed_sche_id:
+                                if sporadic_response_time > delayed_deadline:
+                                    print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                    print("the delayed ST frame miss deadline 1")
+                                    delayed_error += 1
+                            else:
+                                if mark[j] != 0:
+                                    print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                    print("the current frame miss deadline")
+                                    error += 1
                         break
+                else:
+                    print("the current frame can be finished before ST frame")
+                    sporadic_response_time = sporadic_arrive[j] + sporadic_C[j] + interference_sporadic
 
-            else:
-                break
-        else:
-            break
+                    sporadic_C[j] -= 0
+                    interference_sporadic = 0
 
-    # if offsched_count == 0:
-    #     sporadic_arrive[j+1] += 1
-
-    newstart_time = 0
-    if sporadic_C[j] < 0:
-        temp = 0
-        for i in range(len(offline_schedule)):
-            if offline_schedule[i].start_time <= sporadic_arrive[j] <= offline_schedule[
-                i].end_time and offline_schedule[
-                i].source != preemptable_flow and i != delayed_sche_id:
-
-                sporadic_C[j] = sporadic_c_backpack
-                interference_sporadic = 0
-                break
-            elif offline_schedule[i].start_time > sporadic_arrive[
-                j] and offline_schedule[i].source != preemptable_flow and i != delayed_sche_id:
-                temp = offline_schedule[i].start_time
-                sporadic_C[j] = sporadic_c_backpack - (temp - sporadic_arrive[j] + 1) + 0.3
-                if sporadic_C[j] <= 2:
-                    sporadic_response_time = sporadic_arrive[j] + sporadic_C[
-                        j] + interference_sporadic
                     if retrans_sched_id[j] == delayed_sche_id:
-                        print("the response time of delayed frame wwww", j, "is: ",
-                              sporadic_response_time)
+                        print("the response time of delayed frame", j, "is: ", sporadic_response_time)
                         delayed_response_time = sporadic_response_time
                     else:
-                        print("the response time of preempted frame www", j,
-                              "is: ",
-                              sporadic_response_time)
-
-                    # deadline_U_CBS = deadline_U_CBS_backpack
-                    sporadic_C[j] = 0
-                    interference_sporadic = 1
+                        print("the response time of frame", j, "is: ", sporadic_response_time)
 
                     if sporadic_response_time > mark[j]:
                         if retrans_sched_id[j] == delayed_sche_id:
@@ -1391,55 +1380,37 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
                         else:
                             if mark[j] != 0:
                                 print("!!!!!!!!!!!!!!!!!!!!warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                print("the preempted ST frame miss deadline eeee")
+                                print("the current frame miss deadline")
                                 error += 1
-                else:
-                    newstart_time = offline_schedule[i].end_time
-                    interference_sporadic = 0
-                break
-        if temp != 0:
-            sporadic_C[j] = sporadic_c_backpack - (temp - sporadic_arrive[j] + 1) + 0.3
-        else:
-            sporadic_C[j] = sporadic_c_backpack
-    else:
-        interference_sporadic = 0
 
-    print("offsched_count", offsched_count)
-    if offsched_count == 0:
-        sporadic_arrive[prioritized_id] += 1
+        if offline_count == 0:
+            sporadic_C[j] = sporadic_C[j] - (sporadic_arrive[prioritized_id] + 1 - sporadic_arrive[j]) + 0.3
+            sporadic_arrive[prioritized_id] += 1
+            interference_sporadic = 0
 
-    print(" real remain preempted frame is: ", sporadic_C[j])
+    print(" the remain frame after update is: ", sporadic_C[j])
+    if sporadic_C[j] != 0:
+        temp_arrive_time = sporadic_arrive[prioritized_id]
+        temp_sporadic_C = sporadic_C[prioritized_id]
+        temp_mark = mark[prioritized_id]
+        temp_retrans_sched_id = retrans_sched_id[prioritized_id]
 
-    temp_arrive_time = sporadic_arrive[prioritized_id]
-    temp_sporadic_C = sporadic_C[prioritized_id]
-    temp_mark = mark[prioritized_id]
-    temp_retrans_sched_id = retrans_sched_id[prioritized_id]
+        sporadic_arrive.pop(prioritized_id)
+        sporadic_C.pop(prioritized_id)
+        mark.pop(prioritized_id)
+        retrans_sched_id.pop(prioritized_id)
 
-    sporadic_arrive.pop(prioritized_id)
-    sporadic_C.pop(prioritized_id)
-    mark.pop(prioritized_id)
-    retrans_sched_id.pop(prioritized_id)
+        sporadic_arrive.insert(j, temp_arrive_time)
+        sporadic_C.insert(j, temp_sporadic_C)
+        mark.insert(j, temp_mark)
+        retrans_sched_id.insert(j, temp_retrans_sched_id)
 
-    sporadic_arrive.insert(j, temp_arrive_time)
-    sporadic_C.insert(j, temp_sporadic_C)
-    mark.insert(j, temp_mark)
-    retrans_sched_id.insert(j, temp_retrans_sched_id)
-
-    # sporadic_C[j], sporadic_C[j + 1] = sporadic_C[j + 1], sporadic_C[j]
-    # mark[j], mark[j + 1] = mark[j + 1], mark[j]
-    # retrans_sched_id[j + 1] = retrans_sched_id[j]
-
-    if newstart_time:
-        sporadic_arrive[j] = newstart_time
-    else:
-        sporadic_arrive[j] = sporadic_arrive[j + 1]
-
-    deadline_U_CBS = deadline_U_CBS_backpack
-    print("update after prioritization ")
-    print(sporadic_arrive)
-    print(sporadic_C)
-    print(mark)
-    print(retrans_sched_id)
+        deadline_U_CBS = deadline_U_CBS_backpack
+        print("update after prioritization ")
+        print(sporadic_arrive)
+        print(sporadic_C)
+        print(mark)
+        print(retrans_sched_id)
 
     return deadline_U_CBS, interference_sporadic, delayed_response_time, delayed_error, error
 
@@ -1457,7 +1428,7 @@ def conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic,
               sporadic_response_time)
         delayed_response_time = sporadic_response_time
     else:
-        print("the response time of preempted frame", j, "is: ",
+        print("the response time current frame", j, "is: ",
               sporadic_response_time)
 
     if sporadic_response_time > mark[j]:
@@ -1786,7 +1757,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
         if mark[j] != 0:
 
-            print("start with ST related one with release time", sporadic_arrive[j])
+            print("start with frame belongs to class B with lower priority", sporadic_arrive[j])
 
             if retrans_sched_id[j] == delayed_sche_id:
                 deadline_U_CBS = deadline_U_tbs
@@ -1816,7 +1787,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
                     if sporadic_arrive[j] <= sporadic_arrive[prioritized_id] < sporadic_response_time:
                         if sporadic_response_time - sporadic_arrive[prioritized_id] > 2:
-                            print(" will be preempted by the sporadic frame and being prioritized")
+                            print(" will be preempted by the frame from class A, with smaller deadline")
 
                             print("update before prioritization ")
                             print(sporadic_arrive)
@@ -1833,29 +1804,33 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                                      deadline_U_CBS)
 
                         else:
+                            print(" No  prioritize operation ")
                             sporadic_response_time, delayed_response_time, deadline_U_CBS, delayed_error, error = \
                                 conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic, mark,
                                                           retrans_sched_id, sporadic_C,
                                                           sporadic_arrive, delayed_sche_id, delayed_error, error,
                                                           deadline_U_CBS, delayed_response_time)
                     else:
+                        print(" No  prioritize operation ")
                         sporadic_response_time, delayed_response_time, deadline_U_CBS, delayed_error, error = \
                             conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic, mark,
                                                       retrans_sched_id, sporadic_C, sporadic_arrive, delayed_sche_id,
                                                       delayed_error, error, deadline_U_CBS, delayed_response_time)
                 else:
+                    print(" No  prioritize operation ")
                     sporadic_response_time, delayed_response_time, deadline_U_CBS, delayed_error, error = \
                         conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic, mark,
                                                   retrans_sched_id, sporadic_C, sporadic_arrive, delayed_sche_id,
                                                   delayed_error, error, deadline_U_CBS, delayed_response_time)
 
             else:
+                print(" No  prioritize operation ")
                 sporadic_response_time, delayed_response_time, deadline_U_CBS, delayed_error, error = \
                     conventional_transmission(j, deadline_U_CBS_backpack, interference_sporadic, mark,
                                               retrans_sched_id, sporadic_C, sporadic_arrive, delayed_sche_id,
                                               delayed_error, error, deadline_U_CBS, delayed_response_time)
         else:
-            print("start with sporadic one, with release time", sporadic_arrive[j])
+            print("start with frame belongs to class A with higher priority", sporadic_arrive[j])
             temp_check_flag_ST = -2
             temp_check_ST_list = mark[j:]
             # find the first ST preempted frame or delayed
@@ -1866,7 +1841,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
             if temp_check_flag_ST != -2 and temp_check_ST_list[temp_check_flag_ST] != 1000000:
                 prioritized_id = j + temp_check_flag_ST
-                print("prioritized ST candidate FFFF with release time ", prioritized_id,
+                print("prioritized candidate with release time ", prioritized_id,
                       sporadic_arrive[prioritized_id])
 
                 print("deadline comparison", deadline_U_CBS, mark[prioritized_id])
@@ -1874,14 +1849,14 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 if deadline_U_CBS > mark[prioritized_id] and mark[prioritized_id] != 0 and mark[
                     prioritized_id] != 1000000:
 
-                    print(" Conversion prioritized ST candidate ")
+                    print(" Conversion prioritized candidate ")
 
                     if sporadic_arrive[j] >= sporadic_arrive[prioritized_id]:
                         sporadic_arrive[prioritized_id] = sporadic_arrive[j]
 
                     if sporadic_arrive[j] <= sporadic_arrive[prioritized_id] < sporadic_response_time:
                         if sporadic_response_time - sporadic_arrive[prioritized_id] > 2:
-                            print(" will be preempted by the frame in the ST preemptable queue")
+                            print(" will be preempted by the frame from class B but with smaller deadline")
 
                             print("update before prioritization ")
                             print(sporadic_arrive)
@@ -1899,23 +1874,26 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                             # sporadic_c_backpack = sporadic_C[j]
 
                         else:
+                            print(" No  prioritize operation ")
                             temp_int = 0
                             temp_deadline_1 = deadline_U_CBS
-                            deadline_U_CBS, C_CBS_remain = \
+                            deadline_U_CBS, C_CBS_remain, sporadic_response_time = \
                                 Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remain,
                                                             preemptable_flow, interference_sporadic, mark,
                                                             retrans_sched_id,
                                                             sporadic_C, sporadic_arrive, delayed_sche_id, Uti_CBS)
                     else:
+                        print(" No  prioritize operation ")
                         temp_int = 0
                         temp_deadline_1 = deadline_U_CBS
                         print("$$$$$$$$$$ with no prioritied candidate")
-                        deadline_U_CBS, C_CBS_remain = \
+                        deadline_U_CBS, C_CBS_remain, sporadic_response_time = \
                             Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remain,
                                                         preemptable_flow, interference_sporadic, mark, retrans_sched_id,
                                                         sporadic_C, sporadic_arrive, delayed_sche_id, Uti_CBS)
 
                 else:
+                    print(" No  prioritize operation ")
                     temp_int = 0
                     temp_deadline_1 = deadline_U_CBS
                     deadline_U_CBS, C_CBS_remain, sporadic_response_time = \
@@ -1924,6 +1902,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                                                     sporadic_C, sporadic_arrive, delayed_sche_id, Uti_CBS)
 
             else:
+                print(" No  prioritize operation ")
                 temp_int = 0
                 temp_deadline_1 = deadline_U_CBS
                 print("$$$$$$$$$$ with no prioritied candidate")
@@ -2113,7 +2092,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                     else:
                         temp_in += offline_schedule[i].end_time - release_time_class
                         ST_frame_number += 1
-                        print("@@", temp_in)
+                        print("interference from active ST frame", temp_in)
 
             for i in range(len(offline_schedule)):
                 if release_time_class <= offline_schedule[i].start_time < response_time:
@@ -2123,7 +2102,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                     else:
                         temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
                         ST_frame_number += 1
-                        print("@#$", temp_in)
+                        print("interference from future ST frame", temp_in)
 
             slack_class = response_time - release_time_class - temp_in
             credit_2 += idleLp * slack_class
@@ -2693,7 +2672,7 @@ if __name__ == "__main__":
                                 else:
                                     temp_in += offline_schedule[i].end_time - delayed_release_time
                                     ST_frame_number += 1
-                                    print("@@", temp_in)
+                                    print("interference from active frame for delayed frame", temp_in)
 
                         for i in range(len(offline_schedule)):
                             if delayed_release_time <= offline_schedule[i].start_time < delayed_deadline:
@@ -2702,7 +2681,7 @@ if __name__ == "__main__":
                                 else:
                                     temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
                                     ST_frame_number += 1
-                                    print("@#$", temp_in)
+                                    print("interference from future coming frame for delayed frame", temp_in)
 
                         max_preemption_times_delayed = math.floor(C_delayed_frame / 2)
                         max_preemption_overhead_delayed = max_preemption_times_delayed * pure_preemption_overhead
@@ -2767,7 +2746,7 @@ if __name__ == "__main__":
                 print(j)
                 print("delayed frame check state: delayed_count, count", delayed_count, delay_count_1)
                 if delay_count_1 == 0:
-                    print("there is no delayed frame or the already rejected")
+                    print("there is no delayed frame, already handled or already rejected")
 
                 # print("the size of sporadic array", len(sporadic_arrive))
                 print("sporadic frame arrive time", sporadic_arrive[j])
@@ -2889,9 +2868,9 @@ if __name__ == "__main__":
 
         # --------------------- frame transmission of AVB-credit based method--------------------- #
 
-        # AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
-        #                          mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
-        #                          delayed_sche_id, offline_schedule, delayed_error_AVB)
+        AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
+                                 mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
+                                 delayed_sche_id, offline_schedule, delayed_error_AVB)
     print("")
 
     print("------------------------- *************-----------------------------")
