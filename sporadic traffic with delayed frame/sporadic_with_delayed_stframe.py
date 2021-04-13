@@ -1764,7 +1764,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
         if mark[j] != 0:
 
-            print("start with frame belongs to class B with lower priority", sporadic_arrive[j])
+            print("start with frame belongs to class B with release time", sporadic_arrive[j])
 
             if retrans_sched_id[j] == delayed_sche_id:
                 deadline_U_CBS = deadline_U_tbs
@@ -1776,7 +1776,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
                 temp_check_flag = -2
                 temp_check_list = mark[j:]
                 for i in range(len(temp_check_list)):
-                    if temp_check_list[i] == 0:
+                    if temp_check_list[i] == 0 or retrans_sched_id[j] == delayed_sche_id:
                         temp_check_flag = i
                         break
 
