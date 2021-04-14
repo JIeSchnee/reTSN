@@ -2476,7 +2476,7 @@ if __name__ == "__main__":
         while reselect:
 
             stream_number = 5
-            target_utilization = 0.7
+            target_utilization = 0.9
             period_set = [50, 100, 200, 500, 1000]
             generated_window_times = []
             window_times = []
@@ -2745,7 +2745,7 @@ if __name__ == "__main__":
 
         print("para:", Uti_server_up_bound, utilization_delayed, Uti_preempted_ST)
 
-        Uti_CBS = Uti_server_up_bound - utilization_delayed - Uti_preempted_ST
+        Uti_CBS = Uti_server_up_bound - Uti_preempted_ST
         if Uti_CBS < 0:
             print("!!!!system is unschedulable!!!")
             unscheduleable_count += 1
@@ -3181,8 +3181,8 @@ if __name__ == "__main__":
         print("min variation of delayed frame", min(difference_CBS_AVB_delayed_frame))
 
         x = range(len(difference_CBS_AVB_delayed_frame))
-        plt.scatter(x, CBS_delayed_response, marker='x', color='blue', label='CBS_based_delayed_frame')
-        plt.scatter(x, AVB_delayed_response, marker='o', color='orange', label='AVB_based_delayed_frame')
+        plt.plot(x, CBS_delayed_response, marker='x', color='blue', label='CBS_based_delayed_frame')
+        plt.plot(x, AVB_delayed_response, marker='o', color='orange', label='AVB_based_delayed_frame')
         plt.legend()
         plt.show()
 
@@ -3191,14 +3191,14 @@ if __name__ == "__main__":
     print("the number of delayed frame handled by AVB", AVB_delayed_frame_handling_count)
 
     x = range(len(CBS_based_classA_response_time))
-    plt.scatter(x, CBS_based_classA_response_time, color='green', label='CBS_based_classA')
-    plt.scatter(x, AVB_based_classA_response_time, color='red', label='AVB_based_classA')
+    plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBS_based_classA')
+    plt.plot(x, AVB_based_classA_response_time, marker='o', color='red', label='AVB_based_classA')
     plt.legend()
     plt.show()
 
     x = range(len(CBS_based_classB_response_time))
-    plt.scatter(x, CBS_based_classB_response_time, color='blue', label='CBS_based_classB')
-    plt.scatter(x, AVB_based_classB_response_time, color='orange', label='AVB_based_classB')
+    plt.plot(x, CBS_based_classB_response_time, marker='x', color='blue', label='CBS_based_classB')
+    plt.plot(x, AVB_based_classB_response_time, marker='o', color='orange', label='AVB_based_classB')
     plt.legend()
     plt.show()
 
