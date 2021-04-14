@@ -2474,20 +2474,21 @@ if __name__ == "__main__":
 
         reselect = True
         while reselect:
-
-            stream_number = 5
-            target_utilization = 0.9
-            period_set = [50, 100, 200, 500, 1000]
-            generated_window_times = []
-            window_times = []
-            actual_utilization = 0
-            idxs = np.random.randint(0, len(period_set), size=stream_number)
-            period = []
-            for i in idxs:
-                period.append(period_set[i])
-
+            
             k = True
             while k:
+                stream_number = 5
+                target_utilization = 0.9
+                period_set = [50, 100, 200, 500, 1000]
+                generated_window_times = []
+                window_times = []
+                actual_utilization = 0
+                idxs = np.random.randint(0, len(period_set), size=stream_number)
+                period = []
+                for i in idxs:
+                    period.append(period_set[i])
+
+            
                 generated_window_times = window_time_Generator(stream_number, period, target_utilization)
                 uti = []
                 for i in range(stream_number):
