@@ -1,7 +1,10 @@
 import numpy as np
 import random
 import math
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 from random import choice
+
 
 import sys
 from prettytable import PrettyTable
@@ -2464,7 +2467,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 1000
+    round_number = 1
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2611,7 +2614,7 @@ if __name__ == "__main__":
 
         print("----------------------sporadic class B generator------------------------------------")
         sporadic_flow_B = Frame(0, 0, 0, 0, random.randint(0, 100), random.randint(1, math.ceil(np.mean(window_times))),
-                              random.randint(sporadic_interval, max(period)), 0, 0, "sporadic")
+                              random.randint(math.ceil(sporadic_interval), max(period)), 0, 0, "sporadic")
         sporadic_offset_B = sporadic_flow_B.arrive_time
         # print("sporadic offset:", sporadic_offset)
         C_sporadic_B = sporadic_flow_B.window_time
@@ -3141,9 +3144,14 @@ if __name__ == "__main__":
         difference_CBS_AVB_classB.append(CBS_based_classB_response_time[i] - AVB_based_classB_response_time[i])
 
     difference_CBS_AVB_delayed_frame = []
+    CBS_delayed_response = []
+    AVB_delayed_response = []
     for i in range(len(CBS_based_delayed_response_time)):
         if CBS_based_delayed_response_time[i] != 0 and AVB_based_delayed_response_time[i] != 0:
             difference_CBS_AVB_delayed_frame.append(CBS_based_delayed_response_time[i] - AVB_based_delayed_response_time[i])
+            CBS_delayed_response.append(CBS_based_delayed_response_time[i])
+            AVB_delayed_response.append(AVB_based_delayed_response_time[i])
+
 
     CBS_delayed_frame_handling_count = 0
     for i in range(len(CBS_based_delayed_response_time)):
@@ -3156,6 +3164,7 @@ if __name__ == "__main__":
             AVB_delayed_frame_handling_count += 1
 
     print("difference_CBS_AVB_classA", difference_CBS_AVB_classA)
+
     print("the average variation of class A", np.mean(difference_CBS_AVB_classA))
     print("max variation of class A", max(difference_CBS_AVB_classA))
     print("min variation of class A", min(difference_CBS_AVB_classA))
@@ -3170,6 +3179,27 @@ if __name__ == "__main__":
         print("the average variation of delayed frame", np.mean(difference_CBS_AVB_delayed_frame))
         print("max variation of delayed frame", max(difference_CBS_AVB_delayed_frame))
         print("min variation of delayed frame", min(difference_CBS_AVB_delayed_frame))
+
+        x = range(len(difference_CBS_AVB_delayed_frame))
+        plt.scatter(x, CBS_delayed_response, marker='x', color='blue', label='CBS_based_delayed_frame')
+        plt.scatter(x, AVB_delayed_response, marker='o', color='orange', label='AVB_based_delayed_frame')
+        plt.legend()
+        plt.show()
+
     print("")
     print("the number of delayed frame handled by CBS", CBS_delayed_frame_handling_count)
     print("the number of delayed frame handled by AVB", AVB_delayed_frame_handling_count)
+
+    x = range(len(CBS_based_classA_response_time))
+    plt.scatter(x, CBS_based_classA_response_time, color='green', label='CBS_based_classA')
+    plt.scatter(x, AVB_based_classA_response_time, color='red', label='AVB_based_classA')
+    plt.legend()
+    plt.show()
+
+    x = range(len(CBS_based_classB_response_time))
+    plt.scatter(x, CBS_based_classB_response_time, color='blue', label='CBS_based_classB')
+    plt.scatter(x, AVB_based_classB_response_time, color='orange', label='AVB_based_classB')
+    plt.legend()
+    plt.show()
+
+
