@@ -1686,8 +1686,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     # sched_check = []
     pure_preemption_overhead = 0.3
 
-    # deadline_U_CBS_backpack = deadline_U_CBS
-    # print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
+    deadline_U_CBS_backpack = deadline_U_CBS
+    print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
 
     # if mark[j] != 0:
     #     deadline_U_CBS = mark[j]
@@ -1696,8 +1696,9 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     # if there is frame preempted by sporadic frame is will be created as a new sporadic frame
     while sporadic_C[j] > 0:
 
-        deadline_U_CBS_backpack = deadline_U_CBS
-        print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
+        if retrans_sched_id == -2:
+            deadline_U_CBS_backpack = deadline_U_CBS
+            print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
 
         if mark[j] != 0:
             deadline_U_CBS = mark[j]
@@ -2436,15 +2437,13 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
     # for i in range(len(retrans_sched_id)-1):
     #     retrans_sched_AVB.append(retrans_sched_id[i])
     # retrans_sched_AVB.append(-1)
-    AVB_classA_response_time = []
-    AVB_classB_response_time = []
-    delayed_response_time_AVB = 0
+
 
     credit_A = 0
     credit_B = 0
 
-    sendLp = -0.9
-    idleLp = 0.1
+    sendLp = -0.8
+    idleLp = 0.2
 
 
     print("AVB TEST ")
@@ -2501,25 +2500,44 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
                 if delayed_response_time_AVB > mark_AVB[j]:
                     print("the delayed traffic miss deadline, with response time:", response_time)
                     delayed_error_AVB += 1
+
                 else:
                     print("the delayed frame finished before its deadline", response_time, mark_AVB[j])
+
 
             elif retrans_sched_AVB[j] == -2:
                 print("the frame is class B frame with response time", response_time)
                 AVB_classB_response_time.append(response_time)
+                AVB_based_classB_response_time.append(response_time)
 
             elif retrans_sched_AVB[j] == -1:
                 print("the frame is class A frame with response time", response_time)
                 AVB_classA_response_time.append(response_time)
+                AVB_based_classA_response_time.append(response_time)
 
         else:
+            print("data collection from AVB module")
+            AVB_max_response_time_classA.append(max(AVB_based_classA_response_time))
+            AVB_max_response_time_classB.append(max(AVB_based_classB_response_time))
+
+            AVB_min_response_time_classA.append(min(AVB_based_classA_response_time))
+            AVB_min_response_time_classB.append(min(AVB_based_classB_response_time))
+
+            if delayed_response_time_AVB > mark_AVB[j]:
+                AVB_based_delayed_response_time.append(0)
+            else:
+                AVB_based_delayed_response_time.append(delayed_response_time_AVB)
+
+            print(AVB_max_response_time_classA)
+
             break
 
     print("the total number of deadline missing frame:", delayed_error_AVB)
     # print(AVB_classA_response_time)
     # print(AVB_classB_response_time)
 
-    return AVB_classA_response_time, AVB_classB_response_time, delayed_response_time_AVB
+    return AVB_classA_response_time, AVB_classB_response_time, delayed_response_time_AVB, AVB_max_response_time_classA,\
+           AVB_max_response_time_classB, AVB_min_response_time_classA, AVB_min_response_time_classB
 
 if __name__ == "__main__":
 
@@ -2537,15 +2555,15 @@ if __name__ == "__main__":
 
     CBS_based_classA_response_time = []
     CBS_based_classB_response_time = []
+
     CBS_based_delayed_response_time = []
     CBS_max_response_time_classA = []
     CBS_max_response_time_classB = []
     CBS_min_response_time_classA = []
     CBS_min_response_time_classB = []
 
-
-    AVB_based_classA_response_time = []
-    AVB_based_classB_response_time = []
+    AVB_classA_response_time = []
+    AVB_classB_response_time = []
     AVB_based_delayed_response_time = []
     AVB_max_response_time_classA = []
     AVB_max_response_time_classB = []
@@ -2564,6 +2582,11 @@ if __name__ == "__main__":
     unscheduleable_count = 0
 
     for k in range(round_number):
+
+        CBS_classA_response_time = []
+        CBS_classB_response_time = []
+        AVB_based_classA_response_time = []
+        AVB_based_classB_response_time = []
 
         reselect = True
         while reselect:
@@ -2701,7 +2724,7 @@ if __name__ == "__main__":
         print("")
         print("-----------------------sporadic class A generator----------------------------------")
         sporadic_flow = Frame(0, 0, 0, 0, random.randint(0, 100), random.randint(1, math.ceil(np.mean(window_times))),
-                              np.mean(period), 0, 0, "sporadic")
+                              100, 0, 0, "sporadic")
         sporadic_offset = sporadic_flow.arrive_time
         # print("sporadic offset:", sporadic_offset)
         C_sporadic = sporadic_flow.window_time
@@ -2710,7 +2733,7 @@ if __name__ == "__main__":
 
         print("----------------------sporadic class B generator------------------------------------")
         sporadic_flow_B = Frame(0, 0, 0, 0, random.randint(0, 100), random.randint(1, math.ceil(np.mean(window_times))),
-                              random.randint(math.ceil(sporadic_interval), max(period)), 0, 0, "sporadic")
+                             200, 0, 0, "sporadic")
         sporadic_offset_B = sporadic_flow_B.arrive_time
         # print("sporadic offset:", sporadic_offset)
         C_sporadic_B = sporadic_flow_B.window_time
@@ -3126,15 +3149,18 @@ if __name__ == "__main__":
                 if delayed_response_time > delayed_deadline:
                     delayed_error += 1
 
+
                 print(" The response time of ", j, "th sporadic frame is :", sporadic_response_time)
 
                 if retrans_sched_id[j] == -2:
                     print("the frame is class B frame", sporadic_response_time)
                     CBS_based_classB_response_time.append(sporadic_response_time)
+                    CBS_classB_response_time.append(sporadic_response_time)
 
                 elif retrans_sched_id[j] == -1:
                     print("the frame is class A frame", sporadic_response_time)
                     CBS_based_classA_response_time.append(sporadic_response_time)
+                    CBS_classA_response_time.append(sporadic_response_time)
 
 
                 if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
@@ -3177,14 +3203,22 @@ if __name__ == "__main__":
                 print(sporadic_deadline)
 
             else:
+                print("data collection from CBS module")
+                print(CBS_based_classA_response_time)
+                print(max(CBS_based_classA_response_time))
+
+                CBS_max_response_time_classA.append(max(CBS_classA_response_time))
+                CBS_max_response_time_classB.append(max(CBS_classB_response_time))
+                CBS_min_response_time_classA.append(min(CBS_classA_response_time))
+                CBS_min_response_time_classB.append(min(CBS_classB_response_time))
+
+
+                if delayed_response_time <= delayed_deadline:
+                    CBS_based_delayed_response_time.append(delayed_response_time)
+
+                print(CBS_max_response_time_classA)
                 break
 
-        CBS_max_response_time_classA.append(max(CBS_based_classA_response_time))
-        CBS_max_response_time_classB.append(max(CBS_based_classB_response_time))
-        CBS_min_response_time_classA.append(min(CBS_based_classA_response_time))
-        CBS_min_response_time_classB.append(min(CBS_based_classB_response_time))
-
-        CBS_based_delayed_response_time.append(delayed_response_time)
         print("---------------------error----------------------------")
         print("round number:                    ", round_number)
         print("accepted delayed frame:          ", accepted_delayed_traffic)
@@ -3213,50 +3247,40 @@ if __name__ == "__main__":
 
         # --------------------- frame transmission of AVB-credit based method--------------------- #
 
-        AVB_classA_response_time, AVB_classB_response_time, delayed_response_time_AVB = AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
+        AVB_classA_response_time, AVB_classB_response_time, delayed_response_time_AVB, AVB_max_response_time_classA, \
+        AVB_max_response_time_classB, AVB_min_response_time_classA, AVB_min_response_time_classB = \
+            AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
                                  mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
                                  delayed_sche_id, offline_schedule, delayed_error_AVB)
 
         print(" mark ##############")
+        print("delay")
+        print(AVB_max_response_time_classA)
+        print(AVB_based_delayed_response_time)
+        print(CBS_based_delayed_response_time)
 
-        for i in range(len(AVB_classA_response_time)):
-            AVB_based_classA_response_time.append(AVB_classA_response_time[i])
-
-        for i in range(len(AVB_classB_response_time)):
-            AVB_based_classB_response_time.append(AVB_classB_response_time[i])
-
-        if delayed_response_time_AVB <= delayed_deadline:
-            AVB_based_delayed_response_time.append(delayed_response_time_AVB)
-        else:
-            AVB_based_delayed_response_time.append(0)
-
-        AVB_max_response_time_classA.append(max(AVB_based_classA_response_time))
-        AVB_max_response_time_classB.append(max(AVB_based_classB_response_time))
-
-        AVB_min_response_time_classA.append(min(AVB_based_classA_response_time))
-        AVB_min_response_time_classB.append(min(AVB_based_classB_response_time))
 
     print("------------------------- *************-----------------------------")
 
 
-    for i in range(len(sporadic_response_time_list)):
-
-        deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-
-        if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
-            sporadic_missing_count += 1
-            bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
-            sporadic_deadline_miss_id.append(i)
-            missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
-            # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
-            missing_percentage_list.append(missing_percentage)
-
-    print("sporadic frame number :", sporadic_frame_number )
-    print()
-
-    print("the sporadic frame number, deadline missing number and percentage: ",
-          sporadic_frame_number, "|",
-          sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
+    # for i in range(len(sporadic_response_time_list)):
+    #
+    #     deadline_missing_state.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+    #
+    #     if sporadic_deadline_list[i] - sporadic_response_time_list[i] < 0:
+    #         sporadic_missing_count += 1
+    #         bias.append(sporadic_deadline_list[i] - sporadic_response_time_list[i])
+    #         sporadic_deadline_miss_id.append(i)
+    #         missing_percentage = (sporadic_response_time_list[i] - sporadic_deadline_list[i]) / sporadic_interval
+    #         # print("sporadic deadline, and response time",sporadic_deadline_list[i], sporadic_response_time_list[i], missing_percentage)
+    #         missing_percentage_list.append(missing_percentage)
+    #
+    # print("sporadic frame number :", sporadic_frame_number )
+    # print()
+    #
+    # print("the sporadic frame number, deadline missing number and percentage: ",
+    #       sporadic_frame_number, "|",
+    #       sporadic_missing_count, "|", sporadic_missing_count / sporadic_frame_number)
 
 
     print("the maximum response time")
@@ -3310,17 +3334,17 @@ if __name__ == "__main__":
 
 
     print("--------------------- CBS based transmission--------------------")
-    print(CBS_based_classA_response_time)
-    print(CBS_based_classB_response_time)
-    print(CBS_based_delayed_response_time)
+    # print(CBS_based_classA_response_time)
+    # print(CBS_based_classB_response_time)
+    # print(CBS_based_delayed_response_time)
 
 
 
     print("")
     print("--------------------- AVB based transmission---------------------")
-    print(AVB_based_classA_response_time)
-    print(AVB_based_classB_response_time)
-    print(AVB_based_delayed_response_time)
+    # print(AVB_based_classA_response_time)
+    # print(AVB_based_classB_response_time)
+    # print(AVB_based_delayed_response_time)
 
     # x = range(len(CBS_based_classA_response_time))
     # plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBS_based_classA')
@@ -3337,14 +3361,14 @@ if __name__ == "__main__":
     print("")
     print("--------------------------- variance -----------------------------")
     print("size of CBS_based_classA_response_time", len(CBS_based_classA_response_time))
-    print("size of AVB_based_classA_response_time", len(AVB_based_classA_response_time))
+    print("size of AVB_based_classA_response_time", len(AVB_classA_response_time))
     difference_CBS_AVB_classA = []
     for i in range(len(CBS_based_classA_response_time)):
-        difference_CBS_AVB_classA.append((AVB_based_classA_response_time[i] - CBS_based_classA_response_time[i]) / AVB_based_classA_response_time[i])
+        difference_CBS_AVB_classA.append((AVB_classA_response_time[i] - CBS_based_classA_response_time[i]) / AVB_classA_response_time[i])
 
     difference_CBS_AVB_classB = []
     for i in range(len(CBS_based_classB_response_time)):
-        difference_CBS_AVB_classB.append((AVB_based_classB_response_time[i] - CBS_based_classB_response_time[i]) / AVB_based_classB_response_time[i])
+        difference_CBS_AVB_classB.append((AVB_classB_response_time[i] - CBS_based_classB_response_time[i]) / AVB_classB_response_time[i])
 
     labels = ['difference_CBS_AVB_classA', 'difference_CBS_AVB_classB']
     bplot = plt.boxplot([difference_CBS_AVB_classA, difference_CBS_AVB_classB], whis=None, labels=labels, meanline=True,
@@ -3354,13 +3378,13 @@ if __name__ == "__main__":
     plt.title("The response time comparison, under Uti: 0.8 with 5 ST flow", fontsize=11)
     plt.show()
 
-    print("difference_CBS_AVB_classA", difference_CBS_AVB_classA)
+    # print("difference_CBS_AVB_classA", difference_CBS_AVB_classA)
 
     print("the average variation of class A", np.mean(difference_CBS_AVB_classA))
     print("max variation of class A", max(difference_CBS_AVB_classA))
     print("min variation of class A", min(difference_CBS_AVB_classA))
     print("")
-    print("difference_CBS_AVB_classB", difference_CBS_AVB_classB)
+    # print("difference_CBS_AVB_classB", difference_CBS_AVB_classB)
     print("the average variation of class B", np.mean(difference_CBS_AVB_classB))
     print("max variation of class B", max(difference_CBS_AVB_classB))
     print("min variation of class B", min(difference_CBS_AVB_classB))
@@ -3397,7 +3421,7 @@ if __name__ == "__main__":
 
 
     print("")
-    print("difference_CBS_AVB_delayed_frame", difference_CBS_AVB_delayed_frame)
+    # print("difference_CBS_AVB_delayed_frame", difference_CBS_AVB_delayed_frame)
     print("the number of delayed frame handled by CBS", CBS_delayed_frame_handling_count)
     print("the number of delayed frame handled by AVB", AVB_delayed_frame_handling_count)
     if difference_CBS_AVB_delayed_frame:
