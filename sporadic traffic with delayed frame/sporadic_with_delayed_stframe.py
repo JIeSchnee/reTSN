@@ -810,7 +810,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                               sporadic_arrive[j],
                               sporadic_C[j], deadline_U_CBS)
 
-                        sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                        # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                         print(sporadic_arrive)
                         print(sporadic_arrive_backpack)
@@ -841,7 +841,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                               sporadic_arrive[j],
                               sporadic_C[j], deadline_U_CBS)
 
-                        sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                        # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                         print(sporadic_arrive)
                         print(sporadic_arrive_backpack)
@@ -941,7 +941,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                                         "the capacity is exhausted at time point from flag 1ssssss:",
                                         exhaust_time,
                                         sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
-                                    sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                                    # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                                     print(sporadic_arrive)
                                     print(sporadic_arrive_backpack)
@@ -984,7 +984,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                             interference_sporadic = 0
                             print("the capacity is exhausted at time point ## :", exhaust_time,
                                   sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
-                            sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                            # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                             print(sporadic_arrive)
                             print(sporadic_arrive_backpack)
@@ -1084,7 +1084,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                         print("the capacity is exhausted at time point 2 from flag 2:",
                               exhaust_time,
                               sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
-                        sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                        # sporadic_arrive_backpack[j] = sporadic_arrive[j]
                         print(sporadic_arrive)
                         print(sporadic_arrive_backpack)
                         print(sporadic_C)
@@ -1112,7 +1112,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                     print("the capacity is exhausted at time point 3 from flag 2:", exhaust_time,
                           sporadic_arrive[j],
                           sporadic_C[j], deadline_U_CBS)
-                    sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                    # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                     print(sporadic_arrive)
                     print(sporadic_arrive_backpack)
@@ -1202,7 +1202,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                                 print("the capacity is exhausted at time point 4 from flag 3:",
                                       exhaust_time,
                                       sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
-                                sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                                # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                                 print(sporadic_arrive)
                                 print(sporadic_arrive_backpack)
@@ -1235,7 +1235,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                                   exhaust_time,
                                   sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
 
-                            sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                            # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                             print(sporadic_arrive)
                             print(sporadic_arrive_backpack)
@@ -1256,7 +1256,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                               exhaust_time,
                               sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
 
-                        sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                        # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                         print(sporadic_arrive)
                         print(sporadic_arrive_backpack)
@@ -1287,7 +1287,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
                 print("the capacity is exhausted at time point 5 from flag 3:", exhaust_time,
                       sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
 
-                sporadic_arrive_backpack[j] = sporadic_arrive[j]
+                # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
                 print(sporadic_arrive)
                 print(sporadic_arrive_backpack)
@@ -1304,7 +1304,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
             interference_sporadic = 0
             print("the capacity is exhausted at time point 6 from flag 0:", exhaust_time,
                   sporadic_arrive[j], sporadic_C[j], deadline_U_CBS)
-            sporadic_arrive_backpack[j] = sporadic_arrive[j]
+            # sporadic_arrive_backpack[j] = sporadic_arrive[j]
 
             print(sporadic_arrive)
             print(sporadic_arrive_backpack)
@@ -1345,7 +1345,7 @@ def frame_prioritization(j, offline_schedule, sporadic_response_time, delayed_re
         mark.insert(j, temp_mark)
         retrans_sched_id.insert(j, temp_retrans_sched_id)
 
-        # deadline_U_CBS = deadline_U_CBS_backpack
+        deadline_U_CBS = deadline_U_CBS_backpack
         print("update after prioritization ")
         print(sporadic_arrive)
         print(sporadic_arrive_backpack)
@@ -1686,8 +1686,8 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     # sched_check = []
     pure_preemption_overhead = 0.3
 
-    deadline_U_CBS_backpack = deadline_U_CBS
-    print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
+    # deadline_U_CBS_backpack = deadline_U_CBS
+    # print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
 
     # if mark[j] != 0:
     #     deadline_U_CBS = mark[j]
@@ -1695,6 +1695,9 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
 
     # if there is frame preempted by sporadic frame is will be created as a new sporadic frame
     while sporadic_C[j] > 0:
+
+        deadline_U_CBS_backpack = deadline_U_CBS
+        print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
 
         if mark[j] != 0:
             deadline_U_CBS = mark[j]
@@ -2105,7 +2108,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                 print("inteference frome future:", offline_schedule[i].start_time, offline_schedule[i].end_time, interference)
 
     response_time = release_time + transmission_time + interference
-    credit_1 = sendLp * transmission_time
+    credit_1 += sendLp * transmission_time
     print("the credit after the frame transmission:", credit_1)
     print("the response time of current frame is", response_time)
 
@@ -2251,6 +2254,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
 def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, retrans_sched_AVB,
                                                           offline_schedule, credit_A, credit_B, sendLp, idleLp, response_time):
     if retrans_sched_AVB[j] != -2:
+        print("current Class A")
 
         check_frame = retrans_sched_AVB[j+1:]
         if j < len(sporadic_arrive_time_AVB) - 1:
@@ -2261,7 +2265,7 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                     break
             if index != -5:
 
-                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index]:
+                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index] and credit_A < 0:
                     print(" the frame belongs to class B with earlier ready time")
 
                     sporadic_arrive_time_AVB[j], sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[index], \
@@ -2292,6 +2296,9 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                                                                                              response_time,
                                                                                              sendLp, idleLp)
                 else:
+                    if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index]:
+                        sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[j]
+
                     print("keep unchanged, current frame belongs to class A")
                     credit_A, credit_B, response_time = credit_based_transmission_and_update(j, credit_A, credit_B,
                                                                                              sporadic_arrive_time_AVB,
@@ -2316,6 +2323,7 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                                                                                          response_time, sendLp, idleLp)
 
     else:
+        print("current class B")
         check_frame = retrans_sched_AVB[j + 1:]
         if j < len(sporadic_arrive_time_AVB) - 1:
             index = -5
@@ -2326,7 +2334,7 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
 
             if index != -5:
 
-                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index]:
+                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index] and credit_B < 0:
                     print(" the frame belongs to class A with earlier ready time")
 
                     sporadic_arrive_time_AVB[j], sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[index], \
@@ -2363,6 +2371,9 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                                                                                              response_time, sendLp,
                                                                                              idleLp)
                 else:
+                    if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index]:
+                        sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[j]
+
                     print("keep unchanged, current frame belongs to class B")
                     credit_B, credit_A, response_time = credit_based_transmission_and_update(j, credit_B, credit_A,
                                                                                              sporadic_arrive_time_AVB,
@@ -2432,8 +2443,8 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
     credit_A = 0
     credit_B = 0
 
-    sendLp = -0.1
-    idleLp = 0.9
+    sendLp = -0.9
+    idleLp = 0.1
 
 
     print("AVB TEST ")
@@ -2494,11 +2505,11 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
                     print("the delayed frame finished before its deadline", response_time, mark_AVB[j])
 
             elif retrans_sched_AVB[j] == -2:
-                print("the frame is class B frame", response_time)
+                print("the frame is class B frame with response time", response_time)
                 AVB_classB_response_time.append(response_time)
 
             elif retrans_sched_AVB[j] == -1:
-                print("the frame is class A frame", response_time)
+                print("the frame is class A frame with response time", response_time)
                 AVB_classA_response_time.append(response_time)
 
         else:
@@ -2549,7 +2560,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 1
+    round_number = 100
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2559,7 +2570,7 @@ if __name__ == "__main__":
 
             k = True
             while k:
-                stream_number = 2
+                stream_number = 10
                 target_utilization = 0.8
                 period_set = [50, 100, 200, 500, 1000]
                 generated_window_times = []
@@ -3072,11 +3083,25 @@ if __name__ == "__main__":
                     print("sporadic deadline stay unchanged: ", deadline_U_CBS)
                     print("C_remain is enough for the next frame: ", C_CBS_remain)
                 else:
+                    if retrans_sched_id[j] == -2:
+                        print("search the first class A frame")
+                        temp_check_flag = -2
+                        temp_check_list = retrans_sched_id[j:]
+                        for i in range(len(temp_check_list)):
+                            if temp_check_list[i] != -2:
+                                temp_check_flag = i
+                                break
+                        arrive_time_s = sporadic_arrive_backpack[j + temp_check_flag]
+                    else:
+                        print("current frame is class A frame")
+                        arrive_time_s = sporadic_arrive_backpack[j]
+
+
                     print("remain capacity for deadline update:", C_CBS_remain)
                     print("the CSB assigned deadline before update:", deadline_U_CBS)
-                    print("sporadic_arrive_backpack[j]", sporadic_arrive_backpack[j])
-                    if C_CBS_remain >= (deadline_U_CBS - sporadic_arrive_backpack[j]) * Uti_CBS:
-                        deadline_U_CBS = sporadic_arrive_backpack[j] + T_CBS
+                    print("sporadic_arrive_backpack[j]", arrive_time_s)
+                    if C_CBS_remain >= (deadline_U_CBS - arrive_time_s) * Uti_CBS:
+                        deadline_U_CBS = arrive_time_s + T_CBS
                         C_CBS_remain = C_CBS
                         print("full capacity and deadline updated: ", deadline_U_CBS)
                     else:
@@ -3240,23 +3265,23 @@ if __name__ == "__main__":
     # print(AVB_max_response_time_classA)
     # print(len(AVB_max_response_time_classA))
     #
-    # x = range(len(CBS_max_response_time_classA))
-    # plt.plot(x, CBS_max_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
-    # plt.plot(x, AVB_max_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
-    # plt.xlabel("Round number", fontsize=11)
-    # plt.ylabel("The maximum response time", fontsize=11)
-    # plt.title("The maximum response time of class A, under Uti: 0.8 with 5 ST flow", fontsize=11)
-    # plt.legend()
-    # plt.show()
+    x = range(len(CBS_max_response_time_classA))
+    plt.plot(x, CBS_max_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
+    plt.plot(x, AVB_max_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
+    plt.xlabel("Round number", fontsize=11)
+    plt.ylabel("The maximum response time", fontsize=11)
+    plt.title("The maximum response time of class A, under Uti: 0.8 with 5 ST flow", fontsize=11)
+    plt.legend()
+    plt.show()
     #
-    # x = range(len(CBS_max_response_time_classB))
-    # plt.plot(x, CBS_max_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
-    # plt.plot(x, AVB_max_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
-    # plt.xlabel("Round number", fontsize=11)
-    # plt.ylabel("The maximum response time", fontsize=11)
-    # plt.title("The maximum response time of class B, under Uti: 0.8 with 5 ST flow", fontsize=11)
-    # plt.legend()
-    # plt.show()
+    x = range(len(CBS_max_response_time_classB))
+    plt.plot(x, CBS_max_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
+    plt.plot(x, AVB_max_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
+    plt.xlabel("Round number", fontsize=11)
+    plt.ylabel("The maximum response time", fontsize=11)
+    plt.title("The maximum response time of class B, under Uti: 0.8 with 5 ST flow", fontsize=11)
+    plt.legend()
+    plt.show()
 
 
     print("the minimum response time")
@@ -3265,23 +3290,23 @@ if __name__ == "__main__":
     # print(AVB_min_response_time_classA)
     # print(len(AVB_min_response_time_classA))
 
-    # x = range(len(CBS_min_response_time_classA))
-    # plt.plot(x, CBS_min_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
-    # plt.plot(x, AVB_min_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
-    # plt.xlabel("Round number", fontsize=14)
-    # plt.ylabel("The minimum response time", fontsize=14)
-    # plt.title("The minimum response time of class A, under Uti: 0.8 with 5 ST flow", fontsize=14)
-    # plt.legend()
-    # plt.show()
+    x = range(len(CBS_min_response_time_classA))
+    plt.plot(x, CBS_min_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
+    plt.plot(x, AVB_min_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
+    plt.xlabel("Round number", fontsize=14)
+    plt.ylabel("The minimum response time", fontsize=14)
+    plt.title("The minimum response time of class A, under Uti: 0.8 with 5 ST flow", fontsize=14)
+    plt.legend()
+    plt.show()
 
-    # x = range(len(CBS_min_response_time_classB))
-    # plt.plot(x, CBS_min_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
-    # plt.plot(x, AVB_min_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
-    # plt.xlabel("Round number", fontsize=14)
-    # plt.ylabel("The minimum response time", fontsize=14)
-    # plt.title("The minimum response time of class B, under Uti: 0.8 with 5 ST flow", fontsize=14)
-    # plt.legend()
-    # plt.show()
+    x = range(len(CBS_min_response_time_classB))
+    plt.plot(x, CBS_min_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
+    plt.plot(x, AVB_min_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
+    plt.xlabel("Round number", fontsize=14)
+    plt.ylabel("The minimum response time", fontsize=14)
+    plt.title("The minimum response time of class B, under Uti: 0.8 with 5 ST flow", fontsize=14)
+    plt.legend()
+    plt.show()
 
 
     print("--------------------- CBS based transmission--------------------")
