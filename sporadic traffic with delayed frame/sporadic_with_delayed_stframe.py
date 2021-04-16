@@ -2523,10 +2523,7 @@ def AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission
             AVB_min_response_time_classA.append(min(AVB_based_classA_response_time))
             AVB_min_response_time_classB.append(min(AVB_based_classB_response_time))
 
-            if delayed_response_time_AVB > mark_AVB[j]:
-                AVB_based_delayed_response_time.append(0)
-            else:
-                AVB_based_delayed_response_time.append(delayed_response_time_AVB)
+
 
             print(AVB_max_response_time_classA)
 
@@ -2578,7 +2575,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 100
+    round_number = 2
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -3212,13 +3209,10 @@ if __name__ == "__main__":
                 CBS_min_response_time_classA.append(min(CBS_classA_response_time))
                 CBS_min_response_time_classB.append(min(CBS_classB_response_time))
 
-
-                if delayed_response_time <= delayed_deadline:
-                    CBS_based_delayed_response_time.append(delayed_response_time)
-
                 print(CBS_max_response_time_classA)
                 break
 
+        CBS_based_delayed_response_time.append(delayed_response_time)
         print("---------------------error----------------------------")
         print("round number:                    ", round_number)
         print("accepted delayed frame:          ", accepted_delayed_traffic)
@@ -3252,6 +3246,12 @@ if __name__ == "__main__":
             AVB_based_frame_transmission(sporadic_arrive_time_AVB, sporadic_transmission_time_AVB, sporadic_deadline_AVB,
                                  mark_AVB, retrans_sched_AVB, delayed_release_time, delayed_deadline, C_delayed_frame,
                                  delayed_sche_id, offline_schedule, delayed_error_AVB)
+
+        if delayed_response_time_AVB:
+            if delayed_response_time_AVB <= delayed_deadline:
+                AVB_based_delayed_response_time.append(delayed_response_time_AVB)
+            else:
+                AVB_based_delayed_response_time.append(0)
 
         print(" mark ##############")
         print("delay")
