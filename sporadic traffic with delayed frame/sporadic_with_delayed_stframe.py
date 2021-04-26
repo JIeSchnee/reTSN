@@ -2241,7 +2241,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                     else:
                         temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
                         ST_frame_number += 1
-                        print("interference from future ST frame", temp_in)
+                        print("interference from future ST frame",offline_schedule[i].start_time, offline_schedule[i].end_time, temp_in)
 
             slack_class = response_time - release_time_class - temp_in
             credit_2 += idleLp * slack_class
@@ -2575,7 +2575,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 2
+    round_number = 1
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2870,7 +2870,7 @@ if __name__ == "__main__":
 
         print("para:", Uti_server_up_bound, utilization_delayed, Uti_preempted_ST)
 
-        Uti_CBS = Uti_server_up_bound - Uti_preempted_ST
+        Uti_CBS = Uti_server_up_bound - Uti_preempted_ST - max(window_times)/(2 * hyper_period)
         if Uti_CBS < 0:
             print("!!!!system is unschedulable!!!")
             unscheduleable_count += 1
@@ -3255,7 +3255,7 @@ if __name__ == "__main__":
 
         print(" mark ##############")
         print("delay")
-        print(AVB_max_response_time_classA)
+        # print(AVB_max_response_time_classA)
         print(AVB_based_delayed_response_time)
         print(CBS_based_delayed_response_time)
 
@@ -3346,17 +3346,17 @@ if __name__ == "__main__":
     # print(AVB_based_classB_response_time)
     # print(AVB_based_delayed_response_time)
 
-    # x = range(len(CBS_based_classA_response_time))
-    # plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBS_based_classA')
-    # plt.plot(x, AVB_based_classA_response_time, marker='o', color='red', label='AVB_based_classA')
-    # plt.legend()
-    # plt.show()
+    x = range(len(CBS_based_classA_response_time))
+    plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBS_based_classA')
+    plt.plot(x, AVB_classA_response_time, marker='o', color='red', label='AVB_based_classA')
+    plt.legend()
+    plt.show()
 
-    # x = range(len(CBS_based_classB_response_time))
-    # plt.plot(x, CBS_based_classB_response_time, marker='x', color='blue', label='CBS_based_classB')
-    # plt.plot(x, AVB_based_classB_response_time, marker='o', color='orange', label='AVB_based_classB')
-    # plt.legend()
-    # plt.show()
+    x = range(len(CBS_based_classB_response_time))
+    plt.plot(x, CBS_based_classB_response_time, marker='x', color='blue', label='CBS_based_classB')
+    plt.plot(x, AVB_classB_response_time, marker='o', color='orange', label='AVB_based_classB')
+    plt.legend()
+    plt.show()
 
     print("")
     print("--------------------------- variance -----------------------------")
