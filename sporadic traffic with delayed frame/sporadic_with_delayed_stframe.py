@@ -2,6 +2,7 @@ import numpy as np
 import random
 import math
 import matplotlib.pyplot as plt
+import pickle
 import pandas as pd
 import matplotlib as mpl
 from random import choice
@@ -2575,7 +2576,7 @@ if __name__ == "__main__":
     C_sporadic_frames_list = []
     deadline_missing_state = []
 
-    round_number = 1
+    round_number = 1000
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2870,7 +2871,7 @@ if __name__ == "__main__":
 
         print("para:", Uti_server_up_bound, utilization_delayed, Uti_preempted_ST)
 
-        Uti_CBS = Uti_server_up_bound - Uti_preempted_ST - max(window_times)/(2 * hyper_period)
+        Uti_CBS = Uti_server_up_bound - Uti_preempted_ST
         if Uti_CBS < 0:
             print("!!!!system is unschedulable!!!")
             unscheduleable_count += 1
@@ -3035,6 +3036,7 @@ if __name__ == "__main__":
                                 "action should be triggered ! ")
 
                     if acceptance_state:
+
                         inter_delayed = 0
                         temp_retranse_frame_arrive = []
                         temp_retranse_deadline = []
@@ -3067,6 +3069,7 @@ if __name__ == "__main__":
                     if acceptance_state:
                         accepted_delayed_traffic += 1
                         delayed_count -= 1
+                        Uti_CBS = Uti_CBS - utilization_delayed
                         print(" the estimated response time of delayed frame is: ", delayed_response_time)
                     else:
                         delayed_count -= 1
@@ -3288,24 +3291,75 @@ if __name__ == "__main__":
     # print(len(CBS_max_response_time_classA))
     # print(AVB_max_response_time_classA)
     # print(len(AVB_max_response_time_classA))
+
+    difference_CBS_AVB_max_response_time_classA = []
+    for i in range(len(CBS_max_response_time_classA)):
+        difference_CBS_AVB_max_response_time_classA.append((CBS_max_response_time_classA[i] - AVB_max_response_time_classA[i]) / AVB_max_response_time_classA[i])
+
+    difference_CBS_AVB_max_response_time_classB = []
+    for i in range(len(CBS_max_response_time_classB)):
+        difference_CBS_AVB_max_response_time_classB.append(
+            (CBS_max_response_time_classB[i] - AVB_max_response_time_classB[i]) / AVB_max_response_time_classB[i])
+
+    # x = range(len(difference_CBS_AVB_max_response_time_classA))
+    # plt.plot(x, difference_CBS_AVB_max_response_time_classA, marker='o', color='green',linewidth=3)
+    # plt.xlabel("Round number", fontsize=24)
+    # plt.ylabel("The reduction of maximum response time", fontsize=24)
+    # plt.tick_params(labelsize = 22)
+    # plt.title("The reduction of maximum response time of class A, Uti: 0.8 with 10 ST flow", fontsize=24)
     #
-    x = range(len(CBS_max_response_time_classA))
-    plt.plot(x, CBS_max_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
-    plt.plot(x, AVB_max_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
-    plt.xlabel("Round number", fontsize=11)
-    plt.ylabel("The maximum response time", fontsize=11)
-    plt.title("The maximum response time of class A, under Uti: 0.8 with 5 ST flow", fontsize=11)
-    plt.legend()
-    plt.show()
+    # plt.show()
     #
-    x = range(len(CBS_max_response_time_classB))
-    plt.plot(x, CBS_max_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
-    plt.plot(x, AVB_max_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
-    plt.xlabel("Round number", fontsize=11)
-    plt.ylabel("The maximum response time", fontsize=11)
-    plt.title("The maximum response time of class B, under Uti: 0.8 with 5 ST flow", fontsize=11)
-    plt.legend()
-    plt.show()
+    # x = range(len(difference_CBS_AVB_max_response_time_classB))
+    # plt.plot(x, difference_CBS_AVB_max_response_time_classB, marker='o', color='blue')
+    # plt.xlabel("Round number", fontsize=11)
+    # plt.ylabel("The reduction of maximum response time", fontsize=11)
+    # plt.title("The reduction of maximum response time of class B, Uti: 0.8 with 10 ST flow", fontsize=11)
+    #
+    # plt.show()
+
+
+    # #
+    # for i in range(len(CBS_max_response_time_classA)):
+    #     CBS_max_response_time_classA[i] = (CBS_max_response_time_classA[i] - min(CBS_based_classA_response_time)) / \
+    #                                       (max(CBS_based_classA_response_time) - min(CBS_based_classA_response_time))
+    #
+    # for i in range(len(CBS_max_response_time_classB)):
+    #     CBS_max_response_time_classB[i] = (CBS_max_response_time_classB[i] - min(CBS_based_classB_response_time)) / \
+    #                                         (max(CBS_based_classB_response_time) - min(CBS_based_classB_response_time))
+    #
+    #
+    # for i in range(len(AVB_max_response_time_classA)):
+    #     AVB_max_response_time_classA[i] = (AVB_max_response_time_classA[i] - min(AVB_classA_response_time)) / \
+    #                                         (max(AVB_classA_response_time) - min(AVB_classA_response_time))
+    # for i in range(len(AVB_max_response_time_classB)):
+    #     AVB_max_response_time_classB[i] = (AVB_max_response_time_classB[i] - min(AVB_classB_response_time)) / \
+    #                                   (max(AVB_classB_response_time) - min(AVB_classB_response_time))
+
+    # x = range(len(CBS_max_response_time_classA))
+    # plt.plot(x, CBS_max_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
+    # plt.plot(x, AVB_max_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
+    # plt.xlabel("Round number", fontsize=22)
+    # plt.ylabel("The maximum response time", fontsize=22)
+    # plt.title("The maximum response time of class A, under Uti: 0.8 with 10 ST flow", fontsize=22)
+    # plt.legend()
+    # plt.show()
+
+
+
+
+    #
+    # x = range(len(CBS_max_response_time_classB))
+    # plt.plot(x, CBS_max_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
+    # plt.plot(x, AVB_max_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
+    # plt.xlabel("Round number", fontsize=11)
+    # plt.ylabel("The maximum response time", fontsize=11)
+    # plt.title("The maximum response time of class B, under Uti: 0.8 with 10 ST flow", fontsize=11)
+    # plt.legend()
+    # plt.show()
+
+
+
 
 
     print("the minimum response time")
@@ -3313,50 +3367,97 @@ if __name__ == "__main__":
     # print(len(CBS_min_response_time_classA))
     # print(AVB_min_response_time_classA)
     # print(len(AVB_min_response_time_classA))
+    #
+    # x = range(len(CBS_min_response_time_classA))
+    # plt.plot(x, CBS_min_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
+    # plt.plot(x, AVB_min_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
+    # plt.xlabel("Round number", fontsize=14)
+    # plt.ylabel("The minimum response time", fontsize=14)
+    # plt.title("The minimum response time of class A, under Uti: 0.8 with 10 ST flow", fontsize=14)
+    # plt.legend()
+    # plt.show()
+    #
+    # x = range(len(CBS_min_response_time_classB))
+    # plt.plot(x, CBS_min_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
+    # plt.plot(x, AVB_min_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
+    # plt.xlabel("Round number", fontsize=14)
+    # plt.ylabel("The minimum response time", fontsize=14)
+    # plt.title("The minimum response time of class B, under Uti: 0.8 with 10 ST flow", fontsize=14)
+    # plt.legend()
+    # plt.show()
 
-    x = range(len(CBS_min_response_time_classA))
-    plt.plot(x, CBS_min_response_time_classA, marker='x', color='green', label='CBS_max_response_time_classA')
-    plt.plot(x, AVB_min_response_time_classA, marker='o', color='red', label='AVB_max_response_time_classA')
-    plt.xlabel("Round number", fontsize=14)
-    plt.ylabel("The minimum response time", fontsize=14)
-    plt.title("The minimum response time of class A, under Uti: 0.8 with 5 ST flow", fontsize=14)
-    plt.legend()
-    plt.show()
 
-    x = range(len(CBS_min_response_time_classB))
-    plt.plot(x, CBS_min_response_time_classB, marker='x', color='green', label='CBS_max_response_time_classB')
-    plt.plot(x, AVB_min_response_time_classB, marker='o', color='red', label='AVB_max_response_time_classB')
-    plt.xlabel("Round number", fontsize=14)
-    plt.ylabel("The minimum response time", fontsize=14)
-    plt.title("The minimum response time of class B, under Uti: 0.8 with 5 ST flow", fontsize=14)
-    plt.legend()
-    plt.show()
-
-
-    print("--------------------- CBS based transmission--------------------")
+    print("--------------------- CBS based transmission normalization--------------------")
     # print(CBS_based_classA_response_time)
     # print(CBS_based_classB_response_time)
     # print(CBS_based_delayed_response_time)
-
-
-
+    #
+    # for i in range(len(CBS_based_classA_response_time)):
+    #     CBS_based_classA_response_time[i] = (CBS_based_classA_response_time[i] - min(CBS_based_classA_response_time)) / \
+    #                                         (max(CBS_based_classA_response_time) - min(CBS_based_classA_response_time))
+    #
+    # for i in range(len(CBS_based_classB_response_time)):
+    #     CBS_based_classB_response_time[i] = (CBS_based_classB_response_time[i] - min(CBS_based_classB_response_time)) / \
+    #                                         (max(CBS_based_classB_response_time) - min(CBS_based_classB_response_time))
     print("")
     print("--------------------- AVB based transmission---------------------")
+
+    # for i in range(len(AVB_classA_response_time)):
+    #     AVB_classA_response_time[i] = (AVB_classA_response_time[i] - min(AVB_classA_response_time)) / \
+    #                                         (max(AVB_classA_response_time) - min(AVB_classA_response_time))
+    # for i in range(len(AVB_classB_response_time)):
+    #     AVB_classB_response_time[i] = (AVB_classB_response_time[i] - min(AVB_classB_response_time)) / \
+    #                                   (max(AVB_classB_response_time) - min(AVB_classB_response_time))
+
     # print(AVB_based_classA_response_time)
     # print(AVB_based_classB_response_time)
-    # print(AVB_based_delayed_response_time)
+    # # print(AVB_based_delayed_response_time)
+    # fontsize = 24
+    # plt.subplot(211)
+    # pad = 20
+    # prop = {'size': 22}
+    # x = range(1, len(CBS_based_classA_response_time)+1)
+    # plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBServer_based_classA', linewidth=2)
+    # plt.plot(x, AVB_classA_response_time, marker='o', color='red', label='AVB_based_classA', linewidth=2)
+    # plt.xlabel("Frame index", )
+    # plt.ylabel("Finish time")
+    # plt.xticks(range(len(CBS_based_classA_response_time)+1))
+    # plt.title("The finish time of critical frames from Class A, Uti: 0.3 with 10 ST flow")
+    # # plt.tick_params(labelsize=20)
+    # plt.legend()
+    # # plt.show()
+    # plt.subplot(212)
+    # x = range(1, len(CBS_based_classB_response_time)+1)
+    # plt.plot(x, CBS_based_classB_response_time, marker='x', color='blue', label='CBServer_based_classB', linewidth=2)
+    # plt.plot(x, AVB_classB_response_time, marker='o', color='orange', label='AVB_based_classB', linewidth=2)
+    # plt.xlabel("Frame index")
+    # plt.ylabel("Finish time")
+    # plt.xticks(range(len(CBS_based_classB_response_time) + 1))
+    # plt.title("The finish time of critical frames from Class B, Uti: 0.3 with 10 ST flow")
+    # # plt.tick_params(labelsize=22)
+    # plt.legend()
+    # plt.show()
 
-    x = range(len(CBS_based_classA_response_time))
-    plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBS_based_classA')
-    plt.plot(x, AVB_classA_response_time, marker='o', color='red', label='AVB_based_classA')
-    plt.legend()
-    plt.show()
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(AVB_classA_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(AVB_classB_response_time, handle, protocol=2)
 
-    x = range(len(CBS_based_classB_response_time))
-    plt.plot(x, CBS_based_classB_response_time, marker='x', color='blue', label='CBS_based_classB')
-    plt.plot(x, AVB_classB_response_time, marker='o', color='orange', label='AVB_based_classB')
-    plt.legend()
-    plt.show()
 
     print("")
     print("--------------------------- variance -----------------------------")
@@ -3364,21 +3465,42 @@ if __name__ == "__main__":
     print("size of AVB_based_classA_response_time", len(AVB_classA_response_time))
     difference_CBS_AVB_classA = []
     for i in range(len(CBS_based_classA_response_time)):
-        difference_CBS_AVB_classA.append((AVB_classA_response_time[i] - CBS_based_classA_response_time[i]) / AVB_classA_response_time[i])
+        difference_CBS_AVB_classA.append((CBS_based_classA_response_time[i] - AVB_classA_response_time[i]) / AVB_classA_response_time[i])
 
     difference_CBS_AVB_classB = []
     for i in range(len(CBS_based_classB_response_time)):
-        difference_CBS_AVB_classB.append((AVB_classB_response_time[i] - CBS_based_classB_response_time[i]) / AVB_classB_response_time[i])
+        difference_CBS_AVB_classB.append((CBS_based_classB_response_time[i] - AVB_classB_response_time[i]) / AVB_classB_response_time[i])
 
-    labels = ['difference_CBS_AVB_classA', 'difference_CBS_AVB_classB']
-    bplot = plt.boxplot([difference_CBS_AVB_classA, difference_CBS_AVB_classB], whis=None, labels=labels, meanline=True,
-                        showmeans=True)
+    # difference_CBS_AVB_classA = []
+    # for i in range(len(CBS_based_classA_response_time)):
+    #     difference_CBS_AVB_classA.append(CBS_based_classA_response_time[i] - AVB_classA_response_time[i])
+    #
+    # difference_CBS_AVB_classB = []
+    # for i in range(len(CBS_based_classB_response_time)):
+    #     difference_CBS_AVB_classB.append(CBS_based_classB_response_time[i] - AVB_classB_response_time[i])
 
-    plt.ylabel("Response time difference", fontsize=11)
-    plt.title("The response time comparison, under Uti: 0.8 with 5 ST flow", fontsize=11)
-    plt.show()
+    # labels = ['ClassA', 'ClassB']
+    # bplot = plt.boxplot([difference_CBS_AVB_classA, difference_CBS_AVB_classB], whis=None, labels=labels, meanline=True,
+    #                     showmeans=True)
+    #
+    # plt.ylabel("Response time difference", fontsize=24)
+    # plt.title("The response time difference between CBServer and AVB , under Uti: 0.3 with 10 ST flow", fontsize=24)
+    # plt.tick_params(labelsize=22)
+    # plt.show()
 
     # print("difference_CBS_AVB_classA", difference_CBS_AVB_classA)
+
+    # x = range(len(difference_CBS_AVB_classA))
+    # plt.plot(x, difference_CBS_AVB_classA, marker='o', color='blue', label='difference_CBS_AVB_classA')
+    # plt.legend()
+    # plt.show()
+    #
+    # x = range(len(difference_CBS_AVB_classB))
+    # plt.plot(x, difference_CBS_AVB_classB, marker='o', color='blue', label='difference_CBS_AVB_classB')
+    # plt.legend()
+    # plt.show()
+
+
 
     print("the average variation of class A", np.mean(difference_CBS_AVB_classA))
     print("max variation of class A", max(difference_CBS_AVB_classA))
@@ -3429,17 +3551,68 @@ if __name__ == "__main__":
         print("the average variation of delayed frame", np.mean(difference_CBS_AVB_delayed_frame))
         print("max variation of delayed frame", max(difference_CBS_AVB_delayed_frame))
         print("min variation of delayed frame", min(difference_CBS_AVB_delayed_frame))
+        # with open(
+        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle',
+        #         'wb') as handle:
+        #     pickle.dump(difference_CBS_AVB_delayed_frame, handle, protocol=2)
 
-        x = range(len(difference_CBS_AVB_delayed_frame))
+        # x = range(1, len(difference_CBS_AVB_delayed_frame)+1)
         # plt.plot(x, CBS_delayed_response, marker='x', color='blue', label='CBS_based_delayed_frame')
-        # plt.plot(x, AVB_delayed_response, marker='o', color='green', label='AVB_based_delayed_frame')
-        plt.plot(x, difference_CBS_AVB_delayed_frame, marker='o', color='orange',
-                 label='difference_CBS_AVB_delayed_frame')
-        plt.xlabel("The delayed frame", fontsize=11)
-        plt.ylabel("Response time difference", fontsize=11)
-        plt.title("The delayed frame response time difference, under Uti: 0.8 with 5 ST flow", fontsize=11)
+        # # plt.plot(x, AVB_delayed_response, marker='o', color='green', label='AVB_based_delayed_frame')
+        # plt.plot(x, difference_CBS_AVB_delayed_frame, marker='o', color='orange', linewidth=2)
+        # plt.xlabel("The comparable delayed frames", fontsize=24)
+        # plt.ylabel("Response time difference", fontsize=24)
+        # plt.title("The response time difference of comparable delayed frame, Uti: 0.3 with 10 ST flow", fontsize=24)
+        # plt.tick_params(labelsize=22)
+        # plt.show()
 
-        plt.legend()
-        plt.show()
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle',
+            'wb') as handle:
+        pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle',
+            'wb') as handle:
+        pickle.dump(AVB_classA_response_time, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle',
+            'wb') as handle:
+        pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle',
+            'wb') as handle:
+        pickle.dump(AVB_classB_response_time, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle',
+            'wb') as handle:
+        pickle.dump(difference_CBS_AVB_max_response_time_classA, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle',
+            'wb') as handle:
+        pickle.dump(difference_CBS_AVB_max_response_time_classB, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classA.pickle',
+            'wb') as handle:
+        pickle.dump(CBS_max_response_time_classA, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classA.pickle',
+            'wb') as handle:
+        pickle.dump(AVB_max_response_time_classA, handle, protocol=2)
 
 
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classB.pickle',
+            'wb') as handle:
+        pickle.dump(CBS_max_response_time_classB, handle, protocol=2)
+
+    with open(
+            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classB.pickle',
+            'wb') as handle:
+        pickle.dump(AVB_max_response_time_classB, handle, protocol=2)
