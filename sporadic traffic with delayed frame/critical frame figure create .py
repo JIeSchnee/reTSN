@@ -35,15 +35,18 @@ for i in range(len(AVB_response_A)):
     response_diff_A.append((CBS_response_A[i] - AVB_response_A[i])/ AVB_response_A[i])
 response_diff_A = list(filter(lambda x: x > thred or x < -thred, response_diff_A))
 
+
+plt.subplot(211)
+
 ref_A = pd.Series(response_diff_A)
 ref_A.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class A, Uti 0.3", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class A, Uti 0.3")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
 
 
@@ -53,40 +56,54 @@ for i in range(len(AVB_response_B)):
 
 response_diff_B = list(filter(lambda x: x > thred or x < -thred, response_diff_B))
 
+plt.subplot(212)
+
 ref_B = pd.Series(response_diff_B)
 ref_B.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class B, Uti 0.3", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class B, Uti 0.3")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+plt.subplot(211)
 classA03 = pd.Series(difference_CBS_AVB_max_response_time_classA03)
 classB03 = pd.Series(difference_CBS_AVB_max_response_time_classB03)
 
-
 classA03.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class A, Uti 0.3", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class A, Uti 0.3")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
+plt.subplot(212)
 classB03.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class B, Uti 0.3", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class B, Uti 0.3")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
@@ -123,15 +140,16 @@ for i in range(len(AVB_response_A05)):
     response_diff_A05.append((CBS_response_A05[i] - AVB_response_A05[i])/AVB_response_A05[i])
 response_diff_A05 = list(filter(lambda x: x > thred or x < -thred, response_diff_A05))
 
+plt.subplot(211)
 ref_A05 = pd.Series(response_diff_A05)
 ref_A05.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class A, Uti 0.5", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class A, Uti 0.5")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
 
 
@@ -140,19 +158,20 @@ for i in range(len(AVB_response_B05)):
     response_diff_B05.append((CBS_response_B05[i] - AVB_response_B05[i])/ AVB_response_B05[i])
 response_diff_B05 = list(filter(lambda x: x > thred or x < -thred, response_diff_B05))
 
+plt.subplot(212)
 ref_B05 = pd.Series(response_diff_B05)
 ref_B05.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class B, Uti 0.5", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class B, Uti 0.5")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
 
-
+plt.subplot(211)
 
 classA05 = pd.Series(difference_CBS_AVB_max_response_time_classA05)
 classB05 = pd.Series(difference_CBS_AVB_max_response_time_classB05)
@@ -160,20 +179,20 @@ classB05 = pd.Series(difference_CBS_AVB_max_response_time_classB05)
 
 classA05.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class A, Uti 0.5", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class A, Uti 0.5")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
-
+# plt.tick_params(labelsize=24)
+# plt.show()
+plt.subplot(212)
 classB05.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class B, Uti 0.5", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class B, Uti 0.5")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
@@ -211,15 +230,17 @@ for i in range(len(AVB_response_A06)):
 
 response_diff_A06 = list(filter(lambda x: x > thred or x < -thred, response_diff_A06))
 
+plt.subplot(211)
+
 ref_A06 = pd.Series(response_diff_A06)
 ref_A06.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class A, Uti 0.6", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class A, Uti 0.6")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
 
 
@@ -229,19 +250,20 @@ for i in range(len(AVB_response_B06)):
 
 response_diff_B06 = list(filter(lambda x: x > thred or x < -thred, response_diff_B06))
 
+plt.subplot(212)
 ref_B06 = pd.Series(response_diff_B06)
 ref_B06.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class B, Uti 0.6", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class B, Uti 0.6")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
 
-
+plt.subplot(211)
 
 classA06 = pd.Series(difference_CBS_AVB_max_response_time_classA06)
 classB06 = pd.Series(difference_CBS_AVB_max_response_time_classB06)
@@ -249,20 +271,21 @@ classB06 = pd.Series(difference_CBS_AVB_max_response_time_classB06)
 
 classA06.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class A, Uti 0.6", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class A, Uti 0.6")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
+plt.subplot(212)
 classB06.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class B, Uti 0.6", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class B, Uti 0.6")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
@@ -304,15 +327,16 @@ for i in range(len(AVB_response_A08)):
 
 response_diff_A08 = list(filter(lambda x: x > thred or x < -thred, response_diff_A08))
 
+plt.subplot(211)
 ref_A08 = pd.Series(response_diff_A08)
 ref_A08.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class A, Uti 0.8", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class A, Uti 0.8")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
 
 
@@ -322,19 +346,20 @@ for i in range(len(AVB_response_B08)):
 
 response_diff_B08 = list(filter(lambda x: x > thred or x < -thred, response_diff_B08))
 
+plt.subplot(212)
 ref_B08 = pd.Series(response_diff_B08)
 ref_B08.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The response time reduction for class B, Uti 0.8", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The finish time reduction rate for class B, Uti 0.8")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
 
 
 
-
+plt.subplot(211)
 
 classA08 = pd.Series(difference_CBS_AVB_max_response_time_classA08)
 classB08 = pd.Series(difference_CBS_AVB_max_response_time_classB08)
@@ -342,18 +367,19 @@ classB08 = pd.Series(difference_CBS_AVB_max_response_time_classB08)
 
 classA08.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class A, Uti 0.8", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class A, Uti 0.8")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
-plt.show()
+# plt.tick_params(labelsize=24)
+# plt.show()
 
+plt.subplot(212)
 classB08.plot.hist(grid=True, bins=100, rwidth=0.9,
                    color='#607c8e')
-plt.title("The maximum response time reduction for class B, Uti 0.8", fontsize=24, pad=24)
-plt.xlabel('Response time reduction ', fontsize=24)
-plt.ylabel('Counts', fontsize=24)
+plt.title("The maximum finish time reduction rate for class B, Uti 0.8")
+plt.xlabel('Reduction rate')
+plt.ylabel('Counts')
 plt.grid(linestyle="--", alpha=0.5)
-plt.tick_params(labelsize=24)
+# plt.tick_params(labelsize=24)
 plt.show()
