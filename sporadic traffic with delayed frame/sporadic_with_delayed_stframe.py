@@ -1697,7 +1697,7 @@ def sporadic_frame_response_time(j, sporadic_c, sporadic_arrive_t, offline_sched
     # if there is frame preempted by sporadic frame is will be created as a new sporadic frame
     while sporadic_C[j] > 0:
 
-        if retrans_sched_id == -2:
+        if retrans_sched_id[j] == -2:
             deadline_U_CBS_backpack = deadline_U_CBS
             print("deadline_U_CBS_backpack", deadline_U_CBS_backpack)
 
@@ -2213,9 +2213,26 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
                 class_index = j + h
                 break
 
+    class_same = -4
+    for h in range(len(retrans_sched_AVB_check)):
+        if retrans_sched_AVB[j] != -2:
+            if retrans_sched_AVB_check[h] != -2:
+                class_same = j + h
+                break
+        else:
+            if retrans_sched_AVB_check[h] == -2:
+                class_same = j + h
+                break
+
+    if credit_1 > 0:
+        if sporadic_arrive_time_AVB[class_same] < response_time:
+            print("the release time update for next frame belongs to the same class")
+            sporadic_arrive_time_AVB[class_same] = response_time
+
     if class_index != -4:
         release_time_class = sporadic_arrive_time_AVB[class_index]
         print("the release time of frame belongs to another class:", release_time_class)
+
 
         if release_time <= release_time_class < response_time:
             print("there is frame from anther class release during the transmission of current frame")
@@ -2254,6 +2271,8 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
         else:
             credit_2 += 0
 
+
+
     return credit_1, credit_2, response_time
 
 
@@ -2270,8 +2289,13 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                     index = j + 1 + h
                     break
             if index != -5:
+                original_arrive = sporadic_deadline_AVB[j] - 100
+                if sporadic_arrive_time_AVB[j] > original_arrive:
+                    mark_credit = -1
+                else:
+                    mark_credit = 1
 
-                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index] and credit_A < 0:
+                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index] and mark_credit < 0:
                     print(" the frame belongs to class B with earlier ready time")
 
                     sporadic_arrive_time_AVB[j], sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[index], \
@@ -2339,8 +2363,13 @@ def AVB_response_time_calculation(j, sporadic_arrive_time_AVB, sporadic_transmis
                     break
 
             if index != -5:
+                original_arrive = sporadic_deadline_AVB[j] - 200
+                if sporadic_arrive_time_AVB[j] > original_arrive:
+                    mark_credit = -1
+                else:
+                    mark_credit = 1
 
-                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index] and credit_B < 0:
+                if sporadic_arrive_time_AVB[j] > sporadic_arrive_time_AVB[index] and mark_credit < 0:
                     print(" the frame belongs to class A with earlier ready time")
 
                     sporadic_arrive_time_AVB[j], sporadic_arrive_time_AVB[index] = sporadic_arrive_time_AVB[index], \
@@ -3178,10 +3207,10 @@ if __name__ == "__main__":
                 if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
                     sporadic_response_time_list.append(sporadic_response_time)
 
-                if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
-                    print("check", offline_schedule[retrans_sched_id[j]].deadline)
-                    ST_preempted_response_time_list.append(sporadic_response_time)
-                    ST_preempted_deadline_list.append(offline_schedule[retrans_sched_id[j]].deadline)
+                # if retrans_sched_id[j] == -1 and mark[j] != 1000000 and retrans_sched_id[j] != delayed_sche_id:
+                #     print("check", offline_schedule[retrans_sched_id[j]].deadline)
+                #     ST_preempted_response_time_list.append(sporadic_response_time)
+                #     ST_preempted_deadline_list.append(offline_schedule[retrans_sched_id[j]].deadline)
 
                 if retransmiss_st_preemptable_frames:
                     print("the number of preempted ST frame", len(retransmiss_st_preemptable_frames))
@@ -3441,6 +3470,7 @@ if __name__ == "__main__":
         elif CBS_based_classA_response_time[i] <= 2000 and AVB_classA_response_time[i] > 2000:
             moreA+=1
 
+    print("!!!!!!!!!! more transmitted class A frame", moreA)
 
     CBS_based_classB = []
     AVB_based_classB = []
@@ -3455,7 +3485,7 @@ if __name__ == "__main__":
     #     CBS_based_classA = CBS_based_classA_response_time[:len(AVB_classA_response_time)]
     # if len(CBS_based_classB_response_time) >= len(AVB_classB_response_time):
     #     CBS_based_classB = CBS_based_classB_response_time[:len(AVB_classB_response_time)]
-
+    print("!!!!!!!!!! more transmitted class B frame", moreB)
 
 
     plt.subplot(211)
