@@ -2237,12 +2237,16 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
             for i in range(len(offline_schedule)):
                 if release_time_class <= offline_schedule[i].start_time < response_time:
                     if response_time < offline_schedule[i].end_time:
-                        print("check point!!!!!!")
-                        temp_in += response_time - offline_schedule[i].start_time
+                        if i != delayed_sche_id:
+                            print("check point!!!!!!")
+                            temp_in += response_time - offline_schedule[i].start_time
+                        else:
+                            temp_in += 0
                     else:
                         temp_in += offline_schedule[i].end_time - offline_schedule[i].start_time
                         ST_frame_number += 1
                         print("interference from future ST frame",offline_schedule[i].start_time, offline_schedule[i].end_time, temp_in)
+            print("final temp_in and parameters", temp_in, response_time, release_time_class)
 
             slack_class = response_time - release_time_class - temp_in
             credit_2 += idleLp * slack_class
@@ -2575,8 +2579,10 @@ if __name__ == "__main__":
     sporadic_deadline_list = []
     C_sporadic_frames_list = []
     deadline_missing_state = []
+    classA_arrive_time = []
+    classB_arrive_time = []
 
-    round_number = 1000
+    round_number = 1
     unscheduleable_count = 0
 
     for k in range(round_number):
@@ -2619,7 +2625,7 @@ if __name__ == "__main__":
             print("actual utilization:", actual_utilization)
             print("period:", period)
             hyper_period = hyper_period_calculation(period)
-            print(hyper_period)
+            print("hyper_period:", hyper_period)
 
             temp_window = []
             for i in range(len(period)):
@@ -2750,7 +2756,8 @@ if __name__ == "__main__":
         sporadic_arrive.append(100000000)
         print(sporadic_arrive)
 
-
+        for i in range(len(sporadic_arrive)):
+            classA_arrive_time.append(sporadic_arrive[i])
 
         sporadic_deadline = []
         sporadic_step = sporadic_offset + sporadic_interval
@@ -2798,6 +2805,9 @@ if __name__ == "__main__":
         print(sporadic_arrive_B)
 
         for i in range(len(sporadic_arrive_B)):
+            classB_arrive_time.append(sporadic_arrive_B[i])
+
+        for i in range(len(sporadic_arrive_B)):
 
             for k in range(len(sporadic_arrive)-1):
 
@@ -2822,6 +2832,8 @@ if __name__ == "__main__":
         sporadic_arrive_backpack = []
         for i in range(len(sporadic_arrive)):
             sporadic_arrive_backpack.append(sporadic_arrive[i])
+
+
 
 
 
@@ -3294,12 +3306,12 @@ if __name__ == "__main__":
 
     difference_CBS_AVB_max_response_time_classA = []
     for i in range(len(CBS_max_response_time_classA)):
-        difference_CBS_AVB_max_response_time_classA.append((CBS_max_response_time_classA[i] - AVB_max_response_time_classA[i]) / AVB_max_response_time_classA[i])
+        difference_CBS_AVB_max_response_time_classA.append((CBS_max_response_time_classA[i] - AVB_max_response_time_classA[i]))
 
     difference_CBS_AVB_max_response_time_classB = []
     for i in range(len(CBS_max_response_time_classB)):
         difference_CBS_AVB_max_response_time_classB.append(
-            (CBS_max_response_time_classB[i] - AVB_max_response_time_classB[i]) / AVB_max_response_time_classB[i])
+            (CBS_max_response_time_classB[i] - AVB_max_response_time_classB[i]))
 
     # x = range(len(difference_CBS_AVB_max_response_time_classA))
     # plt.plot(x, difference_CBS_AVB_max_response_time_classA, marker='o', color='green',linewidth=3)
@@ -3412,52 +3424,81 @@ if __name__ == "__main__":
     # print(AVB_based_classA_response_time)
     # print(AVB_based_classB_response_time)
     # # print(AVB_based_delayed_response_time)
-    # fontsize = 24
-    # plt.subplot(211)
-    # pad = 20
-    # prop = {'size': 22}
-    # x = range(1, len(CBS_based_classA_response_time)+1)
-    # plt.plot(x, CBS_based_classA_response_time, marker='x', color='green', label='CBServer_based_classA', linewidth=2)
-    # plt.plot(x, AVB_classA_response_time, marker='o', color='red', label='AVB_based_classA', linewidth=2)
-    # plt.xlabel("Frame index", )
-    # plt.ylabel("Finish time")
-    # plt.xticks(range(len(CBS_based_classA_response_time)+1))
-    # plt.title("The finish time of critical frames from Class A, Uti: 0.3 with 10 ST flow")
-    # # plt.tick_params(labelsize=20)
-    # plt.legend()
-    # # plt.show()
-    # plt.subplot(212)
-    # x = range(1, len(CBS_based_classB_response_time)+1)
-    # plt.plot(x, CBS_based_classB_response_time, marker='x', color='blue', label='CBServer_based_classB', linewidth=2)
-    # plt.plot(x, AVB_classB_response_time, marker='o', color='orange', label='AVB_based_classB', linewidth=2)
-    # plt.xlabel("Frame index")
-    # plt.ylabel("Finish time")
-    # plt.xticks(range(len(CBS_based_classB_response_time) + 1))
-    # plt.title("The finish time of critical frames from Class B, Uti: 0.3 with 10 ST flow")
-    # # plt.tick_params(labelsize=22)
-    # plt.legend()
-    # plt.show()
 
-    # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle',
-    #         'wb') as handle:
-    #     pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
+    # CBS_based_classA_response_time = list(filter(lambda x: x <= 2000, CBS_based_classA_response_time))
+    # AVB_classA_response_time = list(filter(lambda x: x <= 2000, AVB_classA_response_time))
+    # CBS_based_classB_response_time = list(filter(lambda x: x <= 2000, CBS_based_classB_response_time))
+    # AVB_classB_response_time = list(filter(lambda x: x <= 2000, AVB_classB_response_time))
+
+    CBS_based_classA = []
+    AVB_based_classA = []
+
+    moreA = 0
+    for i in range(len(CBS_based_classA_response_time)):
+        if CBS_based_classA_response_time[i] <= 2000 and AVB_classA_response_time[i] <= 2000:
+            CBS_based_classA.append(CBS_based_classA_response_time[i])
+            AVB_based_classA.append(AVB_classA_response_time[i])
+        elif CBS_based_classA_response_time[i] <= 2000 and AVB_classA_response_time[i] > 2000:
+            moreA+=1
+
+
+    CBS_based_classB = []
+    AVB_based_classB = []
+    moreB = 0
+    for i in range(len(CBS_based_classB_response_time)):
+        if CBS_based_classB_response_time[i] <= 2000 and AVB_classB_response_time[i] <= 2000:
+            CBS_based_classB.append(CBS_based_classB_response_time[i])
+            AVB_based_classB.append(AVB_classB_response_time[i])
+        elif CBS_based_classB_response_time[i] <= 2000 and AVB_classB_response_time[i] > 2000:
+            moreB += 1
+    # if len(CBS_based_classA_response_time) >= len(AVB_classA_response_time):
+    #     CBS_based_classA = CBS_based_classA_response_time[:len(AVB_classA_response_time)]
+    # if len(CBS_based_classB_response_time) >= len(AVB_classB_response_time):
+    #     CBS_based_classB = CBS_based_classB_response_time[:len(AVB_classB_response_time)]
+
+
+
+    plt.subplot(211)
+
+    x = range(1, len(CBS_based_classA)+1)
+    plt.plot(x, CBS_based_classA, marker='x', color='green', label='CBServer_based_classA', linewidth=2)
+    plt.plot(x, AVB_based_classA, marker='o', color='red', label='AVB_based_classA', linewidth=2)
+    plt.xlabel("frame index", fontsize = 12)
+    plt.ylabel("finish time", fontsize = 12)
+    plt.xticks(range(len(CBS_based_classA)+1))
+    plt.title("The finish time of critical frames from Class A, Uti: 0.8 with 10 ST flow", fontsize = 12, pad=10)
+    # plt.tick_params(labelsize=20)
+    plt.legend(fontsize = 12)
+    # plt.show()
+    plt.subplot(212)
+    x = range(1, len(CBS_based_classB)+1)
+    plt.plot(x, CBS_based_classB, marker='x', color='blue', label='CBServer_based_classB', linewidth=2)
+    plt.plot(x, AVB_based_classB, marker='o', color='orange', label='AVB_based_classB', linewidth=2)
+    plt.xlabel("frame index",fontsize = 12)
+    plt.ylabel("finish time",fontsize = 12)
+    plt.xticks(range(len(CBS_based_classB) + 1))
+    plt.title("The finish time of critical frames from Class B, Uti: 0.8 with 10 ST flow", fontsize = 12, pad=10)
+    # plt.tick_params(labelsize=22)
+    plt.legend(fontsize = 12)
+    plt.show()
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle',
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/specific one/CBS_based_classA_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/specific one/AVB_classA_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_classA_response_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle',
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/specific one/CBS_based_classB_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
-    #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle',
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/specific one/AVB_classB_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_classB_response_time, handle, protocol=2)
-
 
     print("")
     print("--------------------------- variance -----------------------------")
@@ -3466,6 +3507,7 @@ if __name__ == "__main__":
     difference_CBS_AVB_classA = []
     for i in range(len(CBS_based_classA_response_time)):
         difference_CBS_AVB_classA.append((CBS_based_classA_response_time[i] - AVB_classA_response_time[i]) / AVB_classA_response_time[i])
+
 
     difference_CBS_AVB_classB = []
     for i in range(len(CBS_based_classB_response_time)):
@@ -3552,9 +3594,17 @@ if __name__ == "__main__":
         print("max variation of delayed frame", max(difference_CBS_AVB_delayed_frame))
         print("min variation of delayed frame", min(difference_CBS_AVB_delayed_frame))
         # with open(
-        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle',
+        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle',
         #         'wb') as handle:
         #     pickle.dump(difference_CBS_AVB_delayed_frame, handle, protocol=2)
+        # with open(
+        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/CBS_delayed_response.pickle',
+        #         'wb') as handle:
+        #     pickle.dump(CBS_delayed_response, handle, protocol=2)
+        # with open(
+        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/AVB_delayed_response.pickle',
+        #         'wb') as handle:
+        #     pickle.dump(AVB_delayed_response, handle, protocol=2)
 
         # x = range(1, len(difference_CBS_AVB_delayed_frame)+1)
         # plt.plot(x, CBS_delayed_response, marker='x', color='blue', label='CBS_based_delayed_frame')
@@ -3565,54 +3615,64 @@ if __name__ == "__main__":
         # plt.title("The response time difference of comparable delayed frame, Uti: 0.3 with 10 ST flow", fontsize=24)
         # plt.tick_params(labelsize=22)
         # plt.show()
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle',
-            'wb') as handle:
-        pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle',
-            'wb') as handle:
-        pickle.dump(AVB_classA_response_time, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle',
-            'wb') as handle:
-        pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle',
-            'wb') as handle:
-        pickle.dump(AVB_classB_response_time, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle',
-            'wb') as handle:
-        pickle.dump(difference_CBS_AVB_max_response_time_classA, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle',
-            'wb') as handle:
-        pickle.dump(difference_CBS_AVB_max_response_time_classB, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classA.pickle',
-            'wb') as handle:
-        pickle.dump(CBS_max_response_time_classA, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classA.pickle',
-            'wb') as handle:
-        pickle.dump(AVB_max_response_time_classA, handle, protocol=2)
-
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classB.pickle',
-            'wb') as handle:
-        pickle.dump(CBS_max_response_time_classB, handle, protocol=2)
-
-    with open(
-            '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classB.pickle',
-            'wb') as handle:
-        pickle.dump(AVB_max_response_time_classB, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(AVB_classA_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(AVB_classB_response_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(difference_CBS_AVB_max_response_time_classA, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(difference_CBS_AVB_max_response_time_classB, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classA.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_max_response_time_classA, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classA.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(AVB_max_response_time_classA, handle, protocol=2)
+    #
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classB.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(CBS_max_response_time_classB, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classB.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(AVB_max_response_time_classB, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/classA_arrive_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(classA_arrive_time, handle, protocol=2)
+    #
+    # with open(
+    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/classB_arrive_time.pickle',
+    #         'wb') as handle:
+    #     pickle.dump(classB_arrive_time, handle, protocol=2)
