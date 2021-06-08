@@ -1,5 +1,5 @@
 # Flex-TSN
-This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive Systems".
+This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication".
 
 Folder organisation:
 
@@ -9,4 +9,4 @@ Folder organisation:
 
 
 ## Citation
-- Zou Jie, Xiaotian Dai, John McDermid. reTSN: Resilient and Efficient Time-Sensitive Network for Automotive Systems. 2021 
+- Zou Jie, Xiaotian Dai, John McDermid. reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication. 2021 
