@@ -1,4 +1,4 @@
-# Flex-TSN
+# reTSN
 This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication".
 
 Folder organisation:
