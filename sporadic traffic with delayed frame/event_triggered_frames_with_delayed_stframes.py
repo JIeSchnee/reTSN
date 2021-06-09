@@ -3513,20 +3513,20 @@ if __name__ == "__main__":
     plt.show()
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/specific one/CBS_based_classA_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/specific one/CBS_based_classA_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/specific one/AVB_classA_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/specific one/AVB_classA_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_classA_response_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/specific one/CBS_based_classB_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/specific one/CBS_based_classB_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/specific one/AVB_classB_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/specific one/AVB_classB_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_classB_response_time, handle, protocol=2)
 
@@ -3624,15 +3624,15 @@ if __name__ == "__main__":
         print("max variation of delayed frame", max(difference_CBS_AVB_delayed_frame))
         print("min variation of delayed frame", min(difference_CBS_AVB_delayed_frame))
         # with open(
-        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle',
+        #         '/home/.../uti_0.8_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle',
         #         'wb') as handle:
         #     pickle.dump(difference_CBS_AVB_delayed_frame, handle, protocol=2)
         # with open(
-        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/CBS_delayed_response.pickle',
+        #         '/home/.../uti_0.8_10ST/round 1000_delay/CBS_delayed_response.pickle',
         #         'wb') as handle:
         #     pickle.dump(CBS_delayed_response, handle, protocol=2)
         # with open(
-        #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/AVB_delayed_response.pickle',
+        #         '/home/.../uti_0.8_10ST/round 1000_delay/AVB_delayed_response.pickle',
         #         'wb') as handle:
         #     pickle.dump(AVB_delayed_response, handle, protocol=2)
         #
@@ -3647,62 +3647,62 @@ if __name__ == "__main__":
         # plt.show()
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/CBS_based_classA_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_based_classA_response_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/AVB_classA_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_classA_response_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/CBS_based_classB_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_based_classB_response_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle',
+    #         '/home/.../uti_0.8_10ST/AVB_classB_response_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_classB_response_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle',
+    #         '/home/.../uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle',
     #         'wb') as handle:
     #     pickle.dump(difference_CBS_AVB_max_response_time_classA, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle',
+    #         '/home/.../uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle',
     #         'wb') as handle:
     #     pickle.dump(difference_CBS_AVB_max_response_time_classB, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classA.pickle',
+    #         '/home/.../uti_0.8_10ST/CBS_max_response_time_classA.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_max_response_time_classA, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classA.pickle',
+    #         '/home/.../uti_0.8_10ST/AVB_max_response_time_classA.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_max_response_time_classA, handle, protocol=2)
     #
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_max_response_time_classB.pickle',
+    #         '/home/.../uti_0.8_10ST/CBS_max_response_time_classB.pickle',
     #         'wb') as handle:
     #     pickle.dump(CBS_max_response_time_classB, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classB.pickle',
+    #         '/home/.../uti_0.8_10ST/AVB_max_response_time_classB.pickle',
     #         'wb') as handle:
     #     pickle.dump(AVB_max_response_time_classB, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/classA_arrive_time.pickle',
+    #         '/home/.../uti_0.8_10ST/classA_arrive_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(classA_arrive_time, handle, protocol=2)
     #
     # with open(
-    #         '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/classB_arrive_time.pickle',
+    #         '/home/.../uti_0.8_10ST/classB_arrive_time.pickle',
     #         'wb') as handle:
     #     pickle.dump(classB_arrive_time, handle, protocol=2)
