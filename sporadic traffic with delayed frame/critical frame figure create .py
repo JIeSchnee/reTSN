@@ -35,27 +35,27 @@ def convert(CBS_A, AVB_A, CBS_B, AVB_B):
 
 print("---------------------------0.3-----------------------------------")
 # uti 0.3
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classA03 = pickle.load(handle)
 difference_CBS_AVB_max_response_time_classA03 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classA03))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classA03), np.median(difference_CBS_AVB_max_response_time_classA03))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classB03 = pickle.load(handle)
 difference_CBS_AVB_max_response_time_classB03 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classB03))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classB03), np.median(difference_CBS_AVB_max_response_time_classB03))
 
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
     AVB_response_A = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
     CBS_response_A = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
     AVB_response_B = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
     CBS_response_B = pickle.load(handle)
 # x = range(len(AVB_response))
 # plt.plot(x, AVB_response, label='Uti 0.8', marker='o', color='orange', linewidth=2)
@@ -240,35 +240,35 @@ plt.show()
 
 print("---------------------------0.5-----------------------------------")
 # uti 0.5
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classA05 = pickle.load(handle)
 difference_CBS_AVB_max_response_time_classA05 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classA05))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classA05), np.median(difference_CBS_AVB_max_response_time_classA05))
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classB05 = pickle.load(handle)
 difference_CBS_AVB_max_response_time_classB05 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classB05))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classB05), np.median(difference_CBS_AVB_max_response_time_classB05))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
     AVB_response_A05 = pickle.load(handle)
 
 
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
     CBS_response_A05 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
     AVB_response_B05 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
     CBS_response_B05 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/classA_arrive_time.pickle',
+with open('/home/.../uti_0.5_10ST/classA_arrive_time.pickle',
           'rb') as handle:
     classA_arrive_time = pickle.load(handle)
 classA_arrive_time = list(filter(lambda x: x !=100000000, classA_arrive_time))
 with open(
-        '/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/classB_arrive_time.pickle',
+        '/home/.../uti_0.5_10ST/classB_arrive_time.pickle',
         'rb') as handle:
     classB_arrive_time = pickle.load(handle)
 
@@ -450,27 +450,27 @@ plt.show()
 
 print("---------------------------0.6-----------------------------------")
 # uti 0.6
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classA06 = pickle.load(handle)
 
 difference_CBS_AVB_max_response_time_classA06 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classA06))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classA06), np.median(difference_CBS_AVB_max_response_time_classA06))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classB06 = pickle.load(handle)
 difference_CBS_AVB_max_response_time_classB06 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classB06))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classB06), np.median(difference_CBS_AVB_max_response_time_classB06))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
     AVB_response_A06 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
     CBS_response_A06 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
     AVB_response_B06 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
     CBS_response_B06 = pickle.load(handle)
 
 
@@ -642,28 +642,28 @@ print("---------------------------0.8-----------------------------------")
 # uti 0.8
 
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/difference_CBS_AVB_max_response_time_classA.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classA08 = pickle.load(handle)
 difference_CBS_AVB_max_response_time_classA08 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classA08))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classA08), np.median(difference_CBS_AVB_max_response_time_classA08))
 
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/difference_CBS_AVB_max_response_time_classB.pickle', 'rb') as handle:
     difference_CBS_AVB_max_response_time_classB08 = pickle.load(handle)
 
 difference_CBS_AVB_max_response_time_classB08 = list(filter(lambda x: x != 0, difference_CBS_AVB_max_response_time_classB08))
 # print("mean, median", np.mean(difference_CBS_AVB_max_response_time_classB08), np.median(difference_CBS_AVB_max_response_time_classB08))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/AVB_classA_response_time.pickle', 'rb') as handle:
     AVB_response_A08 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/CBS_based_classA_response_time.pickle', 'rb') as handle:
     CBS_response_A08 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/AVB_classB_response_time.pickle', 'rb') as handle:
     AVB_response_B08 = pickle.load(handle)
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/CBS_based_classB_response_time.pickle', 'rb') as handle:
     CBS_response_B08 = pickle.load(handle)
 # x = range(len(AVB_response))
 # plt.plot(x, AVB_response, label='Uti 0.8', marker='o', color='orange', linewidth=2)
