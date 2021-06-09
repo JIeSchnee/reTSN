@@ -8,37 +8,37 @@ import seaborn as sns
 
 
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
     CBS_delayed_response08 = pickle.load(handle)
 # print(len(CBS_delayed_response08))
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
     AVB_delayed_response08 = pickle.load(handle)
 # print(len(AVB_delayed_response08))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
     CBS_delayed_response06 = pickle.load(handle)
 # print(len(CBS_delayed_response06))
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
     AVB_delayed_response06 = pickle.load(handle)
 # print(len(AVB_delayed_response06))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
     CBS_delayed_response05 = pickle.load(handle)
 # print(len(CBS_delayed_response05))
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
     AVB_delayed_response05 = pickle.load(handle)
 # print(len(AVB_delayed_response05))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/round 1000_delay/CBS_delayed_response.pickle', 'rb') as handle:
     CBS_delayed_response03 = pickle.load(handle)
 # print(len(CBS_delayed_response03))
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/round 1000_delay/AVB_delayed_response.pickle', 'rb') as handle:
     AVB_delayed_response03 = pickle.load(handle)
 # print(len(AVB_delayed_response03))
 
 
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
+with open('/home/.../uti_0.8_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
     U08_difference_CBS_AVB_delayed_frame = pickle.load(handle)
 
 u08_rela = []
@@ -46,21 +46,21 @@ for i in range(len(U08_difference_CBS_AVB_delayed_frame)):
     u08_rela.append(U08_difference_CBS_AVB_delayed_frame[i]/AVB_delayed_response08[i])
 # print(len(U08_difference_CBS_AVB_delayed_frame))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.6_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
+with open('/home/.../uti_0.6_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
     U06_difference_CBS_AVB_delayed_frame = pickle.load(handle)
 u06_rela = []
 for i in range(len(U06_difference_CBS_AVB_delayed_frame)):
     u06_rela.append(U06_difference_CBS_AVB_delayed_frame[i]/AVB_delayed_response06[i])
 # print(len(U06_difference_CBS_AVB_delayed_frame))
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.5_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
+with open('/home/.../uti_0.5_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
     U05_difference_CBS_AVB_delayed_frame = pickle.load(handle)
 # print(len(U05_difference_CBS_AVB_delayed_frame))
 u05_rela = []
 for i in range(len(U05_difference_CBS_AVB_delayed_frame)):
     u05_rela.append(U05_difference_CBS_AVB_delayed_frame[i]/AVB_delayed_response05[i])
 
-with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.3_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
+with open('/home/.../uti_0.3_10ST/round 1000_delay/difference_CBS_AVB_delayed_frame.pickle', 'rb') as handle:
     U03_difference_CBS_AVB_delayed_frame = pickle.load(handle)
 # print(len(U03_difference_CBS_AVB_delayed_frame))
 
@@ -98,10 +98,6 @@ for i in range(len(U03_difference_CBS_AVB_delayed_frame)):
 # plt.show()
 
 
-
-
-
-# ----------- 柱状图 ------------#
 # accepted number comparison
 
 name_list = ['Uti 0.3', 'Uti 0.5', 'Uti 0.6', 'Uti 0.8']
@@ -342,12 +338,4 @@ plt.show()
 # plt.tick_params(labelsize=24)
 # plt.show()
 
-#
-# # with open('/home/jiezou/EMSOFT\'21_Flex-TSN/Scheduling_without_guarantee/uti_0.8_10ST/AVB_max_response_time_classA.pickle', 'rb') as handle:
-# #     AVB_max_response_time_classA = pickle.load(handle)
-# #
-# # x = range(len(AVB_max_response_time_classA))
-# # plt.plot(x, AVB_max_response_time_classA, marker='o', color='orange', linewidth=2)
-# # plt.show()
-#
-#
+
