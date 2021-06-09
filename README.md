@@ -4,7 +4,7 @@ This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Se
 Folder organisation:
 
 - edf_schedule_generator:
-- sporadic_with_delayed_stframe:
+- sporadic_with_delayed_stframe: (sporadic also means event triggered traffic)
 - traffics_generator:
 
 
