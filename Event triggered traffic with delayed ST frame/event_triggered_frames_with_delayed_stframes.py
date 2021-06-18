@@ -397,7 +397,7 @@ def active_interference_delayed(offline_schedule, interference, release_time, tr
                         interference += offline_schedule[i].end_time - release_time
                     else:
                         if offline_schedule[i].end_time - release_time > 2:
-                            # 此处已知 ST 可以被抢占 但要判断是否能被抢占
+                            
                             temp_retranse_remain = (offline_schedule[i].end_time - release_time - 1) + 0.3
 
                             if abs(temp_retranse_remain - offline_schedule[i].end_time + offline_schedule[
@@ -482,7 +482,7 @@ def future_interference_delayed(offline_schedule, interference, release_time, tr
                                   offline_schedule[i].end_time, interference)
 
                         else:
-                            ## 抢占确认
+                            
 
                             if release_time + interference + transmission_time + offline_schedule[i].end_time - \
                                     offline_schedule[i].start_time > offline_schedule[i].deadline:
@@ -560,7 +560,7 @@ def active_frame_interference(j, offline_schedule, interference, release_time, t
                         else:
 
                             if offline_schedule[i].end_time - release_time > 2:
-                                # 此处已知 ST 可以被抢占 但要判断是否能被抢占
+                               
                                 remain_transmission_time = (offline_schedule[i].end_time - release_time - 1) + 0.3
 
                                 if abs(remain_transmission_time - offline_schedule[i].end_time + offline_schedule[
@@ -867,7 +867,7 @@ def Capacity_based_transmission(j, offline_schedule, deadline_U_CBS, C_CBS_remai
 
                             print("the remain time of preemption candidate", remain_time)
 
-                            # 改成用utibound来确认是否能抢占
+                          
                             Uti_pr_ST = remain_time / (
                                     offline_schedule[flag_id].deadline - sporadic_arrive[j] - sporadic_C[j])
                             if (Uti_CBS - Uti_pr_ST) < 0:
@@ -2142,7 +2142,7 @@ def credit_based_transmission_and_update(j, credit_1, credit_2, sporadic_arrive_
 
             if index != -5:
                 if sporadic_arrive_time_AVB[index] < response_time + postpont_time:
-                    # 实际的ready time 要包含期间所有ST的时间
+                  
                     ST_interference = credit_update(response_time, postpont_time, offline_schedule)
                     print("original arrive time of next frame belongs to the same class", sporadic_arrive_time_AVB[index])
                     sporadic_arrive_time_AVB[index] = response_time + postpont_time + ST_interference
