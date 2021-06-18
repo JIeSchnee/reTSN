@@ -1,0 +1,53 @@
+window_times: [3, 7, 20, 91, 5, 27, 24, 31, 12, 13]
+actual utilization: 0.5820000000000001
+period: [100, 1000, 200, 1000, 500, 200, 1000, 1000, 500, 100]
+hyper_period: 1000
+
+-------------------- utilization ---------------------------
+original_total_transmission_time and uti:  1164 | 0.582
+actual_total_transmission_time and uti: 1177.8 | 0.5889
+
+-------------------- delayed frame generator ---------------------------
+delayed_flow_id 4
+delayed_sche_id 27
+utilization_delayed : 0.0025
+frame base Uti 0.0
+original start time, end time ans frame size:  516 521 3
+release time of delayed frame: 740
+deadline of delayed frame: 1000
+
+-----------------------sporadic class A generator----------------------------------
+----------------------sporadic class B generator------------------------------------
+sporadic traffic parameters: 55 15 100
+[55, 155, 255, 355, 455, 555, 655, 755, 855, 955, 1055, 1155, 1255, 1355, 1455, 1555, 1655, 1755, 1855, 1955, 100000000]
+[155, 255, 355, 455, 555, 655, 755, 855, 955, 1055, 1155, 1255, 1355, 1455, 1555, 1655, 1755, 1855, 1955, 2055, 1000000]
+[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000000]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+------------------ class B frames insertion---------------------
+the arrive time of Class B frames
+[76, 276, 476, 676, 876, 1076, 1276, 1476, 1676, 1876]
+arrays include class B frames 
+[55, 76, 155, 255, 276, 355, 455, 476, 555, 655, 676, 755, 855, 876, 955, 1055, 1076, 1155, 1255, 1276, 1355, 1455, 1476, 1555, 1655, 1676, 1755, 1855, 1876, 1955, 100000000]
+[15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 15, 22, 15, 0]
+[0, 276, 0, 0, 476, 0, 0, 676, 0, 0, 876, 0, 0, 1076, 0, 0, 1276, 0, 0, 1476, 0, 0, 1676, 0, 0, 1876, 0, 0, 2076, 0, 1000000]
+[-1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1, -2, -1, -1]
+
+-----------------------CBS parameter setup----------------------------------
+para: 0.4111 0.0025 0
+the utilization allocate to sporadic traffic: 0.4111
+the parameters of CBS periodic time | capacity | actual utilization:  58 23 0.39655172413793105
+
+
+
+--------------------------- delayed frame -----------------------------
+
+the number of delayed frame handled by CBS 1
+the number of delayed frame handled by AVB 1
+the average variation of delayed frame -26.5
+max variation of delayed frame -26.5
+min variation of delayed frame -26.5
+
+delay
+[769.5]
+[743]
