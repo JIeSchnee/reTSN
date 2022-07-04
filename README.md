@@ -1,12 +1,13 @@
 # reTSN
-This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication".
+This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication", published in IEEE Transactions on Parallel and Distributed Systems (TPDS). 
 
 Folder organisation:
 
-- edf_schedule_generator:
-- Event_triggered_traffic_with_delayed_ST_frame: 
-- traffics_generator:
+- Event_triggered_traffic_with_delayed_ST_frame
+- edf_schedule_generator.py
+- traffics_generator.py
 
 
 ## Citation
-- Zou Jie, Xiaotian Dai, John McDermid. reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication. 2021 
+To cite this work:
+- Zou Jie, Xiaotian Dai, John McDermid. reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication. IEEE Transactions on Parallel and Distributed Systems. 2022
