@@ -1,5 +1,5 @@
 # reTSN
-This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication", published in IEEE Transactions on Parallel and Distributed Systems (TPDS). 
+This is the experiment code of the paper "reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication", published in IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems . 
 
 Folder organisation:
 
@@ -10,4 +10,4 @@ Folder organisation:
 
 ## Citation
 To cite this work:
-- Zou Jie, Xiaotian Dai, John McDermid. reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication. IEEE Transactions on Parallel and Distributed Systems. 2022
+- Zou Jie, Xiaotian Dai, John McDermid. reTSN: Resilient and Efficient Time-Sensitive Network for Automotive In-Vehicle Communication. IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems 
